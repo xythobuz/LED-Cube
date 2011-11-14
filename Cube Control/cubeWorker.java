@@ -1,5 +1,5 @@
 /*
- * cube.c
+ * cubeWorker.java
  *
  * Copyright 2011 Thomas Buck <xythobuz@me.com>
  * Copyright 2011 Max Nuding <max.nuding@gmail.com>
@@ -43,10 +43,10 @@ public class cubeWorker {
     // Returns how many animations are defined
     public int numOfAnimations() {
 
-           return 0;
+           return 3;
     }
     
-    // Selects an animation, on wich the frame specific functions operate
+    // Selects an animation, on which the frame specific functions operate
     // Returns -1 if it does not exist
     public int selectAnimation(int index) {
 
@@ -55,7 +55,7 @@ public class cubeWorker {
     
     public String getAnimationName(int index) {
 
-           return "Test";
+           return "TestAnim";
     }
     
     public void setAnimationName(int index, String s) {
@@ -65,7 +65,7 @@ public class cubeWorker {
     // Returns how many frames are in the current animation
     public int numOfFrames() {
 
-           return 0;
+           return 3;
     }
     
     public String getFrameName(int index) {
@@ -131,12 +131,13 @@ public class cubeWorker {
     
     public String[] getSerialPorts() {
 
-           return null;
+           String[] sPorts = {"Select serial port..."};
+           return sPorts;
     }
     
     // Returns true if last saved state != current state
     public boolean changedStateSinceSave() {
 
-           return false;
+           return true;
     }
 }
