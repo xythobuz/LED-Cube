@@ -49,7 +49,7 @@ public class cubeWorker {
     // Selects an animation, on which the frame specific functions operate
     // Returns -1 if it does not exist
     public int selectAnimation(int index) {
-
+           System.out.println("Animation " + index + " selected");
            return -1;
     }
     
