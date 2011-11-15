@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.event.*;
 
 /*
  * frame.java
@@ -77,8 +78,8 @@ public class frame extends JFrame {
   }
 
   private void errorMessage(String s) {
-	String[] Optionen = {"OK"};
-	JOptionPane.showOptionDialog(this, s, "Error!", JOptionPane.YES_OPTION, JOptionPane.ERROR_MESSAGE, null, Optionen, Optionen[0]);
+  String[] Optionen = {"OK"};
+  JOptionPane.showOptionDialog(this, s, "Error!", JOptionPane.YES_OPTION, JOptionPane.ERROR_MESSAGE, null, Optionen, Optionen[0]);
   }
 
   public frame(String title) {
@@ -347,7 +348,7 @@ public class frame extends JFrame {
     jList2.setFont(new Font("Dialog", Font.PLAIN, 13));
     frameList.setFont(new Font("Dialog", Font.PLAIN, 13));
     // Ende Komponenten
-
+    jList2.addListSelectionListener(new MyListSelectionListener(jList2, worker));
     setResizable(false);
     setVisible(true);
   }
@@ -467,7 +468,7 @@ public class frame extends JFrame {
 
   public void download_ActionPerformed(ActionEvent evt) {
          if (jComboBox1.getSelectedItem().equals("Select serial port...")) {
-			errorMessage("No serial port selected...");
+      errorMessage("No serial port selected...");
          } else {
            worker.downloadState((String)jComboBox1.getSelectedItem());
          }
@@ -479,5 +480,20 @@ public class frame extends JFrame {
     new frame("Cube Control");
   }
   // Ende Methoden
+}
+
+class MyListSelectionListener implements ListSelectionListener {
+
+  JList alist;
+  cubeWorker worker;
+  MyListSelectionListener(JList animList, cubeWorker w){
+    alist = animList;
+    worker = w;
+  }
+  public void valueChanged(ListSelectionEvent evt) {
+    if (!evt.getValueIsAdjusting()) {
+       worker.selectAnimation(alist.getSelectedIndex());
+    }
+  }
 }
 
