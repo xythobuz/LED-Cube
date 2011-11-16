@@ -6,6 +6,7 @@ import javax.swing.event.*;
 /*
  * frame.java
  *
+ *
  * Copyright 2011 Thomas Buck <xythobuz@me.com>
  * Copyright 2011 Max Nuding <max.nuding@gmail.com>
  * Copyright 2011 Felix Bäder <baeder.felix@gmail.com>
