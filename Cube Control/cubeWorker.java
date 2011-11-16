@@ -22,7 +22,8 @@
  */
 
 public class cubeWorker {
-
+    final int UP = 0;
+    final int DOWN = 1;
     cubeWorker() {
 
     }
@@ -62,6 +63,14 @@ public class cubeWorker {
 
     }
     
+    public void moveAnimation(int dir){
+      if (dir == UP){
+        //animation moved up
+      } else if (dir == DOWN){
+        //animation moved down
+      }
+    }
+    
     // Returns how many frames are in the current animation
     public int numOfFrames() {
 
@@ -97,6 +106,14 @@ public class cubeWorker {
     
     public void setFrame(int index, byte[] data) {
 
+    }
+    
+    public void moveFrame(int dir){
+      if (dir == UP){
+        //animation moved up
+      } else if (dir == DOWN){
+        //animation moved down
+      }
     }
     
     // Loads an animation file into this object

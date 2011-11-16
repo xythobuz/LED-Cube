@@ -395,6 +395,7 @@ public class frame extends JFrame {
             frameListModel.set(i, frameListModel.get(i - 1));
             frameListModel.set(i - 1, tmp);
             frameList.setSelectedIndex(i - 1);
+            worker.moveFrame(worker.UP);
          }
   }
 
@@ -405,6 +406,7 @@ public class frame extends JFrame {
             frameListModel.set(i, frameListModel.get(i + 1));
             frameListModel.set(i + 1, tmp);
             frameList.setSelectedIndex(i + 1);
+            worker.moveFrame(worker.DOWN);
          }
   }
 
@@ -425,6 +427,7 @@ public class frame extends JFrame {
             jList2Model.set(i, jList2Model.get(i - 1));
             jList2Model.set(i - 1, tmp);
             jList2.setSelectedIndex(i - 1);
+            worker.moveAnimation(worker.UP);
          }
   }
 
@@ -435,6 +438,7 @@ public class frame extends JFrame {
             jList2Model.set(i, jList2Model.get(i + 1));
             jList2Model.set(i + 1, tmp);
             jList2.setSelectedIndex(i + 1);
+            worker.moveAnimation(worker.DOWN);
          }
   }
 
