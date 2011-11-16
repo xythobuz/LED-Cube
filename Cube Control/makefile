@@ -11,7 +11,7 @@ java: serialHelper
 
 serialHelper:
 ifeq ($(TARGET),win)
-	$(CC) -o serialHelper -D winHelper serialHelper.c
+	$(CC) -o serialHelper.exe -D winHelper serialHelper.c
 else
 	$(CC) -o serialHelper serialHelper.c
 endif
