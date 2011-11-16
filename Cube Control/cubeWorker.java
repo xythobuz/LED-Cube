@@ -21,14 +21,66 @@
  * along with LED-Cube.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*
+ * This class handles one animation file. This file can contain
+ * many animations, but has to be only 1Mbit in size (128*1024 Byte).
+ */
+
 public class cubeWorker {
-    final int UP = 0;
+
+// --------------------
+// Definitions
+// --------------------
+
+	final int UP = 0;
     final int DOWN = 1;
-    cubeWorker() {
+
+// --------------------
+// Fields
+// --------------------
+
+// --------------------
+
+	cubeWorker() {
 
     }
 
-    // Adds a new Animation
+// --------------------
+// Misc. Methods
+// --------------------
+
+	// Returns how many animations are defined
+    public int numOfAnimations() {
+
+           return 3;
+    }   
+    
+    // Returns how many frames are in the current animation
+    public int numOfFrames() {
+
+           return 3;
+    }
+
+	// Tells how many Frames you can add until you reached 1 Mbit...
+    public int framesRemaining() {
+
+           return 0;
+    }
+
+
+// --------------------
+// Animation Specific
+// --------------------
+
+	// Selects an animation on wich the animation specific functions operate
+    // Returns -1 if it does not exist, else its index
+    public int selectAnimation(int index) {
+           System.out.println("Animation " + index + " selected.");
+           
+		   return index;
+    }
+
+	// Adds a new Animation
     // Returns id if ok, -1 if error or not enough space for
     // another animation
     public int addAnimation() {
@@ -37,52 +89,47 @@ public class cubeWorker {
     }
     
     // Removes an animation
-    public void removeAnimation(int index) {
+    public void removeAnimation() {
 
     }
     
-    // Returns how many animations are defined
-    public int numOfAnimations() {
-
-           return 3;
-    }
-    
-    // Selects an animation, on which the frame specific functions operate
-    // Returns -1 if it does not exist
-    public int selectAnimation(int index) {
-           System.out.println("Animation " + index + " selected");
-           return -1;
-    }
-    
-    public String getAnimationName(int index) {
+	public String getAnimationName() {
 
            return "TestAnim";
     }
-    
-    public void setAnimationName(int index, String s) {
+
+	public void setAnimationName(String s) {
 
     }
-    
-    public void moveAnimation(int dir){
-      if (dir == UP){
-        //animation moved up
-      } else if (dir == DOWN){
-        //animation moved down
-      }
-    }
-    
-    // Returns how many frames are in the current animation
-    public int numOfFrames() {
 
-           return 3;
-    }
-    
-    public String getFrameName(int index) {
+	public void moveAnimation(int dir) {
+		if (dir == UP){
+    		//animation moved up
+		
+		} else if (dir == DOWN){
+			//animation moved down
+
+		}
+	}
+
+// --------------------
+// Frame Specific
+// --------------------
+	
+	// Selects an animation on wich the frame specific functions operate
+    // Returns -1 if it does not exist, else its index
+	public int selectFrame(int index) {
+		System.out.println("Frame " + index + " selected.");
+
+		return index;
+	}
+
+	public String getFrameName() {
 
            return "Test";
     }
 
-    public void setFrameName(int index, String s) {
+    public void setFrameName(String s) {
 
     }
     
@@ -93,29 +140,35 @@ public class cubeWorker {
            return -1;
     }
     
-    // Remove a frame
-    public void removeFrame(int index) {
+    // Remove the frame
+    public void removeFrame() {
 
     }
     
     // Returns array with 64 bytes with led values
-    public byte[] getFrame(int index) {
+    public byte[] getFrame() {
 
            return null;
     }
     
-    public void setFrame(int index, byte[] data) {
+    public void setFrame(byte[] data) {
 
     }
-    
-    public void moveFrame(int dir){
-      if (dir == UP){
-        //animation moved up
-      } else if (dir == DOWN){
-        //animation moved down
-      }
-    }
-    
+
+	public void moveFrame(int dir){
+		if (dir == UP){
+    		// frame moved up
+      
+		} else if (dir == DOWN){
+			// frame moved down
+
+		}
+	}
+
+// --------------------
+// File Specific
+// --------------------
+
     // Loads an animation file into this object
     public int loadState(String path) {
 
@@ -127,6 +180,16 @@ public class cubeWorker {
            System.out.println("Saving to " + path);
            return 0;
     }
+
+	// Returns true if last saved state != current state
+    public boolean changedStateSinceSave() {
+
+           return true;
+    }
+
+// --------------------
+// Serial Port Specific
+// --------------------
     
     // sends state of object to led cube
     public int uploadState(String port) {
@@ -139,22 +202,13 @@ public class cubeWorker {
 
            return 0;
     }
-    
-    // Tells how many Frames you can add until you reached 1 Mbit...
-    public int framesRemaining() {
-
-           return 0;
-    }
-    
+        
     public String[] getSerialPorts() {
 
-           String[] sPorts = {"Select serial port..."};
+           String[] sPorts = { "Select serial port..." }; // Has to be the first entry
            return sPorts;
     }
-    
-    // Returns true if last saved state != current state
-    public boolean changedStateSinceSave() {
 
-           return true;
-    }
+// --------------------
+
 }

@@ -47,9 +47,10 @@ public class frame extends JFrame {
   private JButton frameDown = new JButton();
   private JButton frameAdd = new JButton();
   private JButton frameRemove = new JButton();
-  private JList jList2 = new JList();
-  private DefaultListModel jList2Model = new DefaultListModel();
-  private JScrollPane jList2ScrollPane = new JScrollPane(jList2);
+  private JButton frame = new JButton();
+  private JList animList = new JList();
+  private DefaultListModel animModel = new DefaultListModel();
+  private JScrollPane animScrollPane = new JScrollPane(animList);
   private JButton animUp = new JButton();
   private JButton animDown = new JButton();
   private JButton animAdd = new JButton();
@@ -93,10 +94,10 @@ public class frame extends JFrame {
     }
     
     for(int i = 0; i < worker.numOfAnimations(); i++){
-      jList2Model.addElement(worker.getAnimationName(i));
+      animModel.addElement(worker.getAnimationName());
     }
     for(int i = 0; i < worker.numOfFrames(); i++){
-      frameListModel.add(i, worker.getFrameName(i));
+      frameListModel.add(i, worker.getFrameName());
     }
 
     addWindowListener(new WindowAdapter() {
@@ -245,10 +246,10 @@ public class frame extends JFrame {
       }
     });
 
-    jList2ScrollPane.setBounds(8, 264, 209, 121);
-    jList2.setModel(jList2Model);
+    animScrollPane.setBounds(8, 264, 209, 121);
+    animList.setModel(animModel);
     //jList2Model.addElement("");
-    cp.add(jList2ScrollPane);
+    cp.add(animScrollPane);
     animUp.setBounds(224, 264, 99, 25);
     animUp.setText("Move up");
     animUp.setFont(new Font("Dialog", Font.PLAIN, 13));
@@ -346,10 +347,10 @@ public class frame extends JFrame {
     frameRemaining.setText("2048");
     frameRemaining.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(frameRemaining);
-    jList2.setFont(new Font("Dialog", Font.PLAIN, 13));
+    animList.setFont(new Font("Dialog", Font.PLAIN, 13));
     frameList.setFont(new Font("Dialog", Font.PLAIN, 13));
     // Ende Komponenten
-    jList2.addListSelectionListener(new MyListSelectionListener(jList2, worker));
+    animList.addListSelectionListener(new MyListSelectionListener(animList, worker));
     setResizable(false);
     setVisible(true);
   }
@@ -358,7 +359,7 @@ public class frame extends JFrame {
 
   // Anfang Ereignisprozeduren
   public void editA_ActionPerformed(ActionEvent evt) {
-
+     layerEditFrame layerFrame1 = new layerEditFrame();
   }
 
   public void editB_ActionPerformed(ActionEvent evt) {
@@ -417,28 +418,28 @@ public class frame extends JFrame {
   }
 
   public void frameRemove_ActionPerformed(ActionEvent evt) {
-         worker.removeFrame(jList2.getSelectedIndex());
+         worker.removeFrame();
          frameRemaining.setText(Integer.toString(worker.framesRemaining()));
   }
 
   public void animUp_ActionPerformed(ActionEvent evt) {
-         int i = jList2.getSelectedIndex();
-         if ((i > 0) && (jList2Model.getSize() >= 2)) {
-            Object tmp = jList2Model.get(i);
-            jList2Model.set(i, jList2Model.get(i - 1));
-            jList2Model.set(i - 1, tmp);
-            jList2.setSelectedIndex(i - 1);
+         int i = animList.getSelectedIndex();
+         if ((i > 0) && (animModel.getSize() >= 2)) {
+            Object tmp = animModel.get(i);
+            animModel.set(i, animModel.get(i - 1));
+            animModel.set(i - 1, tmp);
+            animList.setSelectedIndex(i - 1);
             worker.moveAnimation(worker.UP);
          }
   }
 
   public void animDown_ActionPerformed(ActionEvent evt) {
-         int i = jList2.getSelectedIndex();
-         if ((i >= 0) && (jList2Model.getSize() >= 2) && (i < (jList2Model.getSize() - 1))) {
-            Object tmp = jList2Model.get(i);
-            jList2Model.set(i, jList2Model.get(i + 1));
-            jList2Model.set(i + 1, tmp);
-            jList2.setSelectedIndex(i + 1);
+         int i = animList.getSelectedIndex();
+         if ((i >= 0) && (animModel.getSize() >= 2) && (i < (animModel.getSize() - 1))) {
+            Object tmp = animModel.get(i);
+            animModel.set(i, animModel.get(i + 1));
+            animModel.set(i + 1, tmp);
+            animList.setSelectedIndex(i + 1);
             worker.moveAnimation(worker.DOWN);
          }
   }
@@ -451,7 +452,7 @@ public class frame extends JFrame {
   }
 
   public void animRemove_ActionPerformed(ActionEvent evt) {
-     worker.removeAnimation(jList2.getSelectedIndex());
+     worker.removeAnimation();
   }
 
   public void load_ActionPerformed(ActionEvent evt) {
