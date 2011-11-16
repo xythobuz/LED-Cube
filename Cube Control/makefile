@@ -6,11 +6,15 @@ TARGET = unix
 
 all: java
 
-java: helper
+java: serialHelper
 	$(JAVAC) *.java
 
-helper:
-	$(CC) -o serialHelper $(TARGET)Helper.c
+serialHelper:
+ifeq ($(TARGET),win)
+	$(CC) -o serialHelper -D winHelper serialHelper.c
+else
+	$(CC) -o serialHelper serialHelper.c
+endif
 
 clean:
 	rm -f *.class

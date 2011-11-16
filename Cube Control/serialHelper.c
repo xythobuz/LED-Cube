@@ -1,10 +1,33 @@
 /*
- * By: Thomas Buck <taucher.bodensee@gmail.com>
- * Visit: www.xythobuz.org
+ * unixHelper.c
+ *
+ * Copyright 2011 Thomas Buck <xythobuz@me.com>
+ * Copyright 2011 Max Nuding <max.nuding@gmail.com>
+ * Copyright 2011 Felix Bäder <baeder.felix@gmail.com>
+ *
+ * This file is part of LED-Cube.
+ *
+ * LED-Cube is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * LED-Cube is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with LED-Cube.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <stdlib.h>
 #include <stdio.h>
+
+#ifdef winHelper
 #include "helper/winSerial.c"
+#else
+#include "helper/unixSerial.c"
+#endif
 
 char *fileData = NULL;
 
@@ -23,7 +46,11 @@ int main(int argc, char *argv[]) {
 	size_t length, written;
 	
 	if (argc < 3) {
+#ifdef winHelper
 		printf("Usage:\n%s COM1 C:\\file\\to\\send.txt\n", argv[0]);
+#else
+		printf("Usage:\n%s /dev/SerialPort /file/to/send\n", argv[0]);
+#endif
 		return 1;
 	} else {
 		if (serialOpen(argv[1]) != 0) {
