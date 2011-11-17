@@ -118,6 +118,7 @@ size_t getFileSize(FILE *fp) {
 		c = fgetc(fp);
 		size++;
 	} while (c != EOF);
+	size--;
 	
 	fseek(fp, 0, 0);
 
