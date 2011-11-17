@@ -16,7 +16,7 @@ public class layerEditFrame extends JFrame {
   private JPanel panelLED1 = new JPanel(null, true);
   JButton[][] ledPanels = new JButton[8][8];
   static ImageIcon on = new ImageIcon("LEDon.png");
-  static ImageIcon off = new ImageIcon("LEDff.png");
+  static ImageIcon off = new ImageIcon("LEDoff.png");
 
   // Ende Attribute
 
@@ -37,8 +37,15 @@ public class layerEditFrame extends JFrame {
 
     for(int i = 0; i < 8; i++){
       for(int j = 0; j < 8; j++){
+         final int finalI = i;
+         final int finalJ = j;
          ledPanels[i][j] = new JButton(on);
          ledPanels[i][j].setBounds((i*20)+5, (j*20)+5, 15, 15);
+         ledPanels[i][j].addActionListener(new ActionListener() {
+           public void actionPerformed(ActionEvent evt) {
+             btnClicked(finalI, finalJ);
+           }
+         });
          ledPanels[i][j].setVisible(true);
          cp.add(ledPanels[i][j]);
       }
@@ -80,13 +87,13 @@ public class layerEditFrame extends JFrame {
     // Anfang Komponenten
 
     // Ende Komponenten
-  /*public void btnClicked(){
-    if (getIcon() == on){
-      setIcon(off);
+  public void btnClicked(int i, int j){
+    if (ledPanels[i][j].getIcon() == on){
+      ledPanels[i][j].setIcon(off);
     } else {
-      setIcon(on);
+      ledPanels[i][j].setIcon(on);
     }
-  } */
+  }
 
   public void cancel(){
     dispose();
