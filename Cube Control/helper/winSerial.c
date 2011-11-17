@@ -37,14 +37,14 @@ int serialOpen(char *port) {
 	DCB dcbSerialParams = {0};
 	COMMTIMEOUTS timeouts = {0};
 
-	hSerial = CreateFile(port GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	hSerial = CreateFile(port, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
 	if (hSerial == INVALID_HANDLE_VALUE) {
 		return -1;
 	}
 	
 
-	dcbSerial.DCBlength = sizeof(dcbSerialParams);
+	dcbSerialParams.DCBlength = sizeof(dcbSerialParams);
 	if (!GetCommState(hSerial, &dcbSerialParams)) {
 		CloseHandle(hSerial);
 		hSerial = INVALID_HANDLE_VALUE;
