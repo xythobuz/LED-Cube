@@ -363,31 +363,31 @@ public class frame extends JFrame {
   }
 
   public void editB_ActionPerformed(ActionEvent evt) {
-
+     layerEditFrame layerFrame1 = new layerEditFrame();
   }
 
   public void editC_ActionPerformed(ActionEvent evt) {
-
+    layerEditFrame layerFrame1 = new layerEditFrame();
   }
 
   public void editD_ActionPerformed(ActionEvent evt) {
-
+    layerEditFrame layerFrame1 = new layerEditFrame();
   }
 
   public void editE_ActionPerformed(ActionEvent evt) {
-
+    layerEditFrame layerFrame1 = new layerEditFrame();
   }
 
   public void editF_ActionPerformed(ActionEvent evt) {
-
+    layerEditFrame layerFrame1 = new layerEditFrame();
   }
 
   public void editG_ActionPerformed(ActionEvent evt) {
-
+    layerEditFrame layerFrame1 = new layerEditFrame();
   }
 
   public void editH_ActionPerformed(ActionEvent evt) {
-
+    layerEditFrame layerFrame1 = new layerEditFrame();
   }
 
   public void frameUp_ActionPerformed(ActionEvent evt) {
