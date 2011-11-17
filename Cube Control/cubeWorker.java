@@ -32,7 +32,7 @@ public class cubeWorker {
 // Definitions
 // --------------------
 
-	final int UP = 0;
+  final int UP = 0;
     final int DOWN = 1;
 
 // --------------------
@@ -41,7 +41,7 @@ public class cubeWorker {
 
 // --------------------
 
-	cubeWorker() {
+  cubeWorker() {
 
     }
 
@@ -49,7 +49,7 @@ public class cubeWorker {
 // Misc. Methods
 // --------------------
 
-	// Returns how many animations are defined
+  // Returns how many animations are defined
     public int numOfAnimations() {
 
            return 3;
@@ -61,7 +61,7 @@ public class cubeWorker {
            return 3;
     }
 
-	// Tells how many Frames you can add until you reached 1 Mbit...
+  // Tells how many Frames you can add until you reached 1 Mbit...
     public int framesRemaining() {
 
            return 0;
@@ -72,15 +72,15 @@ public class cubeWorker {
 // Animation Specific
 // --------------------
 
-	// Selects an animation on wich the animation specific functions operate
+  // Selects an animation on wich the animation specific functions operate
     // Returns -1 if it does not exist, else its index
     public int selectAnimation(int index) {
            System.out.println("Animation " + index + " selected.");
            
-		   return index;
+       return index;
     }
 
-	// Adds a new Animation
+  // Adds a new Animation
     // Returns id if ok, -1 if error or not enough space for
     // another animation
     public int addAnimation() {
@@ -93,38 +93,38 @@ public class cubeWorker {
 
     }
     
-	public String getAnimationName() {
+  public String getAnimationName() {
 
            return "TestAnim";
     }
 
-	public void setAnimationName(String s) {
+  public void setAnimationName(String s) {
 
     }
 
-	public void moveAnimation(int dir) {
-		if (dir == UP){
-    		//animation moved up
-		
-		} else if (dir == DOWN){
-			//animation moved down
+  public void moveAnimation(int dir) {
+    if (dir == UP){
+        //animation moved up
+    
+    } else if (dir == DOWN){
+      //animation moved down
 
-		}
-	}
+    }
+  }
 
 // --------------------
 // Frame Specific
 // --------------------
-	
-	// Selects an animation on wich the frame specific functions operate
+  
+  // Selects an animation on wich the frame specific functions operate
     // Returns -1 if it does not exist, else its index
-	public int selectFrame(int index) {
-		System.out.println("Frame " + index + " selected.");
+  public int selectFrame(int index) {
+    System.out.println("Frame " + index + " selected.");
 
-		return index;
-	}
+    return index;
+  }
 
-	public String getFrameName() {
+  public String getFrameName() {
 
            return "Test";
     }
@@ -155,15 +155,15 @@ public class cubeWorker {
 
     }
 
-	public void moveFrame(int dir){
-		if (dir == UP){
-    		// frame moved up
+  public void moveFrame(int dir){
+    if (dir == UP){
+        // frame moved up
       
-		} else if (dir == DOWN){
-			// frame moved down
+    } else if (dir == DOWN){
+      // frame moved down
 
-		}
-	}
+    }
+  }
 
 // --------------------
 // File Specific
@@ -181,11 +181,18 @@ public class cubeWorker {
            return 0;
     }
 
-	// Returns true if last saved state != current state
+  // Returns true if last saved state != current state
     public boolean changedStateSinceSave() {
 
            return true;
     }
+// --------------------
+// File Specific
+// --------------------
+
+   public byte[] getLayer(int index){
+          return null;
+   }
 
 // --------------------
 // Serial Port Specific

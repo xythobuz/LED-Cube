@@ -18,12 +18,14 @@ public class layerEditFrame extends JFrame {
   static ImageIcon on = new ImageIcon("LEDon.png");
   static ImageIcon off = new ImageIcon("LEDoff.png");
   boolean changedStateSinceSave = false;
+  byte[] frame;
 
   // Ende Attribute
 
-  public layerEditFrame() {
+  public layerEditFrame(byte[] f) {
     // Frame-Initialisierung
     super("Layer Edit");
+    frame = f;
     setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     int frameWidth = 180;
     int frameHeight = 230;
@@ -51,6 +53,7 @@ public class layerEditFrame extends JFrame {
          cp.add(ledPanels[i][j]);
       }
     }
+    loadData();
     JButton saveBtn = new JButton("Save");
     JButton cancelBtn = new JButton("Cancel");
     
@@ -89,6 +92,25 @@ public class layerEditFrame extends JFrame {
     // Anfang Komponenten
 
     // Ende Komponenten
+  private void loadData(){
+    byte[][] frameArray = new byte[8][8];
+    //Load the data from the bytearray 'frame' and write it into frameArray.length A 0 means off, everything else means on
+    for(int i = 0; i < frameArray.length; i++){            //
+      for(int j = 0; j < frameArray[i].length; j++){       //This ist just that we have a starting point....
+        frameArray[i][j] = 0;                              //
+      }
+    }
+    for(int i = 0; i < frameArray.length; i++){            //
+      for(int j = 0; j < frameArray[i].length; j++){       //Set the LED-Buttons
+        if(frameArray[i][j] == 0){
+           ledPanels[i][j].setIcon(off);
+        } else {
+           ledPanels[i][j].setIcon(on);
+        }
+      }
+    }
+  }
+
   public void btnClicked(int i, int j){
     changedStateSinceSave = true;
     if (ledPanels[i][j].getIcon() == on){
