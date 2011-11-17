@@ -13,16 +13,18 @@ else
 	jar -cmf manifest.txt "Cube Control.jar" *.class serialHelper
 endif
 
+ifeq ($(TARGET),win)
+frame.class: serialHelper.exe
+else
 frame.class: serialHelper
+endif
 	$(JAVAC) *.java
 
-ifeq ($(TARGET),win)
 serialHelper.exe:
 	$(CC) -o serialHelper.exe -D winHelper serialHelper.c
-else
+
 serialHelper:
 	$(CC) -o serialHelper serialHelper.c
-endif
 
 clean:
 	rm -f *.class
