@@ -17,6 +17,7 @@ public class layerEditFrame extends JFrame {
   JButton[][] ledPanels = new JButton[8][8];
   static ImageIcon on = new ImageIcon("LEDon.png");
   static ImageIcon off = new ImageIcon("LEDoff.png");
+  boolean changedStateSinceSave = false;
 
   // Ende Attribute
 
@@ -78,8 +79,9 @@ public class layerEditFrame extends JFrame {
     
     addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent evt) {
-
-             saveExitDialog();
+             if(changedStateSinceSave){
+                saveExitDialog();
+             }
              dispose();
       }
     });
@@ -88,6 +90,7 @@ public class layerEditFrame extends JFrame {
 
     // Ende Komponenten
   public void btnClicked(int i, int j){
+    changedStateSinceSave = true;
     if (ledPanels[i][j].getIcon() == on){
       ledPanels[i][j].setIcon(off);
     } else {
@@ -101,7 +104,7 @@ public class layerEditFrame extends JFrame {
 
   
   public void save(){
-
+    changedStateSinceSave = false;
   }
 
   private int saveExitDialog() {
