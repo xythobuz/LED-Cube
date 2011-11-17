@@ -26,4 +26,8 @@ endif
 
 clean:
 	rm -f *.class
+ifeq ($(TARGET),win)
+	rm -f serialHelper.exe
+else
 	rm -f serialHelper
+endif
