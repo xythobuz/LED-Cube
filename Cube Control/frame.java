@@ -3,6 +3,9 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import java.io.File;
+import com.sun.j3d.utils.universe.*;
+import com.sun.j3d.utils.geometry.*;
+import javax.media.j3d.*;
 
 /*
  * frame.java
@@ -30,7 +33,12 @@ import java.io.File;
 
 public class frame extends JFrame {
   // Anfang Variablen
-  private Canvas cubeCanvas = new Canvas();
+  private GraphicsConfiguration gConfig = SimpleUniverse.getPreferredConfiguration();
+  private Canvas3D cubeCanvas = new Canvas3D(gConfig);
+  SimpleUniverse universe;
+  Transform3D transform3d;
+  TransformGroup transroot;
+  BranchGroup branchgroup;
 
   // Anfang Attribute
   private JButton editA = new JButton();
@@ -123,8 +131,17 @@ public class frame extends JFrame {
     // Anfang Komponenten
 
     cubeCanvas.setBounds(8, 8, 250, 250);
-    cubeCanvas.setBackground(Color.GRAY);
     cp.add(cubeCanvas);
+
+	universe = new SimpleUniverse(cubeCanvas);
+	universe.getViewingPlatform().setNominalViewingTransform();
+	transform3d = new Transform3D();
+	transroot = new TransformGroup(transform3d);
+	transroot.addChild(new ColorCube(0.3));
+	branchgroup = new BranchGroup();
+	branchgroup.addChild(transroot);
+	universe.addBranchGraph(branchgroup);
+
     editA.setBounds(264, 8, 107, 25);
     editA.setText("Layer A");
     editA.setFont(new Font("Dialog", Font.PLAIN, 13));
