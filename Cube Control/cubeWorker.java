@@ -27,6 +27,10 @@
  */
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.io.FileWriter;
+import java.io.File;
+import java.io.IOException;
 
 public class cubeWorker {
 
@@ -51,6 +55,10 @@ public class cubeWorker {
 
   cubeWorker() {
 	animations.add(new Animation());
+  }
+
+  cubeWorker(ArrayList<Animation> anims) {
+	  animations = anims;
   }
 
 // --------------------
@@ -236,8 +244,11 @@ public class cubeWorker {
     // Saves the state of this object in an animation file
     public int saveState(String path) {
            changedState = false;
-		   System.out.println("Saving to " + path);
-
+		   AnimationUtility.writeFile(path, animations);
+		   if (AnimationUtility.getLastError() != null) {
+			   System.out.println(AnimationUtility.getLastError());
+			   return -1;
+			}
            return 0;
     }
 
@@ -272,6 +283,76 @@ public class cubeWorker {
 
 }
 
+class AnimationUtility {
+	private static String lastError = null;
+	
+	public static ArrayList<Animation> readFile(String path) {
+		return null;
+	}
+
+	public static void writeFile(String path, ArrayList<Animation> animations) {
+		File f = new File(path);
+		if (f.exists()) {
+			try {
+				f.delete();
+			} catch (Exception e) {
+				lastError = e.toString();
+				return;
+			}
+		}
+		FileWriter output = null;
+		try {
+			output = new FileWriter(f);
+			for (int i = 0; i < animations.size(); i++) {
+				writeAnimation(animations.get(i), output);
+			}
+		} catch (Exception e) {
+			lastError = e.toString();
+			return;
+		} finally {
+			if (output != null) {
+				try {
+					output.close();
+				} catch (Exception e) {
+					lastError = e.toString();
+				}
+			}
+		}
+
+	}
+
+	public static String getLastError() {
+		String tmp = lastError;
+		lastError = null;
+		return tmp;
+	}
+
+	private static void writeAnimation(Animation anim, FileWriter f) throws IOException {
+		f.write(anim.getName() + "\n");
+		for (int i = 0; i < anim.size(); i++) {
+			writeFrame(anim.get(i), f);
+		}
+		f.write("\n");
+	}
+
+	private static void writeFrame(Frame fr, FileWriter f) throws IOException {
+		for (int i = 0; i < 8; i++) {
+			writeLayer(fr.getLayer(i), f);
+		}
+		f.write(Integer.toString( (fr.getTime() & 0xff) + 0x100, 16).substring(1) + "\n");
+	}
+
+	private static void writeLayer(byte[] l, FileWriter f) throws IOException {
+		String hex = "";
+		for (int i = 0; i < l.length; i++) {
+			hex += Integer.toString( (l[i] & 0xff) + 0x100, 16).substring(1);
+		}
+		hex += "\n";
+
+		f.write(hex);
+	}
+}
+
 class Frame {
 	private byte[] data = new byte[64];
 	private byte duration = 1;
@@ -299,6 +380,10 @@ class Frame {
 
 	byte getTime() {
 		return duration;
+	}
+
+	byte[] getLayer(int i) {
+		return Arrays.copyOfRange(data, (i * 8), (i * 8) + 8);
 	}
 }
 

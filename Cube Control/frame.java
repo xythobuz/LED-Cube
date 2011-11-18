@@ -399,35 +399,35 @@ public class frame extends JFrame {
 
   // Anfang Ereignisprozeduren
   public void editA_ActionPerformed(ActionEvent evt) {
-     layerEditFrame layerFrame1 = new layerEditFrame(worker.getLayer(0));
+     // layerEditFrame layerFrame1 = new layerEditFrame(worker.getLayer(0));
   }
 
   public void editB_ActionPerformed(ActionEvent evt) {
-     layerEditFrame layerFrame1 = new layerEditFrame(worker.getLayer(1));
+     // layerEditFrame layerFrame1 = new layerEditFrame(worker.getLayer(1));
   }
 
   public void editC_ActionPerformed(ActionEvent evt) {
-    layerEditFrame layerFrame1 = new layerEditFrame(worker.getLayer(2));
+    // layerEditFrame layerFrame1 = new layerEditFrame(worker.getLayer(2));
   }
 
   public void editD_ActionPerformed(ActionEvent evt) {
-    layerEditFrame layerFrame1 = new layerEditFrame(worker.getLayer(3));
+    // layerEditFrame layerFrame1 = new layerEditFrame(worker.getLayer(3));
   }
 
   public void editE_ActionPerformed(ActionEvent evt) {
-    layerEditFrame layerFrame1 = new layerEditFrame(worker.getLayer(4));
+    // layerEditFrame layerFrame1 = new layerEditFrame(worker.getLayer(4));
   }
 
   public void editF_ActionPerformed(ActionEvent evt) {
-    layerEditFrame layerFrame1 = new layerEditFrame(worker.getLayer(5));
+    // layerEditFrame layerFrame1 = new layerEditFrame(worker.getLayer(5));
   }
 
   public void editG_ActionPerformed(ActionEvent evt) {
-    layerEditFrame layerFrame1 = new layerEditFrame(worker.getLayer(6));
+    // layerEditFrame layerFrame1 = new layerEditFrame(worker.getLayer(6));
   }
 
   public void editH_ActionPerformed(ActionEvent evt) {
-    layerEditFrame layerFrame1 = new layerEditFrame(worker.getLayer(7));
+    // layerEditFrame layerFrame1 = new layerEditFrame(worker.getLayer(7));
   }
 
   public void frameUp_ActionPerformed(ActionEvent evt) {
