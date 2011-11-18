@@ -15,8 +15,8 @@ public class layerEditFrame extends JFrame {
   // Anfang Attribute
   private JPanel panelLED1 = new JPanel(null, true);
   JButton[][] ledPanels = new JButton[8][8];
-  static ImageIcon on = new ImageIcon("LEDon.png");
-  static ImageIcon off = new ImageIcon("LEDoff.png");
+  ImageIcon on = new ImageIcon(getClass().getResource("LEDon.png"));
+  ImageIcon off = new ImageIcon(getClass().getResource("LEDoff.png"));
   boolean changedStateSinceSave = false;
   byte[] frame;
 
