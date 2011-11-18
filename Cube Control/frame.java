@@ -2,6 +2,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
+import java.io.File;
 
 /*
  * frame.java
@@ -58,6 +59,7 @@ public class frame extends JFrame {
   private JTextField animPath = new JTextField();
   private JButton load = new JButton();
   private JButton save = new JButton();
+  private JButton saveAs = new JButton();
   private JComboBox jComboBox1 = new JComboBox();
   private JButton upload = new JButton();
   private JButton download = new JButton();
@@ -66,6 +68,7 @@ public class frame extends JFrame {
   // Ende Attribute
 
   private cubeWorker worker = new cubeWorker();
+  private boolean fileSelected = false;
   // Ende Variablen
 
   private int saveExitDialog() {
@@ -295,7 +298,7 @@ public class frame extends JFrame {
     animPath.setText("Load/Save an animation file...");
     animPath.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(animPath);
-    load.setBounds(344, 296, 147, 25);
+    load.setBounds(344, 296, 100, 25);
     load.setText("Load");
     load.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(load);
@@ -305,7 +308,7 @@ public class frame extends JFrame {
       }
     });
 
-    save.setBounds(504, 296, 147, 25);
+    save.setBounds(454, 296, 100, 25);
     save.setText("Save");
     save.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(save);
@@ -314,6 +317,16 @@ public class frame extends JFrame {
         save_ActionPerformed(evt);
       }
     });
+
+	saveAs.setBounds(564, 296, 90, 25);
+	saveAs.setText("Save As");
+	saveAs.setFont(new Font("Dialog", Font.PLAIN, 13));
+	cp.add(saveAs);
+	saveAs.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent evt) {
+			saveAs_ActionPerformed(evt);
+		}
+	});
 
     jComboBox1.setBounds(344, 328, 305, 24);
     jComboBox1.setFont(new Font("Dialog", Font.PLAIN, 13));
@@ -456,11 +469,49 @@ public class frame extends JFrame {
   }
 
   public void load_ActionPerformed(ActionEvent evt) {
-    worker.loadState(animPath.getText());
+	JFileChooser fc = new JFileChooser();
+	int ret = fc.showOpenDialog(this);
+	if (ret == JFileChooser.APPROVE_OPTION) {
+		File file = fc.getSelectedFile();
+		if (fileSelected == false) {
+			fileSelected = true;
+		}
+		animPath.setText(file.getPath());
+		worker.loadState(animPath.getText());
+	}
   }
 
   public void save_ActionPerformed(ActionEvent evt) {
-    worker.saveState(animPath.getText());
+	if (fileSelected == false) {
+		JFileChooser fc = new JFileChooser();
+		int ret = fc.showSaveDialog(this);
+		if (ret == JFileChooser.APPROVE_OPTION) {
+			File file = fc.getSelectedFile();
+			fileSelected = true;
+			animPath.setText(file.getPath());
+			worker.saveState(animPath.getText());
+		}
+	} else {
+		worker.saveState(animPath.getText());
+	}
+  }
+
+  public void saveAs_ActionPerformed(ActionEvent evt) {
+	JFileChooser fc;
+	if (fileSelected == true) {
+		fc = new JFileChooser(new File(animPath.getText()).getParentFile());
+	} else {
+		fc = new JFileChooser();
+	}
+	int ret = fc.showSaveDialog(this);
+	if (ret == JFileChooser.APPROVE_OPTION) {
+		File file = fc.getSelectedFile();
+		if (fileSelected == false) {
+			fileSelected = true;
+		}
+		animPath.setText(file.getPath());
+		worker.saveState(animPath.getText());
+	}
   }
 
 
