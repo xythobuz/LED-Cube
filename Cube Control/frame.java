@@ -6,6 +6,7 @@ import java.io.File;
 import com.sun.j3d.utils.universe.*;
 import com.sun.j3d.utils.geometry.*;
 import javax.media.j3d.*;
+import javax.vecmath.*;
 
 /*
  * frame.java
@@ -130,17 +131,26 @@ public class frame extends JFrame {
     cp.setLayout(null);
     // Anfang Komponenten
 
+    //----- 3D-----
+    //-------------
     cubeCanvas.setBounds(8, 8, 250, 250);
     cp.add(cubeCanvas);
 
-	universe = new SimpleUniverse(cubeCanvas);
-	universe.getViewingPlatform().setNominalViewingTransform();
-	transform3d = new Transform3D();
-	transroot = new TransformGroup(transform3d);
-	transroot.addChild(new ColorCube(0.3));
-	branchgroup = new BranchGroup();
-	branchgroup.addChild(transroot);
-	universe.addBranchGraph(branchgroup);
+    ColorCube cube1 = new ColorCube(0.3);
+    universe = new SimpleUniverse(cubeCanvas);
+    universe.getViewingPlatform().setNominalViewingTransform();
+    transform3d = new Transform3D();
+    transroot = new TransformGroup(transform3d);
+    transform3d.rotZ (Math.toRadians(30));
+    transroot.addChild(cube1);
+    transform3d.setTranslation(new Vector3d(2,2,2));
+    branchgroup = new BranchGroup();
+    branchgroup.addChild(transroot);
+    universe.addBranchGraph(branchgroup);
+    
+    
+    
+    //-------------
 
     editA.setBounds(264, 8, 107, 25);
     editA.setText("Layer A");
@@ -335,15 +345,15 @@ public class frame extends JFrame {
       }
     });
 
-	saveAs.setBounds(564, 296, 90, 25);
-	saveAs.setText("Save As");
-	saveAs.setFont(new Font("Dialog", Font.PLAIN, 13));
-	cp.add(saveAs);
-	saveAs.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent evt) {
-			saveAs_ActionPerformed(evt);
-		}
-	});
+  saveAs.setBounds(564, 296, 90, 25);
+  saveAs.setText("Save As");
+  saveAs.setFont(new Font("Dialog", Font.PLAIN, 13));
+  cp.add(saveAs);
+  saveAs.addActionListener(new ActionListener() {
+    public void actionPerformed(ActionEvent evt) {
+      saveAs_ActionPerformed(evt);
+    }
+  });
 
     jComboBox1.setBounds(344, 328, 305, 24);
     jComboBox1.setFont(new Font("Dialog", Font.PLAIN, 13));
@@ -486,49 +496,49 @@ public class frame extends JFrame {
   }
 
   public void load_ActionPerformed(ActionEvent evt) {
-	JFileChooser fc = new JFileChooser();
-	int ret = fc.showOpenDialog(this);
-	if (ret == JFileChooser.APPROVE_OPTION) {
-		File file = fc.getSelectedFile();
-		if (fileSelected == false) {
-			fileSelected = true;
-		}
-		animPath.setText(file.getPath());
-		worker.loadState(animPath.getText());
-	}
+  JFileChooser fc = new JFileChooser();
+  int ret = fc.showOpenDialog(this);
+  if (ret == JFileChooser.APPROVE_OPTION) {
+    File file = fc.getSelectedFile();
+    if (fileSelected == false) {
+      fileSelected = true;
+    }
+    animPath.setText(file.getPath());
+    worker.loadState(animPath.getText());
+  }
   }
 
   public void save_ActionPerformed(ActionEvent evt) {
-	if (fileSelected == false) {
-		JFileChooser fc = new JFileChooser();
-		int ret = fc.showSaveDialog(this);
-		if (ret == JFileChooser.APPROVE_OPTION) {
-			File file = fc.getSelectedFile();
-			fileSelected = true;
-			animPath.setText(file.getPath());
-			worker.saveState(animPath.getText());
-		}
-	} else {
-		worker.saveState(animPath.getText());
-	}
+  if (fileSelected == false) {
+    JFileChooser fc = new JFileChooser();
+    int ret = fc.showSaveDialog(this);
+    if (ret == JFileChooser.APPROVE_OPTION) {
+      File file = fc.getSelectedFile();
+      fileSelected = true;
+      animPath.setText(file.getPath());
+      worker.saveState(animPath.getText());
+    }
+  } else {
+    worker.saveState(animPath.getText());
+  }
   }
 
   public void saveAs_ActionPerformed(ActionEvent evt) {
-	JFileChooser fc;
-	if (fileSelected == true) {
-		fc = new JFileChooser(new File(animPath.getText()).getParentFile());
-	} else {
-		fc = new JFileChooser();
-	}
-	int ret = fc.showSaveDialog(this);
-	if (ret == JFileChooser.APPROVE_OPTION) {
-		File file = fc.getSelectedFile();
-		if (fileSelected == false) {
-			fileSelected = true;
-		}
-		animPath.setText(file.getPath());
-		worker.saveState(animPath.getText());
-	}
+  JFileChooser fc;
+  if (fileSelected == true) {
+    fc = new JFileChooser(new File(animPath.getText()).getParentFile());
+  } else {
+    fc = new JFileChooser();
+  }
+  int ret = fc.showSaveDialog(this);
+  if (ret == JFileChooser.APPROVE_OPTION) {
+    File file = fc.getSelectedFile();
+    if (fileSelected == false) {
+      fileSelected = true;
+    }
+    animPath.setText(file.getPath());
+    worker.saveState(animPath.getText());
+  }
   }
 
 
