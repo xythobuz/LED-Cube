@@ -32,7 +32,7 @@ import javax.vecmath.*;
  * along with LED-Cube.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class frame extends JFrame {
+public class frame extends JFrame implements ListSelectionListener {
   // Anfang Variablen
   private GraphicsConfiguration gConfig = SimpleUniverse.getPreferredConfiguration();
   private Canvas3D cubeCanvas = new Canvas3D(gConfig);
@@ -96,6 +96,16 @@ public class frame extends JFrame {
   JOptionPane.showOptionDialog(this, s, "Error!", JOptionPane.YES_OPTION, JOptionPane.ERROR_MESSAGE, null, Optionen, Optionen[0]);
   }
 
+  public void valueChanged(ListSelectionEvent evt) {
+    if (!evt.getValueIsAdjusting()) {
+	   int anim = animList.getSelectedIndex();
+	   for (int i = 0; i < worker.numOfFrames(anim); i++) {
+		   frameListModel.add(i, worker.getFrameName(anim, i));
+		}
+		frameList.setModel(frameListModel);
+    }
+  }
+
   public frame(String title) {
     // Frame-Initialisierung
     super(title);
@@ -106,10 +116,7 @@ public class frame extends JFrame {
     }
     
     for(int i = 0; i < worker.numOfAnimations(); i++){
-      animModel.addElement(worker.getAnimationName());
-    }
-    for(int i = 0; i < worker.numOfFrames(); i++){
-      frameListModel.add(i, worker.getFrameName());
+      animModel.addElement(worker.getAnimationName(i));
     }
 
     addWindowListener(new WindowAdapter() {
@@ -390,7 +397,7 @@ public class frame extends JFrame {
     animList.setFont(new Font("Dialog", Font.PLAIN, 13));
     frameList.setFont(new Font("Dialog", Font.PLAIN, 13));
     // Ende Komponenten
-    animList.addListSelectionListener(new MyListSelectionListener(animList, worker));
+    animList.addListSelectionListener(this);
     setResizable(false);
     setVisible(true);
   }
@@ -437,7 +444,7 @@ public class frame extends JFrame {
             frameListModel.set(i, frameListModel.get(i - 1));
             frameListModel.set(i - 1, tmp);
             frameList.setSelectedIndex(i - 1);
-            worker.moveFrame(worker.UP);
+            worker.moveFrame(worker.UP, animList.getSelectedIndex(), frameList.getSelectedIndex());
          }
   }
 
@@ -448,18 +455,26 @@ public class frame extends JFrame {
             frameListModel.set(i, frameListModel.get(i + 1));
             frameListModel.set(i + 1, tmp);
             frameList.setSelectedIndex(i + 1);
-            worker.moveFrame(worker.DOWN);
+            worker.moveFrame(worker.DOWN, animList.getSelectedIndex(), frameList.getSelectedIndex());
          }
   }
 
   public void frameAdd_ActionPerformed(ActionEvent evt) {
-         worker.addFrame();
+         worker.addFrame(animList.getSelectedIndex());
          frameRemaining.setText(Integer.toString(worker.framesRemaining()));
+		 int n = worker.numOfFrames(animList.getSelectedIndex()) - 1;
+		 if (n < 0) {
+			 n = 0;
+		 }
+		 frameListModel.add(n, worker.getFrameName(animList.getSelectedIndex(), n));
+		 frameList.setModel(frameListModel);
   }
 
   public void frameRemove_ActionPerformed(ActionEvent evt) {
-         worker.removeFrame();
+         worker.removeFrame(animList.getSelectedIndex(), frameList.getSelectedIndex());
          frameRemaining.setText(Integer.toString(worker.framesRemaining()));
+		 frameListModel.removeElementAt(frameList.getSelectedIndex());
+		 frameList.setModel(frameListModel);
   }
 
   public void animUp_ActionPerformed(ActionEvent evt) {
@@ -469,7 +484,7 @@ public class frame extends JFrame {
             animModel.set(i, animModel.get(i - 1));
             animModel.set(i - 1, tmp);
             animList.setSelectedIndex(i - 1);
-            worker.moveAnimation(worker.UP);
+            worker.moveAnimation(worker.UP, animList.getSelectedIndex());
          }
   }
 
@@ -480,19 +495,28 @@ public class frame extends JFrame {
             animModel.set(i, animModel.get(i + 1));
             animModel.set(i + 1, tmp);
             animList.setSelectedIndex(i + 1);
-            worker.moveAnimation(worker.DOWN);
+            worker.moveAnimation(worker.DOWN, animList.getSelectedIndex());
          }
   }
 
   public void animAdd_ActionPerformed(ActionEvent evt) {
     if(worker.addAnimation() == -1){
-      //show error Dialog
-    }
+      errorMessage("Could not add animation!");
+    } else {
+		int n = worker.numOfAnimations() - 1;
+		if (n < 0) {
+			n = 0;
+		}
+		animModel.add(n, worker.getAnimationName(n));
+		animList.setModel(animModel);
+	}
 
   }
 
   public void animRemove_ActionPerformed(ActionEvent evt) {
-     worker.removeAnimation();
+     worker.removeAnimation(animList.getSelectedIndex());
+	 animModel.removeElementAt(animList.getSelectedIndex());
+	 animList.setModel(animModel);
   }
 
   public void load_ActionPerformed(ActionEvent evt) {
@@ -564,20 +588,5 @@ public class frame extends JFrame {
     new frame("Cube Control");
   }
   // Ende Methoden
-}
-
-class MyListSelectionListener implements ListSelectionListener {
-
-  JList alist;
-  cubeWorker worker;
-  MyListSelectionListener(JList animList, cubeWorker w){
-    alist = animList;
-    worker = w;
-  }
-  public void valueChanged(ListSelectionEvent evt) {
-    if (!evt.getValueIsAdjusting()) {
-       worker.selectAnimation(alist.getSelectedIndex());
-    }
-  }
 }
 

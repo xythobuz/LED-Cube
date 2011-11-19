@@ -28,6 +28,7 @@
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Scanner;
 import java.io.FileWriter;
 import java.io.File;
 import java.io.IOException;
@@ -46,8 +47,6 @@ public class cubeWorker {
 // --------------------
 
   private ArrayList<Animation> animations = new ArrayList<Animation>();
-  private int selectedAnimation = 0;
-  private int selectedFrame = 0;
   private int framesRemaining = 2016; // (128 * 1024) / 65 = 2016,...
   private boolean changedState = false;
 
@@ -71,7 +70,7 @@ public class cubeWorker {
     }
 
     // Returns how many frames are in the current animation
-    public int numOfFrames() {
+    public int numOfFrames(int selectedAnimation) {
            return animations.get(selectedAnimation).size();
     }
 
@@ -84,17 +83,6 @@ public class cubeWorker {
 // --------------------
 // Animation Specific
 // --------------------
-
-  // Selects an animation on wich the animation specific functions operate
-    // Returns -1 if it does not exist, else its index
-    public int selectAnimation(int index) {
-    if (animations.size() <= index) {
-      return -1;
-    } else {
-      selectedAnimation = index;
-      return index;
-    }
-    }
 
   // Adds a new Animation
     // Returns id if ok, -1 if error or not enough space for
@@ -111,22 +99,22 @@ public class cubeWorker {
     }
 
     // Removes an animation
-    public void removeAnimation() {
+    public void removeAnimation(int selectedAnimation) {
     changedState = true;
     animations.remove(selectedAnimation);
     selectedAnimation = 0;
     }
 
-  public String getAnimationName() {
+  public String getAnimationName(int selectedAnimation) {
       return animations.get(selectedAnimation).getName();
     }
 
-  public void setAnimationName(String s) {
+  public void setAnimationName(String s, int selectedAnimation) {
       changedState = true;
     animations.get(selectedAnimation).setName(s);
     }
 
-  public void moveAnimation(int dir) {
+  public void moveAnimation(int dir, int selectedAnimation) {
   changedState = true;
     if (dir == UP){
         //animation moved up
@@ -149,83 +137,70 @@ public class cubeWorker {
 // Frame Specific
 // --------------------
 
-  // Selects an animation on wich the frame specific functions operate
-    // Returns -1 if it does not exist, else its index
-  public int selectFrame(int index) {
-  if (animations.get(selectedAnimation).size() <= index) {
-    return -1;
-  } else {
-    selectedFrame = index;
-    return index;
-  }
-  }
-
-  public String getFrameName() {
-      return animations.get(selectedAnimation).get(selectedFrame).getName();
+  public String getFrameName(int anim, int frame) {
+      return animations.get(anim).get(frame).getName();
     }
 
-    public void setFrameName(String s) {
+    public void setFrameName(String s, int anim, int frame) {
     changedState = true;
-    animations.get(selectedAnimation).get(selectedFrame).setName(s);
+    animations.get(anim).get(frame).setName(s);
     }
 
     // Adds a Frame to the current animation.
     // Returns id if okay, -1 if error
-    public int addFrame() {
+    public int addFrame(int anim) {
     changedState = true;
     if (framesRemaining <= 0) {
       return -1;
     }
     framesRemaining--;
-    int s = animations.get(selectedAnimation).size();
-    animations.get(selectedAnimation).add(s);
+    int s = animations.get(anim).size();
+    animations.get(anim).add(s);
+	animations.get(anim).get(s).setName("Frame " + (2016 - framesRemaining));
     return s;
     }
 
     // Remove the frame
-    public void removeFrame() {
+    public void removeFrame(int anim, int frame) {
     changedState = true;
-    animations.get(selectedAnimation).remove(selectedFrame);
-    selectedFrame = 0;
+    animations.get(anim).remove(frame);
     }
 
     // Returns array with 64 bytes with led values
-    public byte[] getFrame() {
-    return animations.get(selectedAnimation).get(selectedFrame).getData();
+    public byte[] getFrame(int anim, int frame) {
+    return animations.get(anim).get(frame).getData();
   }
 
-    public void setFrame(byte[] data) {
+    public void setFrame(byte[] data, int anim, int frame) {
     changedState = true;
-    animations.get(selectedAnimation).get(selectedFrame).setData(data);
+    animations.get(anim).get(frame).setData(data);
     }
 
   // Frame duration in 1/24th of a second
-  public byte getFrameTime() {
-    return animations.get(selectedAnimation).get(selectedFrame).getTime();
+  public byte getFrameTime(int anim, int frame) {
+    return animations.get(anim).get(frame).getTime();
   }
 
-  public void setFrameTime(byte time) {
+  public void setFrameTime(byte time, int anim, int frame) {
     changedState = true;
-    animations.get(selectedAnimation).get(selectedFrame).setTime(time);
+    animations.get(anim).get(frame).setTime(time);
   }
 
-  public void moveFrame(int dir){
+  public void moveFrame(int dir, int anim, int frame){
   changedState = true;
     if (dir == UP){
         // frame moved up
-        if (selectedFrame > 0) {
-      AFrame tmp = animations.get(selectedAnimation).get(selectedFrame);
-      animations.get(selectedAnimation).set(animations.get(selectedAnimation).get(selectedFrame - 1), selectedFrame);
-      animations.get(selectedAnimation).set(tmp, selectedFrame - 1);
-      selectedFrame--;
-    }
+        if (frame > 0) {
+      		AFrame tmp = animations.get(anim).get(frame);
+      		animations.get(anim).set(animations.get(anim).get(frame - 1), frame);
+      		animations.get(anim).set(tmp, frame - 1);
+    	}
     } else if (dir == DOWN){
       // frame moved down
-    if (selectedFrame < (animations.get(selectedAnimation).size() - 1)) {
-      AFrame tmp = animations.get(selectedAnimation).get(selectedFrame);
-      animations.get(selectedAnimation).set(animations.get(selectedAnimation).get(selectedFrame + 1), selectedFrame);
-      animations.get(selectedAnimation).set(tmp, selectedFrame + 1);
-      selectedFrame++;
+    if (frame < (animations.get(anim).size() - 1)) {
+      AFrame tmp = animations.get(anim).get(frame);
+      animations.get(anim).set(animations.get(anim).get(frame + 1), frame);
+      animations.get(anim).set(tmp, frame + 1);
     }
     }
   }
@@ -237,7 +212,20 @@ public class cubeWorker {
     // Loads an animation file into this object
     public int loadState(String path) {
       changedState = false;
-
+		try {
+			animations = AnimationUtility.readFile(path);
+		} catch (Exception e) {
+			System.out.println(e.toString());
+			return -1;
+		}
+		int size = 0;
+		for (int i = 0; i < animations.size(); i++) {
+			size += animations.get(i).size();
+		}
+		framesRemaining = 2016 - size;
+		if (size > 2016) {
+			return -1;
+		}
         return 0;
     }
 
@@ -286,8 +274,15 @@ public class cubeWorker {
 class AnimationUtility {
   private static String lastError = null;
 
-  public static ArrayList<Animation> readFile(String path) {
-    return null;
+  public static ArrayList<Animation> readFile(String path) throws Exception {
+    Scanner sc = new Scanner(new File(path));
+	ArrayList<Animation> animations = new ArrayList<Animation>();
+
+	do {
+		animations.add(readAnimation(sc));
+	} while (sc.hasNextLine());
+
+	return animations;
   }
 
   public static void writeFile(String path, ArrayList<Animation> animations) {
@@ -327,8 +322,57 @@ class AnimationUtility {
     return tmp;
   }
 
+  private static Animation readAnimation(Scanner sc) {
+	Animation anim = new Animation();
+	AFrame f = null;
+	int index = 0;
+	int size = sc.nextInt();
+	anim.setName(sc.nextLine());
+	while (size > 0) {
+		f = readFrame(sc, index);
+		anim.add(index);
+		anim.set(f, index);
+		index++;
+		size--;
+	}
+
+	return anim;
+  }
+
+  private static AFrame readFrame(Scanner sc, int index) {
+	AFrame frame = new AFrame();
+	frame.setName("Frame " + index);
+	byte[] d = {};
+	for (int i = 0; i < 8; i++) {
+		byte[] data = hexConvert(sc.nextLine());
+		d = concat(data, d);
+	}
+	frame.setData(d);
+	d = hexConvert(sc.nextLine());
+	frame.setTime(d[0]);
+	return frame;
+  }
+
+  private static byte[] concat(byte[] a, byte[] b) {
+	byte[] c = new byte[a.length + b.length];
+	System.arraycopy(a, 0, c, 0, a.length);
+	System.arraycopy(b, 0, c, a.length, b.length);
+	return c;
+  }
+
+  private static byte[] hexConvert(String hex) {
+	hex = hex.replaceAll("\\n", "");
+	int length = hex.length();
+	byte[] data = new byte[length / 2];
+	for (int i = 0; i < length; i += 2) {
+		data[i / 2] = (byte) ((Character.digit(hex.charAt(i), 16) << 4) + Character.digit(hex.charAt(i + 1), 16));
+	}
+	return data;
+  }
+
   private static void writeAnimation(Animation anim, FileWriter f) throws IOException {
-    f.write(anim.getName() + "\n");
+    f.write(anim.size() + "\n");
+	f.write(anim.getName() + "\n");
     for (int i = 0; i < anim.size(); i++) {
       writeFrame(anim.get(i), f);
     }
