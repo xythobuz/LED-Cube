@@ -54,6 +54,7 @@ public class cubeWorker {
 
   cubeWorker() {
   animations.add(new Animation());
+  animations.get(0).setName("Animation 1");
   }
 
   cubeWorker(ArrayList<Animation> anims) {
@@ -93,7 +94,8 @@ public class cubeWorker {
           return -1;
     } else {
       int s = animations.size();
-      animations.add(s + 1, new Animation());
+      animations.add(s, new Animation());
+      animations.get(s).setName("Animation " + animations.size());
       return s;
     }
     }
@@ -156,7 +158,7 @@ public class cubeWorker {
     framesRemaining--;
     int s = animations.get(anim).size();
     animations.get(anim).add(s);
-	animations.get(anim).get(s).setName("Frame " + (2016 - framesRemaining));
+  animations.get(anim).get(s).setName("Frame " + (2016 - framesRemaining));
     return s;
     }
 
@@ -191,10 +193,10 @@ public class cubeWorker {
     if (dir == UP){
         // frame moved up
         if (frame > 0) {
-      		AFrame tmp = animations.get(anim).get(frame);
-      		animations.get(anim).set(animations.get(anim).get(frame - 1), frame);
-      		animations.get(anim).set(tmp, frame - 1);
-    	}
+          AFrame tmp = animations.get(anim).get(frame);
+          animations.get(anim).set(animations.get(anim).get(frame - 1), frame);
+          animations.get(anim).set(tmp, frame - 1);
+      }
     } else if (dir == DOWN){
       // frame moved down
     if (frame < (animations.get(anim).size() - 1)) {
@@ -212,20 +214,20 @@ public class cubeWorker {
     // Loads an animation file into this object
     public int loadState(String path) {
       changedState = false;
-		try {
-			animations = AnimationUtility.readFile(path);
-		} catch (Exception e) {
-			System.out.println(e.toString());
-			return -1;
-		}
-		int size = 0;
-		for (int i = 0; i < animations.size(); i++) {
-			size += animations.get(i).size();
-		}
-		framesRemaining = 2016 - size;
-		if (size > 2016) {
-			return -1;
-		}
+    try {
+      animations = AnimationUtility.readFile(path);
+    } catch (Exception e) {
+      System.out.println(e.toString());
+      return -1;
+    }
+    int size = 0;
+    for (int i = 0; i < animations.size(); i++) {
+      size += animations.get(i).size();
+    }
+    framesRemaining = 2016 - size;
+    if (size > 2016) {
+      return -1;
+    }
         return 0;
     }
 
@@ -276,13 +278,13 @@ class AnimationUtility {
 
   public static ArrayList<Animation> readFile(String path) throws Exception {
     Scanner sc = new Scanner(new File(path));
-	ArrayList<Animation> animations = new ArrayList<Animation>();
+  ArrayList<Animation> animations = new ArrayList<Animation>();
 
-	do {
-		animations.add(readAnimation(sc));
-	} while (sc.hasNextLine());
+  do {
+    animations.add(readAnimation(sc));
+  } while (sc.hasNextLine());
 
-	return animations;
+  return animations;
   }
 
   public static void writeFile(String path, ArrayList<Animation> animations) {
@@ -323,56 +325,56 @@ class AnimationUtility {
   }
 
   private static Animation readAnimation(Scanner sc) {
-	Animation anim = new Animation();
-	AFrame f = null;
-	int index = 0;
-	int size = sc.nextInt();
-	anim.setName(sc.nextLine());
-	while (size > 0) {
-		f = readFrame(sc, index);
-		anim.add(index);
-		anim.set(f, index);
-		index++;
-		size--;
-	}
+  Animation anim = new Animation();
+  AFrame f = null;
+  int index = 0;
+  int size = sc.nextInt();
+  anim.setName(sc.nextLine());
+  while (size > 0) {
+    f = readFrame(sc, index);
+    anim.add(index);
+    anim.set(f, index);
+    index++;
+    size--;
+  }
 
-	return anim;
+  return anim;
   }
 
   private static AFrame readFrame(Scanner sc, int index) {
-	AFrame frame = new AFrame();
-	frame.setName("Frame " + index);
-	byte[] d = {};
-	for (int i = 0; i < 8; i++) {
-		byte[] data = hexConvert(sc.nextLine());
-		d = concat(data, d);
-	}
-	frame.setData(d);
-	d = hexConvert(sc.nextLine());
-	frame.setTime(d[0]);
-	return frame;
+  AFrame frame = new AFrame();
+  frame.setName("Frame " + index);
+  byte[] d = {};
+  for (int i = 0; i < 8; i++) {
+    byte[] data = hexConvert(sc.nextLine());
+    d = concat(data, d);
+  }
+  frame.setData(d);
+  d = hexConvert(sc.nextLine());
+  frame.setTime(d[0]);
+  return frame;
   }
 
   private static byte[] concat(byte[] a, byte[] b) {
-	byte[] c = new byte[a.length + b.length];
-	System.arraycopy(a, 0, c, 0, a.length);
-	System.arraycopy(b, 0, c, a.length, b.length);
-	return c;
+  byte[] c = new byte[a.length + b.length];
+  System.arraycopy(a, 0, c, 0, a.length);
+  System.arraycopy(b, 0, c, a.length, b.length);
+  return c;
   }
 
   private static byte[] hexConvert(String hex) {
-	hex = hex.replaceAll("\\n", "");
-	int length = hex.length();
-	byte[] data = new byte[length / 2];
-	for (int i = 0; i < length; i += 2) {
-		data[i / 2] = (byte) ((Character.digit(hex.charAt(i), 16) << 4) + Character.digit(hex.charAt(i + 1), 16));
-	}
-	return data;
+  hex = hex.replaceAll("\\n", "");
+  int length = hex.length();
+  byte[] data = new byte[length / 2];
+  for (int i = 0; i < length; i += 2) {
+    data[i / 2] = (byte) ((Character.digit(hex.charAt(i), 16) << 4) + Character.digit(hex.charAt(i + 1), 16));
+  }
+  return data;
   }
 
   private static void writeAnimation(Animation anim, FileWriter f) throws IOException {
     f.write(anim.size() + "\n");
-	f.write(anim.getName() + "\n");
+  f.write(anim.getName() + "\n");
     for (int i = 0; i < anim.size(); i++) {
       writeFrame(anim.get(i), f);
     }

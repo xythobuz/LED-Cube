@@ -98,11 +98,30 @@ public class frame extends JFrame implements ListSelectionListener {
 
   public void valueChanged(ListSelectionEvent evt) {
     if (!evt.getValueIsAdjusting()) {
-	   int anim = animList.getSelectedIndex();
-	   for (int i = 0; i < worker.numOfFrames(anim); i++) {
-		   frameListModel.add(i, worker.getFrameName(anim, i));
-		}
-		frameList.setModel(frameListModel);
+     DefaultListModel model = (DefaultListModel)((JList)evt.getSource()).getModel();
+     int anim = animList.getSelectedIndex();
+     int max;
+     if(evt.getSource() == animList){
+       max = worker.numOfAnimations();
+       System.out.println(max);
+
+     } else {
+       max = worker.numOfFrames(animList.getSelectedIndex());
+
+     }
+
+     if (anim == -1){
+        anim = 0;
+     }
+     model.clear();
+     for (int i = 0; i < max; i++) {
+       if(evt.getSource() == animList){
+          model.add(i, worker.getAnimationName(i));
+       } else {
+         model.add(i, worker.getFrameName(anim, i));
+       }
+    }
+    frameList.setModel(model);
     }
   }
 
@@ -460,21 +479,26 @@ public class frame extends JFrame implements ListSelectionListener {
   }
 
   public void frameAdd_ActionPerformed(ActionEvent evt) {
-         worker.addFrame(animList.getSelectedIndex());
-         frameRemaining.setText(Integer.toString(worker.framesRemaining()));
-		 int n = worker.numOfFrames(animList.getSelectedIndex()) - 1;
-		 if (n < 0) {
-			 n = 0;
-		 }
-		 frameListModel.add(n, worker.getFrameName(animList.getSelectedIndex(), n));
-		 frameList.setModel(frameListModel);
+         if(animList.getSelectedIndex() == -1){
+            errorMessage("Please select an animation!");
+         } else {
+           worker.addFrame(animList.getSelectedIndex());
+           frameRemaining.setText(Integer.toString(worker.framesRemaining()));
+           int n = worker.numOfFrames(animList.getSelectedIndex()) - 1;
+           if (n < 0) {
+              n = 0;
+           }
+           frameListModel.add(n, worker.getFrameName(animList.getSelectedIndex(), n));
+           frameList.setModel(frameListModel);
+         }
+
   }
 
   public void frameRemove_ActionPerformed(ActionEvent evt) {
          worker.removeFrame(animList.getSelectedIndex(), frameList.getSelectedIndex());
          frameRemaining.setText(Integer.toString(worker.framesRemaining()));
-		 frameListModel.removeElementAt(frameList.getSelectedIndex());
-		 frameList.setModel(frameListModel);
+     frameListModel.removeElementAt(frameList.getSelectedIndex());
+     frameList.setModel(frameListModel);
   }
 
   public void animUp_ActionPerformed(ActionEvent evt) {
@@ -503,20 +527,22 @@ public class frame extends JFrame implements ListSelectionListener {
     if(worker.addAnimation() == -1){
       errorMessage("Could not add animation!");
     } else {
-		int n = worker.numOfAnimations() - 1;
-		if (n < 0) {
-			n = 0;
-		}
-		animModel.add(n, worker.getAnimationName(n));
-		animList.setModel(animModel);
-	}
+    int n = worker.numOfAnimations() - 1;
+    if (n < 0) {
+      n = 0;
+    }
+    animModel.clear();
+    System.out.println(n);
+    animModel.addElement(worker.getAnimationName(n));
+    animList.setModel(animModel);
+    }
 
   }
 
   public void animRemove_ActionPerformed(ActionEvent evt) {
      worker.removeAnimation(animList.getSelectedIndex());
-	 animModel.removeElementAt(animList.getSelectedIndex());
-	 animList.setModel(animModel);
+   animModel.removeElementAt(animList.getSelectedIndex());
+   animList.setModel(animModel);
   }
 
   public void load_ActionPerformed(ActionEvent evt) {
