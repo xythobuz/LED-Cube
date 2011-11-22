@@ -417,6 +417,7 @@ class AFrame {
   }
 
   byte[] getData() {
+    data[0] = 3;
     return data;
   }
 
