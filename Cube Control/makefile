@@ -35,7 +35,7 @@ serialHelper:
 
 clean:
 ifeq ($(TARGET),win)
-	del $(CLASSES)
+	del *.class
 	del serialHelper.exe
 else
 	rm -f *.class
