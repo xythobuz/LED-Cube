@@ -55,6 +55,9 @@ public class cubeWorker {
   cubeWorker() {
   animations.add(new Animation());
   animations.get(0).setName("Animation 1");
+  animations.get(0).add(0);
+  animations.get(0).get(0).setName("Frame 1");
+  framesRemaining--;
   }
 
   cubeWorker(ArrayList<Animation> anims) {
@@ -158,7 +161,7 @@ public class cubeWorker {
     framesRemaining--;
     int s = animations.get(anim).size();
     animations.get(anim).add(s);
-  animations.get(anim).get(s).setName("Frame " + (2016 - framesRemaining));
+  animations.get(anim).get(s).setName("Frame " + animations.get(anim).size());
     return s;
     }
 

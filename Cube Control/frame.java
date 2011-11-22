@@ -57,6 +57,7 @@ public class frame extends JFrame implements ListSelectionListener {
   private JButton frameDown = new JButton();
   private JButton frameAdd = new JButton();
   private JButton frameRemove = new JButton();
+  private JButton frameRename = new JButton();
   private JButton frame = new JButton();
   private JList animList = new JList();
   private DefaultListModel animModel = new DefaultListModel();
@@ -91,37 +92,40 @@ public class frame extends JFrame implements ListSelectionListener {
     }
   }
 
+  private String askString(String title, String text) {
+	  return JOptionPane.showInputDialog(null, title, text, JOptionPane.QUESTION_MESSAGE);
+  }
+
   private void errorMessage(String s) {
   String[] Optionen = {"OK"};
   JOptionPane.showOptionDialog(this, s, "Error!", JOptionPane.YES_OPTION, JOptionPane.ERROR_MESSAGE, null, Optionen, Optionen[0]);
   }
 
   public void valueChanged(ListSelectionEvent evt) {
-    if ((!evt.getValueIsAdjusting()) && (evt.getSource() != animList) && (evt.getSource() != frameList)) {
-     DefaultListModel model = (DefaultListModel)((JList)evt.getSource()).getModel();
+    if ((!evt.getValueIsAdjusting()) && ((evt.getSource() == animList) || (evt.getSource() == frameList))) {
      int anim = animList.getSelectedIndex();
      int max;
-     if(evt.getSource() == animList){
-       max = worker.numOfAnimations();
-       System.out.println(max);
-
-     } else {
-       max = worker.numOfFrames(animList.getSelectedIndex());
-
-     }
-
-     if (anim == -1){
+	 if (anim == -1){
         anim = 0;
      }
-     model.clear();
-     for (int i = 0; i < max; i++) {
+     if(evt.getSource() == frameList){
+       max = worker.numOfAnimations();
+	   animModel.clear();
+     } else {
+       max = worker.numOfFrames(anim);
+	   frameListModel.clear();
+     }
+
+	 // if value changed in anim, rebuild frame, else other way round
+	 for (int i = 0; i < max; i++) {
        if(evt.getSource() == animList){
-          model.add(i, worker.getAnimationName(i));
+			frameListModel.addElement(worker.getFrameName(anim, i));
+			frameList.setModel(frameListModel);
        } else {
-         model.add(i, worker.getFrameName(anim, i));
+			animModel.addElement(worker.getAnimationName(i));
+			animList.setModel(animModel);
        }
-    }
-    frameList.setModel(model);
+	 }
     }
   }
 
@@ -272,7 +276,7 @@ public class frame extends JFrame implements ListSelectionListener {
       }
     });
 
-    frameDown.setBounds(544, 152, 107, 33);
+    frameDown.setBounds(544, 122, 107, 33);
     frameDown.setText("Move down");
     frameDown.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(frameDown);
@@ -282,7 +286,19 @@ public class frame extends JFrame implements ListSelectionListener {
       }
     });
 
-    frameAdd.setBounds(544, 56, 107, 33);
+	frameRename.setBounds(544, 160, 107, 33);
+	frameRename.setText("Rename");
+	frameRename.setFont(new Font("Dialog", Font.PLAIN, 13));
+	cp.add(frameRename);
+	frameRename.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent evt) {
+			worker.setFrameName(askString("Rename", "Rename " + frameList.getSelectedValue()), animList.getSelectedIndex(), frameList.getSelectedIndex());
+			frameListModel.set(frameList.getSelectedIndex(), worker.getFrameName(animList.getSelectedIndex(), frameList.getSelectedIndex()));
+			frameList.setModel(frameListModel);
+		}
+	});
+
+    frameAdd.setBounds(544, 46, 107, 33);
     frameAdd.setText("Add");
     frameAdd.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(frameAdd);
@@ -292,7 +308,7 @@ public class frame extends JFrame implements ListSelectionListener {
       }
     });
 
-    frameRemove.setBounds(544, 104, 107, 33);
+    frameRemove.setBounds(544, 84, 107, 33);
     frameRemove.setText("Remove");
     frameRemove.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(frameRemove);
@@ -410,7 +426,7 @@ public class frame extends JFrame implements ListSelectionListener {
     cp.add(jLabel4);
     frameRemaining.setBounds(536, 232, 113, 24);
     frameRemaining.setEditable(false);
-    frameRemaining.setText("2048");
+    frameRemaining.setText(String.valueOf(worker.framesRemaining()));
     frameRemaining.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(frameRemaining);
     animList.setFont(new Font("Dialog", Font.PLAIN, 13));
@@ -528,13 +544,12 @@ public class frame extends JFrame implements ListSelectionListener {
       errorMessage("Could not add animation!");
     } else {
     int n = worker.numOfAnimations() - 1;
-    if (n < 0) {
+    // would have 0 anims after successfully adding one...
+	/*if (n < 0) {
       n = 0;
-    }
+    }*/
     animModel.clear();
-    System.out.println(n);
-    //animModel.addElement(worker.getAnimationName(n));
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < (n + 1); i++) {
         animModel.add(i, worker.getAnimationName(i));
     }
     animList.setModel(animModel);
