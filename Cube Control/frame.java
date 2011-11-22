@@ -96,7 +96,7 @@ public class frame extends JFrame implements ListSelectionListener {
   }
 
   public void valueChanged(ListSelectionEvent evt) {
-    if (!evt.getValueIsAdjusting()) {
+    if ((!evt.getValueIsAdjusting()) && (evt.getSource() != animList) && (evt.getSource() != frameList)) {
      DefaultListModel model = (DefaultListModel)((JList)evt.getSource()).getModel();
      int anim = animList.getSelectedIndex();
      int max;
