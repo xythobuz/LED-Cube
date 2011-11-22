@@ -29,6 +29,7 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.Collections;
 import java.io.FileWriter;
 import java.io.File;
 import java.io.IOException;
@@ -125,17 +126,13 @@ public class cubeWorker {
     if (dir == UP){
         //animation moved up
       if (selectedAnimation > 0) {
-      Animation tmp = animations.get(selectedAnimation);
-      animations.set(selectedAnimation, animations.get(selectedAnimation - 1));
-      animations.set(selectedAnimation - 1, tmp);
+        Collections.swap(animations, selectedAnimation, selectedAnimation - 1);
     }
     } else if (dir == DOWN){
       //animation moved down
     if (selectedAnimation < (animations.size() - 1)) {
-      Animation tmp = animations.get(selectedAnimation);
-      animations.set(selectedAnimation, animations.get(selectedAnimation + 1));
-      animations.set(selectedAnimation + 1, tmp);
-    }
+      Collections.swap(animations, selectedAnimation, selectedAnimation + 1);
+	}
     }
   }
 
@@ -197,16 +194,12 @@ public class cubeWorker {
     if (dir == UP){
         // frame moved up
         if (frame > 0) {
-          AFrame tmp = animations.get(anim).get(frame);
-          animations.get(anim).set(animations.get(anim).get(frame - 1), frame);
-          animations.get(anim).set(tmp, frame - 1);
+          Collections.swap(animations.get(anim).frames, frame, frame - 1);
       }
     } else if (dir == DOWN){
       // frame moved down
     if (frame < (animations.get(anim).size() - 1)) {
-      AFrame tmp = animations.get(anim).get(frame);
-      animations.get(anim).set(animations.get(anim).get(frame + 1), frame);
-      animations.get(anim).set(tmp, frame + 1);
+      Collections.swap(animations.get(anim).frames, frame, frame + 1);
     }
     }
   }
@@ -449,7 +442,7 @@ class AFrame {
 }
 
 class Animation {
-  private ArrayList<AFrame> frames = new ArrayList<AFrame>();
+  ArrayList<AFrame> frames = new ArrayList<AFrame>();
   private int lastFrameIndex = 0;
   private String name = "Animation";
 
