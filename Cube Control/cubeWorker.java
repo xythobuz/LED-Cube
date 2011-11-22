@@ -32,6 +32,7 @@ import java.util.Scanner;
 import java.io.FileWriter;
 import java.io.File;
 import java.io.IOException;
+import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 
 public class cubeWorker {
 
@@ -55,6 +56,9 @@ public class cubeWorker {
   cubeWorker() {
   animations.add(new Animation());
   animations.get(0).setName("Animation 1");
+  animations.get(0).add(0);
+  animations.get(0).get(0).setName("Frame 1");
+  framesRemaining--;
   }
 
   cubeWorker(ArrayList<Animation> anims) {
@@ -158,7 +162,7 @@ public class cubeWorker {
     framesRemaining--;
     int s = animations.get(anim).size();
     animations.get(anim).add(s);
-  animations.get(anim).get(s).setName("Frame " + (2016 - framesRemaining));
+  animations.get(anim).get(s).setName("Frame " + animations.get(anim).size());
     return s;
     }
 
@@ -217,7 +221,8 @@ public class cubeWorker {
     try {
       animations = AnimationUtility.readFile(path);
     } catch (Exception e) {
-      System.out.println(e.toString());
+	  System.out.println("Did not load!");
+      e.printStackTrace(System.out);
       return -1;
     }
     int size = 0;
@@ -281,7 +286,14 @@ class AnimationUtility {
   ArrayList<Animation> animations = new ArrayList<Animation>();
 
   do {
-    animations.add(readAnimation(sc));
+	Animation tmp = readAnimation(sc);
+	if (tmp == null) {
+		return animations;
+	}
+	if (sc.hasNextLine()) {
+		sc.nextLine();
+	}
+    animations.add(tmp);
   } while (sc.hasNextLine());
 
   return animations;
@@ -301,7 +313,7 @@ class AnimationUtility {
     try {
       output = new FileWriter(f);
       for (int i = 0; i < animations.size(); i++) {
-        writeAnimation(animations.get(i), output);
+        writeAnimation(animations.get(i), output, (i == (animations.size() - 1)));
       }
     } catch (Exception e) {
       lastError = e.toString();
@@ -328,22 +340,25 @@ class AnimationUtility {
   Animation anim = new Animation();
   AFrame f = null;
   int index = 0;
-  int size = sc.nextInt();
+  String tmpSize = sc.nextLine().replaceAll("\\n", "");
+  if (tmpSize.equals("")) {
+	  return null;
+  }
+  Integer tmpSizeAgain = new Integer(tmpSize);
+  int size = tmpSizeAgain.intValue();
   anim.setName(sc.nextLine());
   while (size > 0) {
     f = readFrame(sc, index);
-    anim.add(index);
-    anim.set(f, index);
+    anim.add(index, f);
     index++;
     size--;
   }
-
   return anim;
   }
 
   private static AFrame readFrame(Scanner sc, int index) {
   AFrame frame = new AFrame();
-  frame.setName("Frame " + index);
+  frame.setName(sc.nextLine());
   byte[] d = {};
   for (int i = 0; i < 8; i++) {
     byte[] data = hexConvert(sc.nextLine());
@@ -364,25 +379,24 @@ class AnimationUtility {
 
   private static byte[] hexConvert(String hex) {
   hex = hex.replaceAll("\\n", "");
-  int length = hex.length();
-  byte[] data = new byte[length / 2];
-  for (int i = 0; i < length; i += 2) {
-    data[i / 2] = (byte) ((Character.digit(hex.charAt(i), 16) << 4) + Character.digit(hex.charAt(i + 1), 16));
-  }
-  return data;
+  HexBinaryAdapter a = new HexBinaryAdapter();
+  return a.unmarshal(hex);
   }
 
-  private static void writeAnimation(Animation anim, FileWriter f) throws IOException {
+  private static void writeAnimation(Animation anim, FileWriter f, boolean last) throws IOException {
     f.write(anim.size() + "\n");
   f.write(anim.getName() + "\n");
     for (int i = 0; i < anim.size(); i++) {
       writeFrame(anim.get(i), f);
     }
-    f.write("\n");
+    if (!last) {
+		f.write("\n");
+	}
   }
 
   private static void writeFrame(AFrame fr, FileWriter f) throws IOException {
-    for (int i = 0; i < 8; i++) {
+    f.write(fr.getName() + "\n");
+	for (int i = 0; i < 8; i++) {
       writeLayer(fr.getLayer(i), f);
     }
     f.write(Integer.toString( (fr.getTime() & 0xff) + 0x100, 16).substring(1) + "\n");
@@ -477,6 +491,15 @@ class Animation {
   void add(int i) {
     try {
       frames.add(i, new AFrame());
+      lastFrameIndex++;
+    } catch (IndexOutOfBoundsException e)  {
+      System.out.println(e.toString());
+    }
+  }
+
+  void add(int i, AFrame f) {
+    try {
+      frames.add(i, f);
       lastFrameIndex++;
     } catch (IndexOutOfBoundsException e)  {
       System.out.println(e.toString());

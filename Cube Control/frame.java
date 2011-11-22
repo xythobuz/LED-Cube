@@ -57,6 +57,7 @@ public class frame extends JFrame implements ListSelectionListener {
   private JButton frameDown = new JButton();
   private JButton frameAdd = new JButton();
   private JButton frameRemove = new JButton();
+  private JButton frameRename = new JButton();
   private JButton frame = new JButton();
   private JList animList = new JList();
   private DefaultListModel animModel = new DefaultListModel();
@@ -65,6 +66,7 @@ public class frame extends JFrame implements ListSelectionListener {
   private JButton animDown = new JButton();
   private JButton animAdd = new JButton();
   private JButton animRemove = new JButton();
+  private JButton animRename = new JButton();
   private JTextField animPath = new JTextField();
   private JButton load = new JButton();
   private JButton save = new JButton();
@@ -86,11 +88,14 @@ public class frame extends JFrame implements ListSelectionListener {
     String[] Optionen = {"Yes", "No"};
     int Auswahl = JOptionPane.showOptionDialog(this, "Do you want to save your changes?", "Save?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, Optionen, Optionen[0]);
     if (Auswahl == JOptionPane.YES_OPTION) {
-       worker.saveState(animPath.getText());
        return 1;
     } else {
        return 0;
     }
+  }
+
+  private String askString(String title, String text) {
+    return JOptionPane.showInputDialog(null, text, title, JOptionPane.QUESTION_MESSAGE);
   }
 
   private void errorMessage(String s) {
@@ -99,32 +104,46 @@ public class frame extends JFrame implements ListSelectionListener {
   }
 
   public void valueChanged(ListSelectionEvent evt) {
-    if ((!evt.getValueIsAdjusting()) && (evt.getSource() != animList) && (evt.getSource() != frameList)) {
-     DefaultListModel model = (DefaultListModel)((JList)evt.getSource()).getModel();
+    if ((!evt.getValueIsAdjusting()) && ((evt.getSource() == animList) || (evt.getSource() == frameList))) {
      int anim = animList.getSelectedIndex();
      int max;
-     if(evt.getSource() == animList){
-       max = worker.numOfAnimations();
-       System.out.println(max);
-
-     } else {
-       max = worker.numOfFrames(animList.getSelectedIndex());
-
-     }
-
-     if (anim == -1){
+   if (anim == -1){
         anim = 0;
      }
-     model.clear();
-     for (int i = 0; i < max; i++) {
+     if(evt.getSource() == frameList){
+       max = worker.numOfAnimations();
+     animModel.clear();
+     } else {
+       max = worker.numOfFrames(anim);
+     frameListModel.clear();
+     }
+
+   // if value changed in anim, rebuild frame, else other way round
+   for (int i = 0; i < max; i++) {
        if(evt.getSource() == animList){
-          model.add(i, worker.getAnimationName(i));
+      frameListModel.addElement(worker.getFrameName(anim, i));
+      frameList.setModel(frameListModel);
        } else {
-         model.add(i, worker.getFrameName(anim, i));
+      animModel.addElement(worker.getAnimationName(i));
+      animList.setModel(animModel);
        }
+   }
     }
-    frameList.setModel(model);
-    }
+  }
+
+  private void save() {
+    if (fileSelected == false) {
+        JFileChooser fc = new JFileChooser();
+        int ret = fc.showSaveDialog(this);
+        if (ret == JFileChooser.APPROVE_OPTION) {
+          File file = fc.getSelectedFile();
+          fileSelected = true;
+          animPath.setText(file.getPath());
+          worker.saveState(animPath.getText());
+        }
+      } else {
+      worker.saveState(animPath.getText());
+      }
   }
 
   public frame(String title) {
@@ -143,7 +162,11 @@ public class frame extends JFrame implements ListSelectionListener {
     addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent evt) {
              if (worker.changedStateSinceSave()) {
-                  saveExitDialog();
+                  if (saveExitDialog() == 1) {
+            save();
+          } else {
+            return;
+          }
              }
              System.exit(0);
       }
@@ -276,6 +299,7 @@ public class frame extends JFrame implements ListSelectionListener {
     });
 
     frameDown.setBounds(544, 122, 107, 28);
+
     frameDown.setText("Move down");
     frameDown.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(frameDown);
@@ -286,6 +310,28 @@ public class frame extends JFrame implements ListSelectionListener {
     });
 
     frameAdd.setBounds(544, 46, 107, 28);
+  frameRename.setText("Rename");
+  frameRename.setFont(new Font("Dialog", Font.PLAIN, 13));
+  cp.add(frameRename);
+  frameRename.addActionListener(new ActionListener() {
+    public void actionPerformed(ActionEvent evt) {
+      int a = animList.getSelectedIndex();
+      if (a < 0) {
+        errorMessage("Select an animation!");
+        return;
+      }
+      int f = frameList.getSelectedIndex();
+      if (f < 0) {
+        errorMessage("Select a frame!");
+        return;
+      }
+      worker.setFrameName(askString("Rename", "Rename " + frameList.getSelectedValue() + "?"), a, f);
+      frameListModel.set(f, worker.getFrameName(a, f));
+      frameList.setModel(frameListModel);
+    }
+  });
+
+
     frameAdd.setText("Add");
     frameAdd.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(frameAdd);
@@ -295,7 +341,11 @@ public class frame extends JFrame implements ListSelectionListener {
       }
     });
 
+
     frameRemove.setBounds(544, 84, 107, 28);
+
+    frameRemove.setBounds(544, 84, 107, 33);
+
     frameRemove.setText("Remove");
     frameRemove.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(frameRemove);
@@ -319,6 +369,7 @@ public class frame extends JFrame implements ListSelectionListener {
     animList.setModel(animModel);
     //jList2Model.addElement("");
     cp.add(animScrollPane);
+
     animUp.setBounds(224, 264, 99, 25);
     animUp.setText("Move up");
     animUp.setFont(new Font("Dialog", Font.PLAIN, 13));
@@ -329,7 +380,7 @@ public class frame extends JFrame implements ListSelectionListener {
       }
     });
 
-    animDown.setBounds(224, 360, 99, 25);
+    animDown.setBounds(224, 342, 99, 25);
     animDown.setText("Move down");
     animDown.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(animDown);
@@ -339,7 +390,24 @@ public class frame extends JFrame implements ListSelectionListener {
       }
     });
 
-    animAdd.setBounds(224, 296, 99, 25);
+  animRename.setBounds(224, 368, 99, 25);
+  animRename.setText("Rename");
+  animRename.setFont(new Font("Dialog", Font.PLAIN, 13));
+  cp.add(animRename);
+  animRename.addActionListener(new ActionListener() {
+    public void actionPerformed(ActionEvent evt) {
+      int a = animList.getSelectedIndex();
+      if (a < 0) {
+        errorMessage("Select an animation!");
+        return;
+      }
+      worker.setAnimationName(askString("Rename", "Rename " + animList.getSelectedValue() + "?"), a);
+      animModel.set(a, worker.getAnimationName(a));
+      animList.setModel(animModel);
+    }
+  });
+
+    animAdd.setBounds(224, 290, 99, 25);
     animAdd.setText("Add");
     animAdd.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(animAdd);
@@ -349,7 +417,7 @@ public class frame extends JFrame implements ListSelectionListener {
       }
     });
 
-    animRemove.setBounds(224, 328, 99, 25);
+    animRemove.setBounds(224, 316, 99, 25);
     animRemove.setText("Remove");
     animRemove.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(animRemove);
@@ -418,12 +486,12 @@ public class frame extends JFrame implements ListSelectionListener {
     });
 
     jLabel4.setBounds(536, 208, 112, 20);
-    jLabel4.setText("Frames remaining:");
+    jLabel4.setText("Remaining:");
     jLabel4.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(jLabel4);
     frameRemaining.setBounds(536, 232, 113, 24);
     frameRemaining.setEditable(false);
-    frameRemaining.setText("2048");
+    frameRemaining.setText(String.valueOf(worker.framesRemaining()));
     frameRemaining.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(frameRemaining);
     animList.setFont(new Font("Dialog", Font.PLAIN, 13));
@@ -542,13 +610,12 @@ public class frame extends JFrame implements ListSelectionListener {
       errorMessage("Could not add animation!");
     } else {
     int n = worker.numOfAnimations() - 1;
-    if (n < 0) {
+    // would have 0 anims after successfully adding one...
+  /*if (n < 0) {
       n = 0;
-    }
+    }*/
     animModel.clear();
-    System.out.println(n);
-    //animModel.addElement(worker.getAnimationName(n));
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < (n + 1); i++) {
         animModel.add(i, worker.getAnimationName(i));
     }
     animList.setModel(animModel);
@@ -572,6 +639,14 @@ public class frame extends JFrame implements ListSelectionListener {
     }
     animPath.setText(file.getPath());
     worker.loadState(animPath.getText());
+  animModel.clear();
+  for (int i = 0; i < worker.numOfAnimations(); i++) {
+    animModel.addElement(worker.getAnimationName(i));
+  }
+  animList.setModel(animModel);
+
+  frameListModel.clear();
+  frameList.setModel(frameListModel);
   }
   }
 
