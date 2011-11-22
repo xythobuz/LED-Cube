@@ -60,11 +60,11 @@ int serialOpen(char *port) {
 		return -1;
 	}
 	
-	timeouts.ReadIntervalTimeout = 1000 * dwReadTimeOutIntervalInSec;
-	timeouts.ReadTotalTimeoutConstant = 1000 * dwReadTimeOutIntervalInSec;
-	timeouts.ReadTotalTimeoutMultiplier = 1000 * dwReadTimeOutIntervalInSec;
-	timeouts.WriteTotalTimeoutConstant = 1000 * dwReadTimeOutIntervalInSec;
-	timeouts.WriteTotalTimeoutMultiplier = 1000 * dwReadTimeOutIntervalInSec;
+	timeouts.ReadIntervalTimeout = 1000;
+	timeouts.ReadTotalTimeoutConstant = 1000;
+	timeouts.ReadTotalTimeoutMultiplier = 1000;
+	timeouts.WriteTotalTimeoutConstant = 1000;
+	timeouts.WriteTotalTimeoutMultiplier = 1000;
 
 	if (!SetCommTimeouts(hSerial, &timeouts)) {
 		CloseHandle(hSerial);
