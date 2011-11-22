@@ -90,7 +90,6 @@ public class frame extends JFrame implements ListSelectionListener {
        return 0;
     }
   }
-
   private void errorMessage(String s) {
   String[] Optionen = {"OK"};
   JOptionPane.showOptionDialog(this, s, "Error!", JOptionPane.YES_OPTION, JOptionPane.ERROR_MESSAGE, null, Optionen, Optionen[0]);
