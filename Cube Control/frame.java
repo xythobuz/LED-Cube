@@ -573,6 +573,14 @@ public class frame extends JFrame implements ListSelectionListener {
     }
     animPath.setText(file.getPath());
     worker.loadState(animPath.getText());
+	animModel.clear();
+	for (int i = 0; i < worker.numOfAnimations(); i++) {
+		animModel.addElement(worker.getAnimationName(i));
+	}
+	animList.setModel(animModel);
+
+	frameListModel.clear();
+	frameList.setModel(frameListModel);
   }
   }
 
