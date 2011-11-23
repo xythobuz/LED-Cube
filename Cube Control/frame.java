@@ -507,7 +507,7 @@ public class frame extends JFrame implements ListSelectionListener {
   // Anfang Ereignisprozeduren
   public void editA_ActionPerformed(ActionEvent evt) {
 
-     layerEditFrame layerFrame1 = new layerEditFrame(worker.getFrame(animList.getSelectedIndex(), frameList.getSelectedIndex()), 0);
+     layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 0, worker);
   }
 
   public void editB_ActionPerformed(ActionEvent evt) {

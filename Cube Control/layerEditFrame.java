@@ -21,13 +21,20 @@ public class layerEditFrame extends JFrame {
   boolean changedStateSinceSave = false;
   byte[] frame;
   int li;
+  boolean finish = false;
+  cubeWorker worker = null;
+  int animI;
+  int frameI;
 
   // Ende Attribute
 
-  public layerEditFrame(byte[] f, int layerIndex) {
+  public layerEditFrame(int animIndex, int frameIndex, int layerIndex, cubeWorker work) {
     // Frame-Initialisierung
-    super("Layer Edit");
-    frame = f;
+	super("Layer Edit");
+	worker = work;
+	animI = animIndex;
+	frameI = frameIndex;
+    frame = worker.getFrame(animIndex, frameIndex);
     li = layerIndex;
     setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     int frameWidth = 180;
@@ -121,7 +128,10 @@ public class layerEditFrame extends JFrame {
   }
 
    byte[] getFinalFrame(){
-      return frame;
+	 if (finish == false) {
+		 return null;
+	 }
+	 return frame;
    }
 
   public void btnClicked(int i, int j){
@@ -156,7 +166,7 @@ public class layerEditFrame extends JFrame {
     }
       frame = tmpFrame;
       dispose();
-
+	  worker.setFrame(frame, animI, frameI);
   }
 
   private int saveExitDialog() {
