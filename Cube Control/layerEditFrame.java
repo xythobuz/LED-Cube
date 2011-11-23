@@ -149,23 +149,13 @@ public class layerEditFrame extends JFrame {
     for(int j = 0; j < 8; j++){
       for(int i = 0; i < 8; i++){
         reihe += ((int) Math.pow(2, i)) * ledStatus[i][j];
-        System.out.println("LED-Status: " + ledStatus[i][j]);
-        System.out.println("Reihe: " + i);
-        System.out.println("Spalte: " + j);
-        System.out.println("Wertigkeit: " + ((int) Math.pow(2, i)));
-        System.out.println("Zusammen: " + ((int) Math.pow(2, j)) * ledStatus[i][j]);
-        System.out.println("Reihe nacher: " + reihe);
-        System.out.println();
         ctr++;
       }
       tmpFrame[j] = (byte)reihe;
       reihe = 0;
-      System.out.println("----");
-      System.out.println("Frame-Array, Position " + j + " = " + tmpFrame[j]);
-      System.out.println("----");
     }
       frame = tmpFrame;
-
+      dispose();
 
   }
 

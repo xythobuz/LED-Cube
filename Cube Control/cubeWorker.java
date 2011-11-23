@@ -132,7 +132,7 @@ public class cubeWorker {
       //animation moved down
     if (selectedAnimation < (animations.size() - 1)) {
       Collections.swap(animations, selectedAnimation, selectedAnimation + 1);
-	}
+  }
     }
   }
 
@@ -214,7 +214,7 @@ public class cubeWorker {
     try {
       animations = AnimationUtility.readFile(path);
     } catch (Exception e) {
-	  System.out.println("Did not load!");
+    System.out.println("Did not load!");
       e.printStackTrace(System.out);
       return -1;
     }
@@ -279,13 +279,13 @@ class AnimationUtility {
   ArrayList<Animation> animations = new ArrayList<Animation>();
 
   do {
-	Animation tmp = readAnimation(sc);
-	if (tmp == null) {
-		return animations;
-	}
-	if (sc.hasNextLine()) {
-		sc.nextLine();
-	}
+  Animation tmp = readAnimation(sc);
+  if (tmp == null) {
+    return animations;
+  }
+  if (sc.hasNextLine()) {
+    sc.nextLine();
+  }
     animations.add(tmp);
   } while (sc.hasNextLine());
 
@@ -335,7 +335,7 @@ class AnimationUtility {
   int index = 0;
   String tmpSize = sc.nextLine().replaceAll("\\n", "");
   if (tmpSize.equals("")) {
-	  return null;
+    return null;
   }
   Integer tmpSizeAgain = new Integer(tmpSize);
   int size = tmpSizeAgain.intValue();
@@ -383,13 +383,13 @@ class AnimationUtility {
       writeFrame(anim.get(i), f);
     }
     if (!last) {
-		f.write("\n");
-	}
+    f.write("\n");
+  }
   }
 
   private static void writeFrame(AFrame fr, FileWriter f) throws IOException {
     f.write(fr.getName() + "\n");
-	for (int i = 0; i < 8; i++) {
+  for (int i = 0; i < 8; i++) {
       writeLayer(fr.getLayer(i), f);
     }
     f.write(Integer.toString( (fr.getTime() & 0xff) + 0x100, 16).substring(1) + "\n");
@@ -424,7 +424,6 @@ class AFrame {
   }
 
   byte[] getData() {
-    data[0] = 3;
     return data;
   }
 
