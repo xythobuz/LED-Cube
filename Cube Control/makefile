@@ -1,7 +1,7 @@
 JAVAC = javac
 CC = gcc
-TARGET = unix
-#TARGET = win
+#TARGET = unix
+TARGET = win
 
 JAVAFILES = cubeWorker.java layerEditFrame.java frame.java
 

@@ -515,27 +515,27 @@ public class frame extends JFrame implements ListSelectionListener {
   }
 
   public void editC_ActionPerformed(ActionEvent evt) {
-    layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 2, worker);
+     layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 2, worker);
   }
 
   public void editD_ActionPerformed(ActionEvent evt) {
-    // layerEditFrame layerFrame1 = new layerEditFrame(worker.getLayer(3));
+     layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 3, worker);
   }
 
   public void editE_ActionPerformed(ActionEvent evt) {
-    // layerEditFrame layerFrame1 = new layerEditFrame(worker.getLayer(4));
+     layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 4, worker);
   }
 
   public void editF_ActionPerformed(ActionEvent evt) {
-    // layerEditFrame layerFrame1 = new layerEditFrame(worker.getLayer(5));
+     layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 5, worker);
   }
 
   public void editG_ActionPerformed(ActionEvent evt) {
-    // layerEditFrame layerFrame1 = new layerEditFrame(worker.getLayer(6));
+     layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 6, worker);
   }
 
   public void editH_ActionPerformed(ActionEvent evt) {
-    // layerEditFrame layerFrame1 = new layerEditFrame(worker.getLayer(7));
+     layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 7, worker);
   }
 
   public void frameUp_ActionPerformed(ActionEvent evt) {
