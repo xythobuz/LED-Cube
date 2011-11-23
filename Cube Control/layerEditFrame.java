@@ -51,7 +51,8 @@ public class layerEditFrame extends JFrame {
     worker = work;
     animI = animIndex;
     frameI = frameIndex;
-    frame =  byteToShortArray(worker.getFrame(animIndex, frameIndex));
+    //frame =  byteToShortArray(worker.getFrame(animIndex, frameIndex));
+    frame = worker.getFrame(animIndex, frameIndex);
     li = layerIndex;
     setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     int frameWidth = 180;
@@ -144,11 +145,12 @@ public class layerEditFrame extends JFrame {
 
   }
 
-   byte[] getFinalFrame(){
+   short[] getFinalFrame(){
       if (finish == false) {
         return null;
       }
-      return shortToByteArray(frame);
+      //return shortToByteArray(frame);
+      return frame;
    }
 
   public void btnClicked(int i, int j){
@@ -182,7 +184,8 @@ public class layerEditFrame extends JFrame {
       reihe = 0;
     }
       frame = tmpFrame;
-      worker.setFrame(shortToByteArray(frame), animI, frameI);
+      //worker.setFrame(shortToByteArray(frame), animI, frameI);
+      worker.setFrame(frame, animI, frameI);
       dispose();
   }
   

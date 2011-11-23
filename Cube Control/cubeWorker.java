@@ -170,21 +170,21 @@ public class cubeWorker {
     }
 
     // Returns array with 64 bytes with led values
-    public byte[] getFrame(int anim, int frame) {
+    public short[] getFrame(int anim, int frame) {
     return animations.get(anim).get(frame).getData();
   }
 
-    public void setFrame(byte[] data, int anim, int frame) {
+    public void setFrame(short[] data, int anim, int frame) {
     changedState = true;
     animations.get(anim).get(frame).setData(data);
     }
 
   // Frame duration in 1/24th of a second
-  public byte getFrameTime(int anim, int frame) {
+  public short getFrameTime(int anim, int frame) {
     return animations.get(anim).get(frame).getTime();
   }
 
-  public void setFrameTime(byte time, int anim, int frame) {
+  public void setFrameTime(short time, int anim, int frame) {
     changedState = true;
     animations.get(anim).get(frame).setTime(time);
   }
@@ -352,9 +352,9 @@ class AnimationUtility {
   private static AFrame readFrame(Scanner sc, int index) {
   AFrame frame = new AFrame();
   frame.setName(sc.nextLine());
-  byte[] d = {};
+  short[] d = {};
   for (int i = 0; i < 8; i++) {
-    byte[] data = hexConvert(sc.nextLine());
+    short[] data = hexConvert(sc.nextLine());
     d = concat(data, d);
   }
   frame.setData(d);
@@ -363,17 +363,32 @@ class AnimationUtility {
   return frame;
   }
 
-  private static byte[] concat(byte[] a, byte[] b) {
-  byte[] c = new byte[a.length + b.length];
+  private static short[] concat(short[] a, short[] b) {
+  short[] c = new short[a.length + b.length];
   System.arraycopy(a, 0, c, 0, a.length);
   System.arraycopy(b, 0, c, a.length, b.length);
   return c;
   }
 
-  private static byte[] hexConvert(String hex) {
-  hex = hex.replaceAll("\\n", "");
-  HexBinaryAdapter a = new HexBinaryAdapter();
-  return a.unmarshal(hex);
+  private static short[] hexConvert(String hex) {
+    hex = hex.replaceAll("\\n", "");
+
+      short[] tmp = new short[hex.length()/2];
+      for (int i = 0; i < hex.length(); i=i+2){
+        char[] tmpString = new char[2];
+        tmpString[0] = hex.charAt(i);
+        tmpString[1] = hex.charAt(i+1);
+        String tmpS = String.copyValueOf(tmpString);
+        if(i == 0){
+          tmp[0] = Short.parseShort(tmpS, 16);
+        } else {
+          tmp[i/2] = Short.parseShort(tmpS, 16);
+        }
+
+      }
+      return tmp;
+
+
   }
 
   private static void writeAnimation(Animation anim, FileWriter f, boolean last) throws IOException {
@@ -395,7 +410,7 @@ class AnimationUtility {
     f.write(Integer.toString( (fr.getTime() & 0xff) + 0x100, 16).substring(1) + "\n");
   }
 
-  private static void writeLayer(byte[] l, FileWriter f) throws IOException {
+  private static void writeLayer(short[] l, FileWriter f) throws IOException {
     String hex = "";
     for (int i = 0; i < l.length; i++) {
       hex += Integer.toString( (l[i] & 0xff) + 0x100, 16).substring(1);
@@ -407,8 +422,8 @@ class AnimationUtility {
 }
 
 class AFrame {
-  private byte[] data = new byte[64];
-  private byte duration = 1;
+  private short[] data = new short[64];
+  private short duration = 1;
   private String name = "Frame";
 
   String getName() {
@@ -419,23 +434,23 @@ class AFrame {
     name = s;
   }
 
-  void setData(byte[] d) {
+  void setData(short[] d) {
     data = d;
   }
 
-  byte[] getData() {
+  short[] getData() {
     return data;
   }
 
-  void setTime(byte t) {
+  void setTime(short t) {
     duration = t;
   }
 
-  byte getTime() {
+  short getTime() {
     return duration;
   }
 
-  byte[] getLayer(int i) {
+  short[] getLayer(int i) {
     return Arrays.copyOfRange(data, (i * 8), (i * 8) + 8);
   }
 }
