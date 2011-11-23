@@ -99,3 +99,35 @@ void serialClose(void) {
 	CloseHandle(hSerial);
 	hSerial = INVALID_HANDLE_VALUE;
 }
+
+// Last element has to be NULL
+char** getSerialPorts(void) {
+	LPTSTR ports;
+	DWORD num;
+	char **files;
+	int i, j = 0, start, k;
+
+#ifdef UNICODE
+	ports = (LPTSTR)malloc(100 * sizeof(WCHAR));
+#else
+	 ports = (LPTSTR)malloc(100 * sizeof(CHAR));
+#endif
+
+	num = QueryDosDevice(ports, 100);	
+	files = (char **)malloc(num * sizeof(char *));
+	
+	for (i = 0; i < num; i++) {
+		start = j;
+		j = 0;
+		while (ports[start + j] != '\0') {
+			j++;
+		}
+		j++; // \0
+		files[i] = (char *)malloc(j * sizeof(char));
+		for (k = 0; k < j; k++) {
+			files[i] = ports[start + k];
+		}
+	}
+
+	return files;
+}

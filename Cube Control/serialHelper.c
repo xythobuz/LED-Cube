@@ -34,6 +34,11 @@ char *fileData = NULL;
 void removeFromBeginning(size_t size, size_t remove);
 size_t readFile(char *path);
 size_t getFileSize(FILE *fp);
+void usage(char *name);
+int parseNumber(char *s);
+int power(int num, int pow);
+void printFileData(size_t size);
+void printSerialPorts(char ** ports);
 
 /*
 Return values:
@@ -42,40 +47,84 @@ Return values:
 2: Serial Port Error
 3: Data File Error
 */
+
 int main(int argc, char *argv[]) {
 	size_t length, written;
+
+		if (argc < 2) {
+			usage(argv[0]);
+			return 1;
+		}
+
+		if (argv[1][0] == 'p') {
+
+			if (argc != 2) {
+				usage(argv[0]);
+				return 1;
+			}
+			char** ports = getSerialPorts();
+			printSerialPorts(ports);
+			free(ports);
+			return 0;
+
+		} else if (argv[1][0] == 'w') {
+
+			if (argc != 4) {
+				usage(argv[0]);
+				return 1;
+			}
+			if (serialOpen(argv[2]) != 0) {
+				printf("Error: Could not open %s\n", argv[1]);
+				return 2;
+			}
+			// write file to com port
+			length = readFile(argv[3]);
+			if (length == 0) {
+				printf("Error while reading %s\n", argv[2]);
+				return 3;
+			}
 	
-	if (argc < 3) {
-#ifdef winHelper
-		printf("Usage:\n%s COM1 C:\\file\\to\\send.txt\n", argv[0]);
-#else
-		printf("Usage:\n%s /dev/SerialPort /file/to/send\n", argv[0]);
-#endif
-		return 1;
-	} else {
-		if (serialOpen(argv[1]) != 0) {
-			printf("Error: Could not open %s\n", argv[1]);
-			return 2;
-		}
-
-		length = readFile(argv[2]);
-		if (length == 0) {
-			printf("Error while reading %s\n", argv[2]);
-			return 3;
-		}
-
-		written = serialWrite(fileData, length);
-		while (written < length) {
-			removeFromBeginning(length, written);
-			length -= written;
 			written = serialWrite(fileData, length);
+			while (written < length) {
+				removeFromBeginning(length, written);
+				length -= written;
+				written = serialWrite(fileData, length);
+			}
+
+		} else {
+
+			if (argc != 4) {
+				usage(argv[0]);
+				return 1;
+			}
+			if (serialOpen(argv[2]) != 0) {
+				printf("Error: Could not open %s\n", argv[1]);
+				return 2;
+			}
+			// Read from com port to file
+			if (argc < 5) {
+				printf("No size given. ");
+				usage(argv[0]);
+				return 1;
+			}
+			
+			length = parseNumber(argv[3]);
+			fileData = (char *)malloc(length * sizeof(char));
+			// fill fileData with serial Port data
+			written = 0;
+			while (written < length) {
+				written = serialRead(fileData + written, length - written);
+			}
+
+			printFileData(length);
+
 		}
 
 		free(fileData);
 		fileData = NULL;
 		serialClose();
 		return 0;
-	}
+	// }
 }
 
 void removeFromBeginning(size_t size, size_t remove) {
@@ -124,3 +173,50 @@ size_t getFileSize(FILE *fp) {
 
 	return size;
 }
+
+void usage(char *name) {
+#ifdef winHelper
+	printf("Usage:\n%s r|w|p [COM1 [C:\\file\\to\\send.txt] [sizeToRead]]\n", name);
+#else
+	printf("Usage:\n%s r|w|p [/dev/SerialPort [/file/to/send] [sizeToRead]]\n", name);
+#endif
+}
+
+int parseNumber(char *s) {
+	int i, size = 0, result = 0;
+	while (*(s++) != '\0') {
+		size++;
+	}
+	for (i = 0; i < size; i++) {
+		result += (s[i] - '0') * power(10, (size - i));
+	}
+	return result;
+}
+
+int power(int num, int pow) {
+	int result = 1;
+	while (pow > 0) {
+		result *= num;
+		pow--;
+	}
+	return result;
+}
+
+void printFileData(size_t size) {
+	int i;
+	for (i = 0; i < size; i++) {
+		printf("%x", fileData[i]);
+		if (i % 8 == 0) {
+			printf("\n");
+		}
+	}
+}
+
+void printSerialPorts(char ** ports) {
+	int i = 0;
+	while (ports[i] != NULL) {
+		printf("%s\n", ports[i]);
+		i++;
+	}
+}
+

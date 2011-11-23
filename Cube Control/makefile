@@ -1,7 +1,7 @@
 JAVAC = javac
 CC = gcc
-#TARGET = unix
-TARGET = win
+TARGET = unix
+#TARGET = win
 
 JAVAFILES = cubeWorker.java layerEditFrame.java frame.java
 
@@ -27,10 +27,10 @@ frame.class: serialHelper
 endif
 	$(JAVAC) $(JAVAFILES)
 
-serialHelper.exe:
+serialHelper.exe: serialHelper.c helper/winSerial.c
 	$(CC) -o serialHelper.exe -D winHelper serialHelper.c
 
-serialHelper:
+serialHelper: serialHelper.c helper/unixSerial.c
 	$(CC) -o serialHelper serialHelper.c
 
 clean:
