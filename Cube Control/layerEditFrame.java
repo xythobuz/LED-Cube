@@ -105,7 +105,7 @@ public class layerEditFrame extends JFrame {
   private void loadData(){
 
     for(int i = 0; i < 8; i++){
-      int div = frame[li + i];
+      int div = frame[(8*(li+1)+i)-8];
       int[] rest = new int[8];
       int ctr = 0;
       while(div != 0){
@@ -116,11 +116,11 @@ public class layerEditFrame extends JFrame {
 
       for(int j = 0; j < 8; j++){
         if(rest[j] == 0){
-         ledPanels[li + j][i].setIcon(off);
+         ledPanels[j][i].setIcon(off);
         } else {
-         ledPanels[li + j][i].setIcon(on);
+         ledPanels[j][i].setIcon(on);
         }
-        ledStatus[li + j][i] = (byte) rest[j];
+        ledStatus[j][i] = (byte) rest[j];
       }
 
     }
@@ -153,7 +153,7 @@ public class layerEditFrame extends JFrame {
 
   public void save(){
     int ctr = 0;
-    short[] tmpFrame = new short[64];
+    short[] tmpFrame = frame;
     changedStateSinceSave = false;
     short reihe = 0;
     for(int j = 0; j < 8; j++){
@@ -161,7 +161,7 @@ public class layerEditFrame extends JFrame {
         reihe += ((short) Math.pow(2, i)) * ledStatus[i][j];
         ctr++;
       }
-      tmpFrame[j] = reihe;
+      tmpFrame[(8*(li+1)+j)-8] = reihe;
       reihe = 0;
     }
       frame = tmpFrame;
