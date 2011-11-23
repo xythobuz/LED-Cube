@@ -4,12 +4,12 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 /**
-  *
-  * Beschreibung
-  *
-  * @version 1.0 vom 11/16/2011
-  * @author
-  */
+*
+* Beschreibung
+*
+* @version 1.0 vom 11/16/2011
+* @author
+*/
 
 public class layerEditFrame extends JFrame {
   // Anfang Attribute
@@ -19,7 +19,7 @@ public class layerEditFrame extends JFrame {
   ImageIcon off = new ImageIcon(getClass().getResource("LEDoff.png"));
   byte[][] ledStatus = new byte[8][8];
   boolean changedStateSinceSave = false;
-  byte[] frame;
+  short[] frame;
   int li;
   boolean finish = false;
   cubeWorker worker = null;
@@ -30,11 +30,11 @@ public class layerEditFrame extends JFrame {
 
   public layerEditFrame(int animIndex, int frameIndex, int layerIndex, cubeWorker work) {
     // Frame-Initialisierung
-	super("Layer Edit");
-	worker = work;
-	animI = animIndex;
-	frameI = frameIndex;
-    frame = worker.getFrame(animIndex, frameIndex);
+    super("Layer Edit");
+    worker = work;
+    animI = animIndex;
+    frameI = frameIndex;
+    frame =  byteToShortArray(worker.getFrame(animIndex, frameIndex));
     li = layerIndex;
     setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     int frameWidth = 180;
@@ -66,7 +66,7 @@ public class layerEditFrame extends JFrame {
     loadData();
     JButton saveBtn = new JButton("Save");
     JButton cancelBtn = new JButton("Cancel");
-    
+
     saveBtn.setBounds(5, 170, 70, 25);
     saveBtn.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(saveBtn);
@@ -74,9 +74,9 @@ public class layerEditFrame extends JFrame {
     cancelBtn.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(cancelBtn);
     setVisible(true);
-    
 
-    
+
+
     saveBtn.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent evt) {
         save();
@@ -89,7 +89,7 @@ public class layerEditFrame extends JFrame {
       }
     });
 
-    
+
     addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent evt) {
              if(changedStateSinceSave){
@@ -128,10 +128,10 @@ public class layerEditFrame extends JFrame {
   }
 
    byte[] getFinalFrame(){
-	 if (finish == false) {
-		 return null;
-	 }
-	 return frame;
+      if (finish == false) {
+        return null;
+      }
+      return shortToByteArray(frame);
    }
 
   public void btnClicked(int i, int j){
@@ -150,23 +150,40 @@ public class layerEditFrame extends JFrame {
     dispose();
   }
 
-  
+
   public void save(){
     int ctr = 0;
-    byte[] tmpFrame = new byte[64];
+    short[] tmpFrame = new short[64];
     changedStateSinceSave = false;
-    int reihe = 0;
+    short reihe = 0;
     for(int j = 0; j < 8; j++){
       for(int i = 0; i < 8; i++){
-        reihe += ((int) Math.pow(2, i)) * ledStatus[i][j];
+        reihe += ((short) Math.pow(2, i)) * ledStatus[i][j];
         ctr++;
       }
-      tmpFrame[j] = (byte)reihe;
+      tmpFrame[j] = reihe;
       reihe = 0;
     }
       frame = tmpFrame;
+      worker.setFrame(shortToByteArray(frame), animI, frameI);
       dispose();
-	  worker.setFrame(frame, animI, frameI);
+  }
+  
+  public byte[] shortToByteArray(short[] shrt){
+     byte[] tmpByte = new byte[shrt.length];
+     short min = 128;
+     for(int i = 0; i < tmpByte.length; i++){
+       tmpByte[i] = (byte) (shrt[i] - min);
+     }
+     return tmpByte;
+  }
+  
+  public short[] byteToShortArray(byte[] tmpByte){
+     short[] tmpShrt = new short[tmpByte.length];
+     for(int i = 0; i < tmpByte.length; i++){
+       tmpShrt[i] = (short) (tmpByte[i] + 128);
+     }
+     return tmpShrt;
   }
 
   private int saveExitDialog() {
@@ -180,3 +197,6 @@ public class layerEditFrame extends JFrame {
     }
   }
 }
+
+
+

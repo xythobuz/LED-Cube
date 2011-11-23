@@ -9,28 +9,28 @@ import javax.media.j3d.*;
 import javax.vecmath.*;
 
 /*
- * frame.java
- *
- *
- * Copyright 2011 Thomas Buck <xythobuz@me.com>
- * Copyright 2011 Max Nuding <max.nuding@gmail.com>
- * Copyright 2011 Felix BÃ¤der <baeder.felix@gmail.com>
- *
- * This file is part of LED-Cube.
- *
- * LED-Cube is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * LED-Cube is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with LED-Cube.  If not, see <http://www.gnu.org/licenses/>.
- */
+* frame.java
+*
+*
+* Copyright 2011 Thomas Buck <xythobuz@me.com>
+* Copyright 2011 Max Nuding <max.nuding@gmail.com>
+* Copyright 2011 Felix Bäder <baeder.felix@gmail.com>
+*
+* This file is part of LED-Cube.
+*
+* LED-Cube is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* LED-Cube is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with LED-Cube. If not, see <http://www.gnu.org/licenses/>.
+*/
 
 public class frame extends JFrame implements ListSelectionListener {
   // Anfang Variablen
@@ -154,7 +154,7 @@ public class frame extends JFrame implements ListSelectionListener {
     for(int i = 0; i < sPorts.length; i++){
       jComboBox1.addItem(sPorts[i]);
     }
-    
+
     for(int i = 0; i < worker.numOfAnimations(); i++){
       animModel.addElement(worker.getAnimationName(i));
     }
@@ -171,7 +171,7 @@ public class frame extends JFrame implements ListSelectionListener {
              System.exit(0);
       }
     });
-    int frameWidth = 661; 
+    int frameWidth = 661;
     int frameHeight = 417;
     setSize(frameWidth, frameHeight);
     Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
@@ -198,9 +198,9 @@ public class frame extends JFrame implements ListSelectionListener {
     branchgroup = new BranchGroup();
     branchgroup.addChild(transroot);
     universe.addBranchGraph(branchgroup);
-    
-    
-    
+
+
+
     //-------------
 
     editA.setBounds(264, 8, 107, 25);
@@ -354,12 +354,12 @@ public class frame extends JFrame implements ListSelectionListener {
         frameRemove_ActionPerformed(evt);
       }
     });
-    
+
     frmLngthLbl.setBounds(536, 160, 113, 24);
     frmLngthLbl.setText("Length of a frame");
     frmLngthLbl.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(frmLngthLbl);
-    
+
     frmLngthTxt.setBounds(536, 184, 113, 24);
     frmLngthTxt.setText("0");
     frmLngthTxt.setFont(new Font("Dialog", Font.PLAIN, 13));
@@ -511,11 +511,11 @@ public class frame extends JFrame implements ListSelectionListener {
   }
 
   public void editB_ActionPerformed(ActionEvent evt) {
-     // layerEditFrame layerFrame1 = new layerEditFrame(worker.getLayer(1));
+     layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 1, worker);
   }
 
   public void editC_ActionPerformed(ActionEvent evt) {
-    // layerEditFrame layerFrame1 = new layerEditFrame(worker.getLayer(2));
+    layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 2, worker);
   }
 
   public void editD_ActionPerformed(ActionEvent evt) {
@@ -612,8 +612,8 @@ public class frame extends JFrame implements ListSelectionListener {
     int n = worker.numOfAnimations() - 1;
     // would have 0 anims after successfully adding one...
   /*if (n < 0) {
-      n = 0;
-    }*/
+n = 0;
+}*/
     animModel.clear();
     for (int i = 0; i < (n + 1); i++) {
         animModel.add(i, worker.getAnimationName(i));
@@ -707,4 +707,6 @@ public class frame extends JFrame implements ListSelectionListener {
   }
   // Ende Methoden
 }
+
+
 
