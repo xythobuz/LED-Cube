@@ -51,6 +51,8 @@ Return values:
 int main(int argc, char *argv[]) {
 	size_t length, written;
 
+		printf("Debugging Worker... Ignore me!\n");
+
 		if (argc < 2) {
 			usage(argv[0]);
 			return 1;

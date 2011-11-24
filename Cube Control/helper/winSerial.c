@@ -113,7 +113,7 @@ char** getSerialPorts(void) {
 	 ports = (LPTSTR)malloc(100 * sizeof(CHAR));
 #endif
 
-	num = QueryDosDevice(ports, 100);	
+	num = QueryDosDevice(NULL, ports, 100);	
 	files = (char **)malloc(num * sizeof(char *));
 	
 	for (i = 0; i < num; i++) {
