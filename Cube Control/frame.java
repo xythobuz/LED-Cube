@@ -507,35 +507,83 @@ public class frame extends JFrame implements ListSelectionListener {
   // Anfang Ereignisprozeduren
   public void editA_ActionPerformed(ActionEvent evt) {
 
-     layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 0, worker);
+     if(animList.getSelectedIndex() == -1){
+       errorMessage("Please select an animation.");
+     } else if(frameList.getSelectedIndex() == -1){
+       errorMessage("Please select a frame.");
+     } else {
+       layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 0, worker);
+     }
   }
 
   public void editB_ActionPerformed(ActionEvent evt) {
-     layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 1, worker);
+    if(animList.getSelectedIndex() == -1){
+       errorMessage("Please select an animation.");
+     } else if(frameList.getSelectedIndex() == -1){
+       errorMessage("Please select a frame.");
+     } else {
+       layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 1, worker);
+     }
   }
 
   public void editC_ActionPerformed(ActionEvent evt) {
-     layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 2, worker);
+    if(animList.getSelectedIndex() == -1){
+       errorMessage("Please select an animation.");
+     } else if(frameList.getSelectedIndex() == -1){
+       errorMessage("Please select a frame.");
+     } else {
+       layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 2, worker);
+     }
   }
 
   public void editD_ActionPerformed(ActionEvent evt) {
-     layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 3, worker);
+    if(animList.getSelectedIndex() == -1){
+       errorMessage("Please select an animation.");
+     } else if(frameList.getSelectedIndex() == -1){
+       errorMessage("Please select a frame.");
+     } else {
+       layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 3, worker);
+     }
   }
 
   public void editE_ActionPerformed(ActionEvent evt) {
-     layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 4, worker);
+     if(animList.getSelectedIndex() == -1){
+       errorMessage("Please select an animation.");
+     } else if(frameList.getSelectedIndex() == -1){
+       errorMessage("Please select a frame.");
+     } else {
+       layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 4, worker);
+     }
   }
 
   public void editF_ActionPerformed(ActionEvent evt) {
-     layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 5, worker);
+     if(animList.getSelectedIndex() == -1){
+       errorMessage("Please select an animation.");
+     } else if(frameList.getSelectedIndex() == -1){
+       errorMessage("Please select a frame.");
+     } else {
+       layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 5, worker);
+     }
   }
 
   public void editG_ActionPerformed(ActionEvent evt) {
-     layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 6, worker);
+     if(animList.getSelectedIndex() == -1){
+       errorMessage("Please select an animation.");
+     } else if(frameList.getSelectedIndex() == -1){
+       errorMessage("Please select a frame.");
+     } else {
+       layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 6, worker);
+     }
   }
 
   public void editH_ActionPerformed(ActionEvent evt) {
-     layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 7, worker);
+     if(animList.getSelectedIndex() == -1){
+       errorMessage("Please select an animation.");
+     } else if(frameList.getSelectedIndex() == -1){
+       errorMessage("Please select a frame.");
+     } else {
+       layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 7, worker);
+     }
   }
 
   public void frameUp_ActionPerformed(ActionEvent evt) {
@@ -577,10 +625,16 @@ public class frame extends JFrame implements ListSelectionListener {
   }
 
   public void frameRemove_ActionPerformed(ActionEvent evt) {
-         worker.removeFrame(animList.getSelectedIndex(), frameList.getSelectedIndex());
-         frameRemaining.setText(Integer.toString(worker.framesRemaining()));
-     frameListModel.removeElementAt(frameList.getSelectedIndex());
-     frameList.setModel(frameListModel);
+     if(animList.getSelectedIndex() == -1){
+       errorMessage("Select an animation.");
+     } else if(frameList.getSelectedIndex() == -1){
+       errorMessage("Select a frame.");
+     } else {
+       worker.removeFrame(animList.getSelectedIndex(), frameList.getSelectedIndex());
+       frameRemaining.setText(Integer.toString(worker.framesRemaining()));
+       frameListModel.removeElementAt(frameList.getSelectedIndex());
+       frameList.setModel(frameListModel);
+     }
   }
 
   public void animUp_ActionPerformed(ActionEvent evt) {
@@ -624,9 +678,13 @@ n = 0;
   }
 
   public void animRemove_ActionPerformed(ActionEvent evt) {
+   if(animList.getSelectedIndex() == -1){
+     errorMessage("Select an animation.");
+   } else {
      worker.removeAnimation(animList.getSelectedIndex());
-   animModel.removeElementAt(animList.getSelectedIndex());
-   animList.setModel(animModel);
+     animModel.removeElementAt(animList.getSelectedIndex());
+     animList.setModel(animModel);
+   }
   }
 
   public void load_ActionPerformed(ActionEvent evt) {
