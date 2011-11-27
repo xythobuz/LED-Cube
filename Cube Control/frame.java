@@ -78,6 +78,7 @@ public class frame extends JFrame implements ListSelectionListener {
   private JTextField frameRemaining = new JTextField();
   private JLabel frmLngthLbl = new JLabel();
   private JTextField frmLngthTxt = new JTextField();
+  private JButton frameDuration = new JButton();
   // Ende Attribute
 
   private cubeWorker worker = new cubeWorker();
@@ -107,15 +108,18 @@ public class frame extends JFrame implements ListSelectionListener {
     if ((!evt.getValueIsAdjusting()) && ((evt.getSource() == animList) || (evt.getSource() == frameList))) {
      int anim = animList.getSelectedIndex();
      int max;
-   if (anim == -1){
+     if (anim == -1){
         anim = 0;
      }
+	 if ((animList.getSelectedIndex() != -1) && (frameList.getSelectedIndex() != -1)) {
+	   	   frmLngthTxt.setText(Integer.toString(worker.getFrameTime(animList.getSelectedIndex(), frameList.getSelectedIndex())));
+	 }
      if(evt.getSource() == frameList){
        max = worker.numOfAnimations();
-     animModel.clear();
+	   animModel.clear();
      } else {
        max = worker.numOfFrames(anim);
-     frameListModel.clear();
+       frameListModel.clear();
      }
 
    // if value changed in anim, rebuild frame, else other way round
@@ -285,7 +289,6 @@ public class frame extends JFrame implements ListSelectionListener {
 
     frameListScrollPane.setBounds(384, 8, 145, 249);
     frameList.setModel(frameListModel);
-    //frameListModel.addElement();
     cp.add(frameListScrollPane);
 
     frameUp.setBounds(544, 8, 107, 28);
@@ -298,22 +301,31 @@ public class frame extends JFrame implements ListSelectionListener {
       }
     });
 
-    frameDown.setBounds(544, 122, 107, 28);
-
-    frameDown.setText("Move down");
-    frameDown.setFont(new Font("Dialog", Font.PLAIN, 13));
-    cp.add(frameDown);
-    frameDown.addActionListener(new ActionListener() {
+	frameAdd.setBounds(544, 39, 107, 28);
+    frameAdd.setText("Add");
+    frameAdd.setFont(new Font("Dialog", Font.PLAIN, 13));
+    cp.add(frameAdd);
+    frameAdd.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent evt) {
-        frameDown_ActionPerformed(evt);
+        frameAdd_ActionPerformed(evt);
       }
     });
 
-    frameAdd.setBounds(544, 46, 107, 28);
-  frameRename.setText("Rename");
-  frameRename.setFont(new Font("Dialog", Font.PLAIN, 13));
-  cp.add(frameRename);
-  frameRename.addActionListener(new ActionListener() {
+	frameRemove.setBounds(544, 70, 107, 28);
+    frameRemove.setText("Remove");
+    frameRemove.setFont(new Font("Dialog", Font.PLAIN, 13));
+    cp.add(frameRemove);
+    frameRemove.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent evt) {
+        frameRemove_ActionPerformed(evt);
+      }
+    });
+	
+	frameRename.setBounds(544, 101, 107, 28);
+	frameRename.setText("Rename");
+  	frameRename.setFont(new Font("Dialog", Font.PLAIN, 13));
+  	cp.add(frameRename);
+  	frameRename.addActionListener(new ActionListener() {
     public void actionPerformed(ActionEvent evt) {
       int a = animList.getSelectedIndex();
       if (a < 0) {
@@ -331,43 +343,55 @@ public class frame extends JFrame implements ListSelectionListener {
     }
   });
 
-
-    frameAdd.setText("Add");
-    frameAdd.setFont(new Font("Dialog", Font.PLAIN, 13));
-    cp.add(frameAdd);
-    frameAdd.addActionListener(new ActionListener() {
+    frameDown.setBounds(544, 132, 107, 28);
+    frameDown.setText("Move down");
+    frameDown.setFont(new Font("Dialog", Font.PLAIN, 13));
+    cp.add(frameDown);
+    frameDown.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent evt) {
-        frameAdd_ActionPerformed(evt);
-      }
-    });
-
-
-    frameRemove.setBounds(544, 84, 107, 28);
-
-    frameRemove.setBounds(544, 84, 107, 33);
-
-    frameRemove.setText("Remove");
-    frameRemove.setFont(new Font("Dialog", Font.PLAIN, 13));
-    cp.add(frameRemove);
-    frameRemove.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent evt) {
-        frameRemove_ActionPerformed(evt);
+        frameDown_ActionPerformed(evt);
       }
     });
 
     frmLngthLbl.setBounds(536, 160, 113, 24);
-    frmLngthLbl.setText("Length of a frame");
+    frmLngthLbl.setText("Time (1/24 sec)");
     frmLngthLbl.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(frmLngthLbl);
 
-    frmLngthTxt.setBounds(536, 184, 113, 24);
-    frmLngthTxt.setText("0");
+    frmLngthTxt.setBounds(536, 184, 50, 24);
+    frmLngthTxt.setText("");
     frmLngthTxt.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(frmLngthTxt);
 
+	frameDuration.setBounds(590, 184, 50, 24);
+	frameDuration.setText("OK");
+	frameDuration.setFont(new Font("Dialog", Font.PLAIN, 13));
+	cp.add(frameDuration);
+	frameDuration.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent evt) {
+			if (frmLngthTxt.getText().equals("0")) {
+				errorMessage("0 is not a valid value!");
+				frmLngthTxt.setText("1");
+			} else if (Integer.parseInt(frmLngthTxt.getText()) > 256) {
+				errorMessage("Value too high. Max: 256");
+				frmLngthTxt.setText("256");
+				return;
+			} else {
+				if (animList.getSelectedIndex() == -1) {
+					errorMessage("Please select an animation!");
+					return;
+				}
+				if (frameList.getSelectedIndex() == -1) {
+					errorMessage("Please select a frame!");
+					return;
+				}
+				worker.setFrameTime((byte)(Integer.parseInt(frmLngthTxt.getText()) - 1), animList.getSelectedIndex(), frameList.getSelectedIndex());
+			}
+		}
+	});
+
     animScrollPane.setBounds(8, 264, 209, 121);
     animList.setModel(animModel);
-    //jList2Model.addElement("");
     cp.add(animScrollPane);
 
     animUp.setBounds(224, 264, 99, 25);
@@ -380,7 +404,7 @@ public class frame extends JFrame implements ListSelectionListener {
       }
     });
 
-    animDown.setBounds(224, 342, 99, 25);
+  	animDown.setBounds(224, 368, 99, 25);
     animDown.setText("Move down");
     animDown.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(animDown);
@@ -390,11 +414,11 @@ public class frame extends JFrame implements ListSelectionListener {
       }
     });
 
-  animRename.setBounds(224, 368, 99, 25);
-  animRename.setText("Rename");
-  animRename.setFont(new Font("Dialog", Font.PLAIN, 13));
-  cp.add(animRename);
-  animRename.addActionListener(new ActionListener() {
+    animRename.setBounds(224, 342, 99, 25);
+  	animRename.setText("Rename");
+  	animRename.setFont(new Font("Dialog", Font.PLAIN, 13));
+  	cp.add(animRename);
+  	animRename.addActionListener(new ActionListener() {
     public void actionPerformed(ActionEvent evt) {
       int a = animList.getSelectedIndex();
       if (a < 0) {
