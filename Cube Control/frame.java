@@ -7,6 +7,7 @@ import com.sun.j3d.utils.universe.*;
 import com.sun.j3d.utils.geometry.*;
 import javax.media.j3d.*;
 import javax.vecmath.*;
+import com.sun.j3d.utils.behaviors.mouse.*;
 
 /*
 * frame.java
@@ -32,14 +33,107 @@ import javax.vecmath.*;
 * along with LED-Cube. If not, see <http://www.gnu.org/licenses/>.
 */
 
+class Led3D {
+	private Canvas3D canvas = null;
+	private SimpleUniverse universe = null;
+  	private BranchGroup group = null;
+	private Transform3D trans3D = null;
+	private BranchGroup inBetween = null;
+	private TransformGroup transGroup = null;
+
+	private Sphere[][][] leds = new Sphere[8][8][8];
+
+	private static ColoringAttributes colorRed = new ColoringAttributes(1.5f, 0.1f, 0.1f, ColoringAttributes.FASTEST);
+	private static ColoringAttributes colorWhite = new ColoringAttributes(1.5f, 1.5f, 1.5f, ColoringAttributes.FASTEST);
+
+	private Point3d eye = new Point3d(3.5, 3.5, -13.0);
+	private Point3d look = new Point3d(3.5, 3.5, 0.0);
+	private Vector3d lookVect = new Vector3d(1.0, 1.0, 0.0);
+
+	Led3D(Canvas3D canv) {
+		canvas = canv;
+		group = new BranchGroup();
+		// Position viewer, so we are looking at object
+		trans3D = new Transform3D();
+		trans3D.lookAt(eye, look, lookVect);
+		trans3D.invert();
+		//transGroup = new TransformGroup(trans3D);
+		transGroup = new TransformGroup();
+		ViewingPlatform viewingPlatform = new ViewingPlatform();
+		transGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
+		transGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+		transGroup.setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
+		Viewer viewer = new Viewer(canvas);
+		universe = new SimpleUniverse(viewingPlatform, viewer);
+		group.addChild(transGroup);
+		universe.getViewingPlatform().getViewPlatformTransform().setTransform(trans3D);
+    	universe.addBranchGraph(group); // Add group to universe
+
+		BoundingBox boundBox = new BoundingBox(new Point3d(-5.0, -5.0, -5.0), new Point3d(13.0, 13.0, 13.0));
+		// roration with left mouse button
+		MouseRotate behaviour = new MouseRotate(transGroup);
+		BranchGroup inBetween = new BranchGroup();
+		inBetween.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
+		inBetween.addChild(behaviour);
+		transGroup.addChild(inBetween);
+		behaviour.setSchedulingBounds(boundBox);
+
+		// zoom with middle mouse button
+		MouseZoom beh2 = new MouseZoom(transGroup);
+		BranchGroup brM2 = new BranchGroup();
+		brM2.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
+		brM2.addChild(beh2);
+		inBetween.addChild(brM2);
+		beh2.setSchedulingBounds(boundBox);
+
+		// move with right mouse button
+		MouseTranslate beh3 = new MouseTranslate(transGroup);
+		BranchGroup brM3 = new BranchGroup();
+		brM3.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
+		brM3.addChild(beh3);
+		inBetween.addChild(brM3);
+		beh3.setSchedulingBounds(boundBox);
+
+		// Add all our led sphares to the universe
+		for (int x = 0; x < 8; x++) {
+			for (int y = 0; y < 8; y++) {
+				for (int z = 0; z < 8; z++) {
+					leds[x][y][z] = new Sphere(0.05f);
+					if ((x == 7) && (y == 7) && (z == 7)) {
+						Appearance a = new Appearance();
+						a.setColoringAttributes(colorRed);
+						leds[x][y][z].setAppearance(a);
+					}
+					TransformGroup tg = new TransformGroup();
+					tg.setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
+					Transform3D transform = new Transform3D();
+					Vector3f vector = new Vector3f(x, y, z);
+					transform.setTranslation(vector);
+					tg.setTransform(transform);
+					tg.addChild(leds[x][y][z]);
+					BranchGroup allTheseGroupsScareMe = new BranchGroup();
+					allTheseGroupsScareMe.addChild(tg);
+					inBetween.addChild(allTheseGroupsScareMe);
+				}
+			}
+		}
+
+		// Add an ambient light
+		Color3f light2Color = new Color3f(8.0f, 8.0f, 8.0f);
+		AmbientLight light2 = new AmbientLight(light2Color);
+		BoundingSphere bounds = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 100.0);
+		light2.setInfluencingBounds(bounds);
+		BranchGroup fffuuuuu = new BranchGroup();
+		fffuuuuu.addChild(light2);
+		inBetween.addChild(fffuuuuu);
+	}
+}
+
 public class frame extends JFrame implements ListSelectionListener {
   // Anfang Variablen
   private GraphicsConfiguration gConfig = SimpleUniverse.getPreferredConfiguration();
   private Canvas3D cubeCanvas = new Canvas3D(gConfig);
-  SimpleUniverse universe;
-  Transform3D transform3d;
-  TransformGroup transroot;
-  BranchGroup branchgroup;
+  private Led3D ledView = new Led3D(cubeCanvas);
 
   // Anfang Attribute
   private JButton editA = new JButton();
@@ -190,20 +284,6 @@ public class frame extends JFrame implements ListSelectionListener {
     //-------------
     cubeCanvas.setBounds(8, 8, 250, 250);
     cp.add(cubeCanvas);
-
-    ColorCube cube1 = new ColorCube(0.3);
-    universe = new SimpleUniverse(cubeCanvas);
-    universe.getViewingPlatform().setNominalViewingTransform();
-    transform3d = new Transform3D();
-    transroot = new TransformGroup(transform3d);
-    transform3d.rotZ (Math.toRadians(30));
-    transroot.addChild(cube1);
-    transform3d.setTranslation(new Vector3d(2,2,2));
-    branchgroup = new BranchGroup();
-    branchgroup.addChild(transroot);
-    universe.addBranchGraph(branchgroup);
-
-
 
     //-------------
 
