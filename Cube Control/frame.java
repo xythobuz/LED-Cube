@@ -53,7 +53,7 @@ class Led3D {
   private Vector3d lookVect = new Vector3d(1.0, 1.0, 0.0);
 
   Led3D(Canvas3D canv) {
-  
+
     canvas = canv;
     group = new BranchGroup();
     // Position viewer, so we are looking at object
