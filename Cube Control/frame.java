@@ -15,7 +15,7 @@ import com.sun.j3d.utils.behaviors.mouse.*;
 *
 * Copyright 2011 Thomas Buck <xythobuz@me.com>
 * Copyright 2011 Max Nuding <max.nuding@gmail.com>
-* Copyright 2011 Felix Bäder <baeder.felix@gmail.com>
+* Copyright 2011 Felix BÃ¤der <baeder.felix@gmail.com>
 *
 * This file is part of LED-Cube.
 *
@@ -34,99 +34,116 @@ import com.sun.j3d.utils.behaviors.mouse.*;
 */
 
 class Led3D {
-	private Canvas3D canvas = null;
-	private SimpleUniverse universe = null;
-  	private BranchGroup group = null;
-	private Transform3D trans3D = null;
-	private BranchGroup inBetween = null;
-	private TransformGroup transGroup = null;
+  private Canvas3D canvas = null;
+  private SimpleUniverse universe = null;
+    private BranchGroup group = null;
+  private Transform3D trans3D = null;
+  private BranchGroup inBetween = null;
+  private TransformGroup transGroup = null;
 
-	private Sphere[][][] leds = new Sphere[8][8][8];
+  private Sphere[][][] leds = new Sphere[8][8][8];
 
-	private static ColoringAttributes colorRed = new ColoringAttributes(1.5f, 0.1f, 0.1f, ColoringAttributes.FASTEST);
-	private static ColoringAttributes colorWhite = new ColoringAttributes(1.5f, 1.5f, 1.5f, ColoringAttributes.FASTEST);
+  private static ColoringAttributes colorRed = new ColoringAttributes(1.0f, 0.0f, 0.0f, ColoringAttributes.FASTEST);
+  private static ColoringAttributes colorWhite = new ColoringAttributes(1.0f, 1.0f, 1.0f, ColoringAttributes.FASTEST);
 
-	private Point3d eye = new Point3d(3.5, 3.5, -13.0);
-	private Point3d look = new Point3d(3.5, 3.5, 0.0);
-	private Vector3d lookVect = new Vector3d(1.0, 1.0, 0.0);
+  private static Material whiteMat = new Material(new Color3f(1.0f, 1.0f, 1.0f), new Color3f(1.0f, 1.0f, 1.0f), new Color3f(1.0f, 1.0f, 1.0f), new Color3f(1.0f, 1.0f, 1.0f), 42.0f);
+  private static Material redMat = new Material(new Color3f(1.0f, 0.0f, 0.0f), new Color3f(1.0f, 0.0f, 0.0f), new Color3f(1.0f, 0.0f, 0.0f), new Color3f(1.0f, 0.0f, 0.0f), 42.0f);
+  private static Appearance ledAppearance = new Appearance();
 
-	Led3D(Canvas3D canv) {
-		canvas = canv;
-		group = new BranchGroup();
-		// Position viewer, so we are looking at object
-		trans3D = new Transform3D();
-		trans3D.lookAt(eye, look, lookVect);
-		trans3D.invert();
-		//transGroup = new TransformGroup(trans3D);
-		transGroup = new TransformGroup();
-		ViewingPlatform viewingPlatform = new ViewingPlatform();
-		transGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
-		transGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-		transGroup.setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
-		Viewer viewer = new Viewer(canvas);
-		universe = new SimpleUniverse(viewingPlatform, viewer);
-		group.addChild(transGroup);
-		universe.getViewingPlatform().getViewPlatformTransform().setTransform(trans3D);
-    	universe.addBranchGraph(group); // Add group to universe
+  private Point3d eye = new Point3d(3.5, 3.5, -13.0);
+  private Point3d look = new Point3d(3.5, 3.5, 0.0);
+  private Vector3d lookVect = new Vector3d(1.0, 1.0, 0.0);
 
-		BoundingBox boundBox = new BoundingBox(new Point3d(-5.0, -5.0, -5.0), new Point3d(13.0, 13.0, 13.0));
-		// roration with left mouse button
-		MouseRotate behaviour = new MouseRotate(transGroup);
-		BranchGroup inBetween = new BranchGroup();
-		inBetween.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
-		inBetween.addChild(behaviour);
-		transGroup.addChild(inBetween);
-		behaviour.setSchedulingBounds(boundBox);
+  Led3D(Canvas3D canv) {
+  
+    //Material
 
-		// zoom with middle mouse button
-		MouseZoom beh2 = new MouseZoom(transGroup);
-		BranchGroup brM2 = new BranchGroup();
-		brM2.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
-		brM2.addChild(beh2);
-		inBetween.addChild(brM2);
-		beh2.setSchedulingBounds(boundBox);
 
-		// move with right mouse button
-		MouseTranslate beh3 = new MouseTranslate(transGroup);
-		BranchGroup brM3 = new BranchGroup();
-		brM3.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
-		brM3.addChild(beh3);
-		inBetween.addChild(brM3);
-		beh3.setSchedulingBounds(boundBox);
+  
+  
+    canvas = canv;
+    group = new BranchGroup();
+    // Position viewer, so we are looking at object
+    trans3D = new Transform3D();
+    trans3D.lookAt(eye, look, lookVect);
+    trans3D.invert();
+    //transGroup = new TransformGroup(trans3D);
+    transGroup = new TransformGroup();
+    ViewingPlatform viewingPlatform = new ViewingPlatform();
+    transGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
+    transGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+    transGroup.setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
+    Viewer viewer = new Viewer(canvas);
+    universe = new SimpleUniverse(viewingPlatform, viewer);
+    group.addChild(transGroup);
+    universe.getViewingPlatform().getViewPlatformTransform().setTransform(trans3D);
+      universe.addBranchGraph(group); // Add group to universe
 
-		// Add all our led sphares to the universe
-		for (int x = 0; x < 8; x++) {
-			for (int y = 0; y < 8; y++) {
-				for (int z = 0; z < 8; z++) {
-					leds[x][y][z] = new Sphere(0.05f);
-					if ((x == 7) && (y == 7) && (z == 7)) {
-						Appearance a = new Appearance();
-						a.setColoringAttributes(colorRed);
-						leds[x][y][z].setAppearance(a);
-					}
-					TransformGroup tg = new TransformGroup();
-					tg.setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
-					Transform3D transform = new Transform3D();
-					Vector3f vector = new Vector3f(x, y, z);
-					transform.setTranslation(vector);
-					tg.setTransform(transform);
-					tg.addChild(leds[x][y][z]);
-					BranchGroup allTheseGroupsScareMe = new BranchGroup();
-					allTheseGroupsScareMe.addChild(tg);
-					inBetween.addChild(allTheseGroupsScareMe);
-				}
-			}
-		}
+    BoundingBox boundBox = new BoundingBox(new Point3d(-5.0, -5.0, -5.0), new Point3d(13.0, 13.0, 13.0));
+    // roration with left mouse button
+    MouseRotate behaviour = new MouseRotate(transGroup);
+    BranchGroup inBetween = new BranchGroup();
+    inBetween.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
+    inBetween.addChild(behaviour);
+    transGroup.addChild(inBetween);
+    behaviour.setSchedulingBounds(boundBox);
 
-		// Add an ambient light
-		Color3f light2Color = new Color3f(8.0f, 8.0f, 8.0f);
-		AmbientLight light2 = new AmbientLight(light2Color);
-		BoundingSphere bounds = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 100.0);
-		light2.setInfluencingBounds(bounds);
-		BranchGroup fffuuuuu = new BranchGroup();
-		fffuuuuu.addChild(light2);
-		inBetween.addChild(fffuuuuu);
-	}
+    // zoom with middle mouse button
+    MouseZoom beh2 = new MouseZoom(transGroup);
+    BranchGroup brM2 = new BranchGroup();
+    brM2.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
+    brM2.addChild(beh2);
+    inBetween.addChild(brM2);
+    beh2.setSchedulingBounds(boundBox);
+
+    // move with right mouse button
+    MouseTranslate beh3 = new MouseTranslate(transGroup);
+    BranchGroup brM3 = new BranchGroup();
+    brM3.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
+    brM3.addChild(beh3);
+    inBetween.addChild(brM3);
+    beh3.setSchedulingBounds(boundBox);
+
+    // Add all our led sphares to the universe
+    for (int x = 0; x < 8; x++) {
+      for (int y = 0; y < 8; y++) {
+        for (int z = 0; z < 8; z++) {
+          leds[x][y][z] = new Sphere(0.05f);
+          if ((x == 7) && (y == 7) && (z == 7)) {
+            Appearance a = new Appearance();
+            a.setMaterial(redMat);
+            //a.setColoringAttributes(colorRed);
+            leds[x][y][z].setAppearance(a);
+          } else {
+            Appearance a = new Appearance();
+            a.setMaterial(whiteMat);
+            //a.setColoringAttributes(colorRed);
+            leds[x][y][z].setAppearance(a);
+          }
+          TransformGroup tg = new TransformGroup();
+          tg.setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
+          Transform3D transform = new Transform3D();
+          Vector3f vector = new Vector3f(x, y, z);
+          transform.setTranslation(vector);
+          tg.setTransform(transform);
+          tg.addChild(leds[x][y][z]);
+          BranchGroup allTheseGroupsScareMe = new BranchGroup();
+          allTheseGroupsScareMe.addChild(tg);
+          inBetween.addChild(allTheseGroupsScareMe);
+        }
+      }
+    }
+
+    // Add an ambient light
+    Color3f light2Color = new Color3f(1.0f, 1.0f, 1.0f);
+    AmbientLight light2 = new AmbientLight(light2Color);
+    BoundingSphere bounds = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 100.0);
+    light2.setInfluencingBounds(bounds);
+    BranchGroup fffuuuuu = new BranchGroup();
+    light2.setEnable(true);
+    fffuuuuu.addChild(light2);
+    inBetween.addChild(fffuuuuu);
+  }
 }
 
 public class frame extends JFrame implements ListSelectionListener {
@@ -205,12 +222,12 @@ public class frame extends JFrame implements ListSelectionListener {
      if (anim == -1){
         anim = 0;
      }
-	 if ((animList.getSelectedIndex() != -1) && (frameList.getSelectedIndex() != -1)) {
-	   	   frmLngthTxt.setText(Integer.toString(worker.getFrameTime(animList.getSelectedIndex(), frameList.getSelectedIndex())));
-	 }
+   if ((animList.getSelectedIndex() != -1) && (frameList.getSelectedIndex() != -1)) {
+         frmLngthTxt.setText(Integer.toString(worker.getFrameTime(animList.getSelectedIndex(), frameList.getSelectedIndex())));
+   }
      if(evt.getSource() == frameList){
        max = worker.numOfAnimations();
-	   animModel.clear();
+     animModel.clear();
      } else {
        max = worker.numOfFrames(anim);
        frameListModel.clear();
@@ -381,7 +398,7 @@ public class frame extends JFrame implements ListSelectionListener {
       }
     });
 
-	frameAdd.setBounds(544, 39, 107, 28);
+  frameAdd.setBounds(544, 39, 107, 28);
     frameAdd.setText("Add");
     frameAdd.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(frameAdd);
@@ -391,7 +408,7 @@ public class frame extends JFrame implements ListSelectionListener {
       }
     });
 
-	frameRemove.setBounds(544, 70, 107, 28);
+  frameRemove.setBounds(544, 70, 107, 28);
     frameRemove.setText("Remove");
     frameRemove.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(frameRemove);
@@ -400,12 +417,12 @@ public class frame extends JFrame implements ListSelectionListener {
         frameRemove_ActionPerformed(evt);
       }
     });
-	
-	frameRename.setBounds(544, 101, 107, 28);
-	frameRename.setText("Rename");
-  	frameRename.setFont(new Font("Dialog", Font.PLAIN, 13));
-  	cp.add(frameRename);
-  	frameRename.addActionListener(new ActionListener() {
+  
+  frameRename.setBounds(544, 101, 107, 28);
+  frameRename.setText("Rename");
+    frameRename.setFont(new Font("Dialog", Font.PLAIN, 13));
+    cp.add(frameRename);
+    frameRename.addActionListener(new ActionListener() {
     public void actionPerformed(ActionEvent evt) {
       int a = animList.getSelectedIndex();
       if (a < 0) {
@@ -443,32 +460,32 @@ public class frame extends JFrame implements ListSelectionListener {
     frmLngthTxt.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(frmLngthTxt);
 
-	frameDuration.setBounds(590, 184, 50, 24);
-	frameDuration.setText("OK");
-	frameDuration.setFont(new Font("Dialog", Font.PLAIN, 13));
-	cp.add(frameDuration);
-	frameDuration.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent evt) {
-			if (frmLngthTxt.getText().equals("0")) {
-				errorMessage("0 is not a valid value!");
-				frmLngthTxt.setText("1");
-			} else if (Integer.parseInt(frmLngthTxt.getText()) > 256) {
-				errorMessage("Value too high. Max: 256");
-				frmLngthTxt.setText("256");
-				return;
-			} else {
-				if (animList.getSelectedIndex() == -1) {
-					errorMessage("Please select an animation!");
-					return;
-				}
-				if (frameList.getSelectedIndex() == -1) {
-					errorMessage("Please select a frame!");
-					return;
-				}
-				worker.setFrameTime((byte)(Integer.parseInt(frmLngthTxt.getText()) - 1), animList.getSelectedIndex(), frameList.getSelectedIndex());
-			}
-		}
-	});
+  frameDuration.setBounds(590, 184, 50, 24);
+  frameDuration.setText("OK");
+  frameDuration.setFont(new Font("Dialog", Font.PLAIN, 13));
+  cp.add(frameDuration);
+  frameDuration.addActionListener(new ActionListener() {
+    public void actionPerformed(ActionEvent evt) {
+      if (frmLngthTxt.getText().equals("0")) {
+        errorMessage("0 is not a valid value!");
+        frmLngthTxt.setText("1");
+      } else if (Integer.parseInt(frmLngthTxt.getText()) > 256) {
+        errorMessage("Value too high. Max: 256");
+        frmLngthTxt.setText("256");
+        return;
+      } else {
+        if (animList.getSelectedIndex() == -1) {
+          errorMessage("Please select an animation!");
+          return;
+        }
+        if (frameList.getSelectedIndex() == -1) {
+          errorMessage("Please select a frame!");
+          return;
+        }
+        worker.setFrameTime((byte)(Integer.parseInt(frmLngthTxt.getText()) - 1), animList.getSelectedIndex(), frameList.getSelectedIndex());
+      }
+    }
+  });
 
     animScrollPane.setBounds(8, 264, 209, 121);
     animList.setModel(animModel);
@@ -484,7 +501,7 @@ public class frame extends JFrame implements ListSelectionListener {
       }
     });
 
-  	animDown.setBounds(224, 368, 99, 25);
+    animDown.setBounds(224, 368, 99, 25);
     animDown.setText("Move down");
     animDown.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(animDown);
@@ -495,10 +512,10 @@ public class frame extends JFrame implements ListSelectionListener {
     });
 
     animRename.setBounds(224, 342, 99, 25);
-  	animRename.setText("Rename");
-  	animRename.setFont(new Font("Dialog", Font.PLAIN, 13));
-  	cp.add(animRename);
-  	animRename.addActionListener(new ActionListener() {
+    animRename.setText("Rename");
+    animRename.setFont(new Font("Dialog", Font.PLAIN, 13));
+    cp.add(animRename);
+    animRename.addActionListener(new ActionListener() {
     public void actionPerformed(ActionEvent evt) {
       int a = animList.getSelectedIndex();
       if (a < 0) {
@@ -869,6 +886,3 @@ n = 0;
   }
   // Ende Methoden
 }
-
-
-
