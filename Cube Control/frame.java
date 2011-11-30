@@ -1,14 +1,3 @@
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import java.io.File;
-import com.sun.j3d.utils.universe.*;
-import com.sun.j3d.utils.geometry.*;
-import javax.media.j3d.*;
-import javax.vecmath.*;
-import com.sun.j3d.utils.behaviors.mouse.*;
-
 /*
 * frame.java
 *
@@ -33,6 +22,17 @@ import com.sun.j3d.utils.behaviors.mouse.*;
 * along with LED-Cube. If not, see <http://www.gnu.org/licenses/>.
 */
 
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import java.io.File;
+import com.sun.j3d.utils.universe.*;
+import com.sun.j3d.utils.geometry.*;
+import javax.media.j3d.*;
+import javax.vecmath.*;
+import com.sun.j3d.utils.behaviors.mouse.*;
+
 class Led3D {
   private Canvas3D canvas = null;
   private SimpleUniverse universe = null;
@@ -43,23 +43,16 @@ class Led3D {
 
   private Sphere[][][] leds = new Sphere[8][8][8];
 
-  private static ColoringAttributes colorRed = new ColoringAttributes(1.0f, 0.0f, 0.0f, ColoringAttributes.FASTEST);
-  private static ColoringAttributes colorWhite = new ColoringAttributes(1.0f, 1.0f, 1.0f, ColoringAttributes.FASTEST);
-
+	private static ColoringAttributes redColor = new ColoringAttributes(new Color3f(1.0f, 0.0f, 0.0f), ColoringAttributes.FASTEST);
+	private static ColoringAttributes whiteColor = new ColoringAttributes(new Color3f(1.0f, 1.0f, 1.0f), ColoringAttributes.FASTEST);
   private static Material whiteMat = new Material(new Color3f(1.0f, 1.0f, 1.0f), new Color3f(1.0f, 1.0f, 1.0f), new Color3f(1.0f, 1.0f, 1.0f), new Color3f(1.0f, 1.0f, 1.0f), 42.0f);
   private static Material redMat = new Material(new Color3f(1.0f, 0.0f, 0.0f), new Color3f(1.0f, 0.0f, 0.0f), new Color3f(1.0f, 0.0f, 0.0f), new Color3f(1.0f, 0.0f, 0.0f), 42.0f);
-  private static Appearance ledAppearance = new Appearance();
 
   private Point3d eye = new Point3d(3.5, 3.5, -13.0);
   private Point3d look = new Point3d(3.5, 3.5, 0.0);
   private Vector3d lookVect = new Vector3d(1.0, 1.0, 0.0);
 
   Led3D(Canvas3D canv) {
-  
-    //Material
-
-
-  
   
     canvas = canv;
     group = new BranchGroup();
@@ -73,17 +66,21 @@ class Led3D {
     transGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
     transGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
     transGroup.setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
+	transGroup.setCapability(TransformGroup.ALLOW_CHILDREN_WRITE);
+	transGroup.setCapability(TransformGroup.ALLOW_CHILDREN_READ);
     Viewer viewer = new Viewer(canvas);
     universe = new SimpleUniverse(viewingPlatform, viewer);
     group.addChild(transGroup);
     universe.getViewingPlatform().getViewPlatformTransform().setTransform(trans3D);
-      universe.addBranchGraph(group); // Add group to universe
+    universe.addBranchGraph(group); // Add group to universe
 
     BoundingBox boundBox = new BoundingBox(new Point3d(-5.0, -5.0, -5.0), new Point3d(13.0, 13.0, 13.0));
     // roration with left mouse button
     MouseRotate behaviour = new MouseRotate(transGroup);
     BranchGroup inBetween = new BranchGroup();
     inBetween.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
+	inBetween.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
+	inBetween.setCapability(BranchGroup.ALLOW_CHILDREN_READ);
     inBetween.addChild(behaviour);
     transGroup.addChild(inBetween);
     behaviour.setSchedulingBounds(boundBox);
@@ -92,6 +89,8 @@ class Led3D {
     MouseZoom beh2 = new MouseZoom(transGroup);
     BranchGroup brM2 = new BranchGroup();
     brM2.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
+	brM2.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
+	brM2.setCapability(BranchGroup.ALLOW_CHILDREN_READ);
     brM2.addChild(beh2);
     inBetween.addChild(brM2);
     beh2.setSchedulingBounds(boundBox);
@@ -100,6 +99,8 @@ class Led3D {
     MouseTranslate beh3 = new MouseTranslate(transGroup);
     BranchGroup brM3 = new BranchGroup();
     brM3.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
+	brM3.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
+	brM3.setCapability(BranchGroup.ALLOW_CHILDREN_READ);
     brM3.addChild(beh3);
     inBetween.addChild(brM3);
     beh3.setSchedulingBounds(boundBox);
@@ -109,25 +110,26 @@ class Led3D {
       for (int y = 0; y < 8; y++) {
         for (int z = 0; z < 8; z++) {
           leds[x][y][z] = new Sphere(0.05f);
-          if ((x == 7) && (y == 7) && (z == 7)) {
-            Appearance a = new Appearance();
-            a.setMaterial(redMat);
-            //a.setColoringAttributes(colorRed);
-            leds[x][y][z].setAppearance(a);
-          } else {
-            Appearance a = new Appearance();
-            a.setMaterial(whiteMat);
-            //a.setColoringAttributes(colorRed);
-            leds[x][y][z].setAppearance(a);
-          }
+
+          Appearance a = new Appearance();
+          a.setMaterial(whiteMat);
+          leds[x][y][z].setAppearance(a);
+		  leds[x][y][z].getShape().setCapability(Shape3D.ALLOW_APPEARANCE_WRITE);
+
           TransformGroup tg = new TransformGroup();
           tg.setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
+		  tg.setCapability(TransformGroup.ALLOW_CHILDREN_WRITE);
+		  tg.setCapability(TransformGroup.ALLOW_CHILDREN_READ);
           Transform3D transform = new Transform3D();
           Vector3f vector = new Vector3f(x, y, z);
           transform.setTranslation(vector);
           tg.setTransform(transform);
           tg.addChild(leds[x][y][z]);
+
           BranchGroup allTheseGroupsScareMe = new BranchGroup();
+		  allTheseGroupsScareMe.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
+		  allTheseGroupsScareMe.setCapability(BranchGroup.ALLOW_CHILDREN_READ);
+		  allTheseGroupsScareMe.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
           allTheseGroupsScareMe.addChild(tg);
           inBetween.addChild(allTheseGroupsScareMe);
         }
@@ -144,6 +146,27 @@ class Led3D {
     fffuuuuu.addChild(light2);
     inBetween.addChild(fffuuuuu);
   }
+
+	// 64 Element byte array
+	public void setData(short[] data) {
+		for (int y = 0; y < 8; y++) {
+			for (int z = 0; z < 8; z++) {
+				for (int x = 0; x < 8; x++) {
+					Appearance a = new Appearance();
+					if ((data[y + (z * 8)] & (1 << x)) != 0) {
+						// Activate led
+						a.setColoringAttributes(redColor);
+						a.setMaterial(redMat);
+					} else {
+						// Deactivate led
+						a.setColoringAttributes(whiteColor);
+						a.setMaterial(whiteMat);
+					}
+					leds[x][y][z].setAppearance(a);
+				}
+			}
+		}
+	}
 }
 
 public class frame extends JFrame implements ListSelectionListener {
@@ -216,34 +239,27 @@ public class frame extends JFrame implements ListSelectionListener {
   }
 
   public void valueChanged(ListSelectionEvent evt) {
-    if ((!evt.getValueIsAdjusting()) && ((evt.getSource() == animList) || (evt.getSource() == frameList))) {
-     int anim = animList.getSelectedIndex();
-     int max;
-     if (anim == -1){
-        anim = 0;
-     }
-   if ((animList.getSelectedIndex() != -1) && (frameList.getSelectedIndex() != -1)) {
-         frmLngthTxt.setText(Integer.toString(worker.getFrameTime(animList.getSelectedIndex(), frameList.getSelectedIndex())));
-   }
-     if(evt.getSource() == frameList){
-       max = worker.numOfAnimations();
-     animModel.clear();
-     } else {
-       max = worker.numOfFrames(anim);
-       frameListModel.clear();
-     }
+	if ((!evt.getValueIsAdjusting()) && ((evt.getSource() == animList) || (evt.getSource() == frameList))) {
+		// If animList or framsList is the source, we act...
 
-   // if value changed in anim, rebuild frame, else other way round
-   for (int i = 0; i < max; i++) {
-       if(evt.getSource() == animList){
-      frameListModel.addElement(worker.getFrameName(anim, i));
-      frameList.setModel(frameListModel);
-       } else {
-      animModel.addElement(worker.getAnimationName(i));
-      animList.setModel(animModel);
-       }
-   }
-    }
+		// If both selections are valid, update frame duration and set 3D data
+		if ((animList.getSelectedIndex() != -1) && (frameList.getSelectedIndex() != -1)) {
+			ledView.setData(worker.getFrame(animList.getSelectedIndex(), frameList.getSelectedIndex()));
+			frmLngthTxt.setText(Integer.toString(worker.getFrameTime(animList.getSelectedIndex(), frameList.getSelectedIndex())));
+		} else {
+			// clear frame duration
+			frmLngthTxt.setText("");
+		}
+
+		if ((evt.getSource() == animList) && (animList.getSelectedIndex() != -1)) {
+			// animList selection changed, update frameList
+			frameListModel.clear();
+			for (int i = 0; i < worker.numOfFrames(animList.getSelectedIndex()); i++) {
+				frameListModel.addElement(worker.getFrameName(animList.getSelectedIndex(), i));
+			}
+			frameList.setModel(frameListModel);
+		}
+	}
   }
 
   private void save() {
@@ -296,6 +312,13 @@ public class frame extends JFrame implements ListSelectionListener {
     Container cp = getContentPane();
     cp.setLayout(null);
     // Anfang Komponenten
+
+	// ledView init
+	short[] dat = new short[64];
+	for (int i = 0; i < dat.length; i++) {
+		dat[i] = 0xFF;
+	}
+	ledView.setData(dat);
 
     //----- 3D-----
     //-------------
@@ -619,6 +642,7 @@ public class frame extends JFrame implements ListSelectionListener {
     frameList.setFont(new Font("Dialog", Font.PLAIN, 13));
     // Ende Komponenten
     animList.addListSelectionListener(this);
+	frameList.addListSelectionListener(this);
     setResizable(false);
     setVisible(true);
   }
@@ -784,13 +808,8 @@ public class frame extends JFrame implements ListSelectionListener {
     if(worker.addAnimation() == -1){
       errorMessage("Could not add animation!");
     } else {
-    int n = worker.numOfAnimations() - 1;
-    // would have 0 anims after successfully adding one...
-  /*if (n < 0) {
-n = 0;
-}*/
     animModel.clear();
-    for (int i = 0; i < (n + 1); i++) {
+    for (int i = 0; i < worker.numOfAnimations(); i++) {
         animModel.add(i, worker.getAnimationName(i));
     }
     animList.setModel(animModel);
