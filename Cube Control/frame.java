@@ -55,12 +55,7 @@ class Led3D {
   private Vector3d lookVect = new Vector3d(1.0, 1.0, 0.0);
 
   Led3D(Canvas3D canv) {
-  
-    //Material
 
-
-  
-  
     canvas = canv;
     group = new BranchGroup();
     // Position viewer, so we are looking at object
@@ -109,16 +104,11 @@ class Led3D {
       for (int y = 0; y < 8; y++) {
         for (int z = 0; z < 8; z++) {
           leds[x][y][z] = new Sphere(0.05f);
+          Appearance a = new Appearance();
+          a.setMaterial(whiteMat);
+          leds[x][y][z].setAppearance(a);
           if ((x == 7) && (y == 7) && (z == 7)) {
-            Appearance a = new Appearance();
-            a.setMaterial(redMat);
-            //a.setColoringAttributes(colorRed);
-            leds[x][y][z].setAppearance(a);
-          } else {
-            Appearance a = new Appearance();
-            a.setMaterial(whiteMat);
-            //a.setColoringAttributes(colorRed);
-            leds[x][y][z].setAppearance(a);
+           a.setMaterial(redMat);
           }
           TransformGroup tg = new TransformGroup();
           tg.setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
