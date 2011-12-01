@@ -34,23 +34,22 @@ import javax.vecmath.*;
 import com.sun.j3d.utils.behaviors.mouse.*;
 
 class Led3D {
-  private Canvas3D canvas = null;
-  private SimpleUniverse universe = null;
-    private BranchGroup group = null;
-  private Transform3D trans3D = null;
-  private BranchGroup inBetween = null;
-  private TransformGroup transGroup = null;
+	private Canvas3D canvas = null;
+	private SimpleUniverse universe = null;
+	private BranchGroup group = null;
+	private Transform3D trans3D = null;
+	private BranchGroup inBetween = null;
+	private TransformGroup transGroup = null;
 
-  private Sphere[][][] leds = new Sphere[8][8][8];
-
+	private Sphere[][][] leds = new Sphere[8][8][8];
 	private static ColoringAttributes redColor = new ColoringAttributes(new Color3f(1.0f, 0.0f, 0.0f), ColoringAttributes.FASTEST);
 	private static ColoringAttributes whiteColor = new ColoringAttributes(new Color3f(1.0f, 1.0f, 1.0f), ColoringAttributes.FASTEST);
-  private static Material whiteMat = new Material(new Color3f(1.0f, 1.0f, 1.0f), new Color3f(1.0f, 1.0f, 1.0f), new Color3f(1.0f, 1.0f, 1.0f), new Color3f(1.0f, 1.0f, 1.0f), 42.0f);
-  private static Material redMat = new Material(new Color3f(1.0f, 0.0f, 0.0f), new Color3f(1.0f, 0.0f, 0.0f), new Color3f(1.0f, 0.0f, 0.0f), new Color3f(1.0f, 0.0f, 0.0f), 42.0f);
+	private static Material whiteMat = new Material(new Color3f(1.0f, 1.0f, 1.0f), new Color3f(1.0f, 1.0f, 1.0f), new Color3f(1.0f, 1.0f, 1.0f), new Color3f(1.0f, 1.0f, 1.0f), 42.0f);
+	private static Material redMat = new Material(new Color3f(1.0f, 0.0f, 0.0f), new Color3f(1.0f, 0.0f, 0.0f), new Color3f(1.0f, 0.0f, 0.0f), new Color3f(1.0f, 0.0f, 0.0f), 42.0f);
 
-  private Point3d eye = new Point3d(3.5, 3.5, -13.0);
-  private Point3d look = new Point3d(3.5, 3.5, 0.0);
-  private Vector3d lookVect = new Vector3d(1.0, 1.0, 0.0);
+	private Point3d eye = new Point3d(3.5, 3.5, -13.0);
+	private Point3d look = new Point3d(3.5, 3.5, 0.0);
+	private Vector3d lookVect = new Vector3d(1.0, 1.0, 0.0);
 
   Led3D(Canvas3D canv) {
 
