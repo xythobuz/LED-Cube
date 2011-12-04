@@ -289,7 +289,7 @@ public class cubeWorker {
 		}
 		String[] arg = {"p"};
 		String portLines = HelperUtility.runHelper(arg);
-		System.out.println("Output: " + portLines);
+		// System.out.println("Output: " + portLines);
 		if (portLines == null) {
 			return ports;
 		}

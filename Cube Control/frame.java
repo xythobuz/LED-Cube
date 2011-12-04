@@ -49,7 +49,7 @@ class Led3D {
 
 	private Point3d eye = new Point3d(3.5, 3.5, -13.0);
 	private Point3d look = new Point3d(3.5, 3.5, 0.0);
-	private Vector3d lookVect = new Vector3d(1.0, 1.0, 0.0);
+	private Vector3d lookVect = new Vector3d(1.0, 1.0, 1.0);
 
   Led3D(Canvas3D canv) {
 
@@ -58,8 +58,8 @@ class Led3D {
     // Position viewer, so we are looking at object
     trans3D = new Transform3D();
     trans3D.lookAt(eye, look, lookVect);
-    trans3D.invert();
-    //transGroup = new TransformGroup(trans3D);
+	trans3D.invert();
+	transGroup = new TransformGroup(trans3D);
     transGroup = new TransformGroup();
     ViewingPlatform viewingPlatform = new ViewingPlatform();
     transGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
@@ -71,7 +71,8 @@ class Led3D {
     universe = new SimpleUniverse(viewingPlatform, viewer);
     group.addChild(transGroup);
     universe.getViewingPlatform().getViewPlatformTransform().setTransform(trans3D);
-    universe.addBranchGraph(group); // Add group to universe
+    // universe.getViewingPlatform().setNominalViewingTransform();
+	universe.addBranchGraph(group); // Add group to universe
 
     BoundingBox boundBox = new BoundingBox(new Point3d(-5.0, -5.0, -5.0), new Point3d(13.0, 13.0, 13.0));
     // roration with left mouse button
@@ -145,6 +146,15 @@ class Led3D {
     fffuuuuu.addChild(light2);
     inBetween.addChild(fffuuuuu);
   }
+
+  	public void printTranslationData() {
+		Matrix4d mat = new Matrix4d();
+		Transform3D t = new Transform3D();
+		transGroup.getTransform(t);
+		t.get(mat);
+		String s = mat.toString();
+		System.out.println(s.replaceAll(", ", "\t"));
+	}
 
 	// 64 Element byte array
 	public void setData(short[] data) {
@@ -897,10 +907,42 @@ public class frame extends JFrame implements ListSelectionListener {
          }
   }
 
+  public Led3D get3D() {
+	  return ledView;
+  }
+
   // Ende Ereignisprozeduren
 
   public static void main(String[] args) {
-    new frame("Cube Control");
+    frame f = new frame("Cube Control");
+	Led3D l = f.get3D();
+	java.util.Scanner sc = new java.util.Scanner(System.in);
+
+	System.out.println("## Cube Control Debug Console ##");
+	System.out.println("Enter a Command ('h' for help)\n");
+	
+	System.out.print("$> ");
+
+	do {
+		if (sc.hasNext()) {
+			String s = sc.next();
+			
+			if (s.equals("p") || (s.equals("print")))
+				l.printTranslationData();
+
+			if (s.equals("q") || s.equals("quit"))
+				System.exit(0);
+
+			if (s.equals("h") || (s.equals("help"))) {
+				System.out.println("Commands:");
+				System.out.println("\t'print' / 'p'\t:\tPrint 3D Translation Matrix Data");
+				System.out.println("\t'help' / 'h'\t:\tShow this message");
+				System.out.println("\t'quit' / 'q'\t:\tExit Cube Control");
+			}
+
+			System.out.print("$> ");
+		}
+	} while (true);
   }
   // Ende Methoden
 }
