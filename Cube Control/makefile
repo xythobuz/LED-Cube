@@ -1,14 +1,13 @@
 JAVAC = javac
+JAVADOC = javadoc
+DOCDIR = doc
 CC = gcc
 TARGET = unix
 #TARGET = win
 
 # Java files to be compiled
-ifeq ($(TARGET),win)
-JAVAFILES = cubeWorker.java layerEditFrame.java frame.java
-else
-JAVAFILES = *.java
-endif
+# Needs to be a complete list so they work as target
+JAVAFILES = HelperUtility.java AnimationUtility.java Animation.java AFrame.java cubeWorker.java layerEditFrame.java Led3D.java frame.java
 
 ifeq ($(TARGET),win)
 INJAR = *.class *.png serialHelper.exe
@@ -16,8 +15,11 @@ else
 INJAR = *.class *.png serialHelper
 endif
 
-# Spit out jar file, delete intermediate files
-all: build clean
+# Spit out jar file, documentation, delete intermediate files
+all: build doc/index.html clean
+
+# Generate Documentation
+doc: doc/index.html
 
 # Compile java files
 java: frame.class
@@ -29,6 +31,9 @@ build: frame.class serialHelper
 # Compile java files
 frame.class: $(JAVAFILES)
 	$(JAVAC) $(JAVAFILES)
+
+doc/index.html: $(JAVAFILES)
+	$(JAVADOC) -d $(DOCDIR) $(JAVAFILES)
 
 # Compile serial Helper
 ifeq ($(TARGET),win)
