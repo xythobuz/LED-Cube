@@ -27,9 +27,17 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+/**
+ * Shows a windows that allows the user to toggle the state of 64 LEDs.
+ * @author Max Nuding
+ * @author Thomas Buck
+ * @author Felix Bäder
+ * @version 1.0
+ */
 
 public class layerEditFrame extends JFrame {
   // Anfang Attribute
+
   private JPanel panelLED1 = new JPanel(null, true);
   JButton[][] ledPanels = new JButton[8][8];
   ImageIcon on = new ImageIcon(getClass().getResource("LEDon.png"));
@@ -45,7 +53,14 @@ public class layerEditFrame extends JFrame {
   Frame LedFrame;
 
   // Ende Attribute
-
+  /**
+   * Create a new layer editor.
+   * @param animIndex Current animation
+   * @param frameIndex Current frame
+   * @param layerIndex Layer to edit
+   * @param work the cubeWorker containing the data
+   * @param LEDframe Used to call valueChanged, to trigger 3D View update
+   */
   public layerEditFrame(int animIndex, int frameIndex, int layerIndex, cubeWorker work, Frame LEDframe) {
     // Frame-Initialisierung
     super("Layer Edit");
@@ -147,14 +162,22 @@ public class layerEditFrame extends JFrame {
 
   }
 
+	/**
+	 * Get the edited data back. NOTE: The worker is updated automagically!
+	 * @return Now changed 64 byte array.
+	 */
    public short[] getFinalFrame(){
       if (finish == false) {
         return null;
       }
-      //return shortToByteArray(frame);
       return frame;
    }
 
+	/**
+	 * Gets called when the user clicks on a Toggle Button.
+	 * @param i X-Coordinate of Button
+	 * @param j Y-Coordinate of Button
+	 */
   public void btnClicked(int i, int j){
     changedStateSinceSave = true;
     if (ledPanels[i][j].getIcon() == on){
@@ -167,11 +190,16 @@ public class layerEditFrame extends JFrame {
 
   }
 
+	/**
+	 * Action of Cancel Button. Removes this window...
+	 */
   public void cancel(){
     dispose();
   }
 
-
+	/**
+	 * Gets called when clicking the save button. Puts data back into Worker and fires ListSelectionEvent in Worker, so that the 3D View is updated.
+	 */
   public void save(){
     int ctr = 0;
     short[] tmpFrame = frame;
