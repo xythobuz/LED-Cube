@@ -42,11 +42,11 @@ public class layerEditFrame extends JFrame {
   cubeWorker worker = null;
   int animI;
   int frameI;
-  frame LedFrame;
+  Frame LedFrame;
 
   // Ende Attribute
 
-  public layerEditFrame(int animIndex, int frameIndex, int layerIndex, cubeWorker work, frame LEDframe) {
+  public layerEditFrame(int animIndex, int frameIndex, int layerIndex, cubeWorker work, Frame LEDframe) {
     // Frame-Initialisierung
     super("Layer Edit");
     worker = work;
