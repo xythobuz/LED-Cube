@@ -1,10 +1,10 @@
 /*
-* frame.java
+* Frame.java
 *
 *
 * Copyright 2011 Thomas Buck <xythobuz@me.com>
 * Copyright 2011 Max Nuding <max.nuding@gmail.com>
-* Copyright 2011 Felix BÃ¤der <baeder.felix@gmail.com>
+* Copyright 2011 Felix BÃƒÂ¤der <baeder.felix@gmail.com>
 *
 * This file is part of LED-Cube.
 *
@@ -31,7 +31,7 @@ import javax.swing.event.*;
 import java.io.File;
 
 
-public class frame extends JFrame implements ListSelectionListener {
+public class Frame extends JFrame implements ListSelectionListener {
   // Anfang Variablen
   private GraphicsConfiguration gConfig = SimpleUniverse.getPreferredConfiguration();
   private Canvas3D cubeCanvas = new Canvas3D(gConfig);
@@ -54,7 +54,7 @@ public class frame extends JFrame implements ListSelectionListener {
   private JButton frameAdd = new JButton();
   private JButton frameRemove = new JButton();
   private JButton frameRename = new JButton();
-  private JButton frame = new JButton();
+  private JButton Frame = new JButton();
   private JList animList = new JList();
   private DefaultListModel animModel = new DefaultListModel();
   private JScrollPane animScrollPane = new JScrollPane(animList);
@@ -104,12 +104,12 @@ public class frame extends JFrame implements ListSelectionListener {
   if ((!evt.getValueIsAdjusting()) && ((evt.getSource() == animList) || (evt.getSource() == frameList))) {
     // If animList or framsList is the source, we act...
 
-    // If both selections are valid, update frame duration and set 3D data
+    // If both selections are valid, update Frame duration and set 3D data
     if ((animList.getSelectedIndex() != -1) && (frameList.getSelectedIndex() != -1)) {
       ledView.setData(worker.getFrame(animList.getSelectedIndex(), frameList.getSelectedIndex()));
       frmLngthTxt.setText(Integer.toString(worker.getFrameTime(animList.getSelectedIndex(), frameList.getSelectedIndex())));
     } else {
-      // clear frame duration
+      // clear Frame duration
       frmLngthTxt.setText("");
     }
 
@@ -139,7 +139,7 @@ public class frame extends JFrame implements ListSelectionListener {
       }
   }
 
-  public frame(String title) {
+  public Frame(String title) {
     // Frame-Initialisierung
     super(title);
 
@@ -316,7 +316,7 @@ public class frame extends JFrame implements ListSelectionListener {
       }
       int f = frameList.getSelectedIndex();
       if (f < 0) {
-        errorMessage("Select a frame!");
+        errorMessage("Select a Frame!");
         return;
       }
       worker.setFrameName(askString("Rename", "Rename " + frameList.getSelectedValue() + "?"), a, f);
@@ -364,7 +364,7 @@ public class frame extends JFrame implements ListSelectionListener {
           return;
         }
         if (frameList.getSelectedIndex() == -1) {
-          errorMessage("Please select a frame!");
+          errorMessage("Please select a Frame!");
           return;
         }
         worker.setFrameTime((byte)(Integer.parseInt(frmLngthTxt.getText()) - 1), animList.getSelectedIndex(), frameList.getSelectedIndex());
@@ -517,7 +517,7 @@ public class frame extends JFrame implements ListSelectionListener {
      if(animList.getSelectedIndex() == -1){
        errorMessage("Please select an animation.");
      } else if(frameList.getSelectedIndex() == -1){
-       errorMessage("Please select a frame.");
+       errorMessage("Please select a Frame.");
      } else {
        layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 0, worker, this);
 
@@ -528,7 +528,7 @@ public class frame extends JFrame implements ListSelectionListener {
     if(animList.getSelectedIndex() == -1){
        errorMessage("Please select an animation.");
      } else if(frameList.getSelectedIndex() == -1){
-       errorMessage("Please select a frame.");
+       errorMessage("Please select a Frame.");
      } else {
        layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 1, worker, this);
      }
@@ -538,7 +538,7 @@ public class frame extends JFrame implements ListSelectionListener {
     if(animList.getSelectedIndex() == -1){
        errorMessage("Please select an animation.");
      } else if(frameList.getSelectedIndex() == -1){
-       errorMessage("Please select a frame.");
+       errorMessage("Please select a Frame.");
      } else {
        layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 2, worker, this);
      }
@@ -548,7 +548,7 @@ public class frame extends JFrame implements ListSelectionListener {
     if(animList.getSelectedIndex() == -1){
        errorMessage("Please select an animation.");
      } else if(frameList.getSelectedIndex() == -1){
-       errorMessage("Please select a frame.");
+       errorMessage("Please select a Frame.");
      } else {
        layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 3, worker, this);
      }
@@ -558,7 +558,7 @@ public class frame extends JFrame implements ListSelectionListener {
      if(animList.getSelectedIndex() == -1){
        errorMessage("Please select an animation.");
      } else if(frameList.getSelectedIndex() == -1){
-       errorMessage("Please select a frame.");
+       errorMessage("Please select a Frame.");
      } else {
        layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 4, worker, this);
      }
@@ -568,7 +568,7 @@ public class frame extends JFrame implements ListSelectionListener {
      if(animList.getSelectedIndex() == -1){
        errorMessage("Please select an animation.");
      } else if(frameList.getSelectedIndex() == -1){
-       errorMessage("Please select a frame.");
+       errorMessage("Please select a Frame.");
      } else {
        layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 5, worker, this);
      }
@@ -578,7 +578,7 @@ public class frame extends JFrame implements ListSelectionListener {
      if(animList.getSelectedIndex() == -1){
        errorMessage("Please select an animation.");
      } else if(frameList.getSelectedIndex() == -1){
-       errorMessage("Please select a frame.");
+       errorMessage("Please select a Frame.");
      } else {
        layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 6, worker, this);
      }
@@ -588,7 +588,7 @@ public class frame extends JFrame implements ListSelectionListener {
      if(animList.getSelectedIndex() == -1){
        errorMessage("Please select an animation.");
      } else if(frameList.getSelectedIndex() == -1){
-       errorMessage("Please select a frame.");
+       errorMessage("Please select a Frame.");
      } else {
        layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 7, worker, this);
      }
@@ -636,7 +636,7 @@ public class frame extends JFrame implements ListSelectionListener {
      if(animList.getSelectedIndex() == -1){
        errorMessage("Select an animation.");
      } else if(frameList.getSelectedIndex() == -1){
-       errorMessage("Select a frame.");
+       errorMessage("Select a Frame.");
      } else {
        worker.removeFrame(animList.getSelectedIndex(), frameList.getSelectedIndex());
        frameRemaining.setText(Integer.toString(worker.framesRemaining()));
@@ -766,7 +766,7 @@ public class frame extends JFrame implements ListSelectionListener {
   }
 
   public static void main(String[] args) {
-    frame f = new frame("Cube Control");
+    Frame f = new Frame("Cube Control");
   Led3D l = f.get3D();
   java.util.Scanner sc = new java.util.Scanner(System.in);
 
