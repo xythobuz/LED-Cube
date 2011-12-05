@@ -2,13 +2,13 @@ JAVAC = javac
 JAVADOC = javadoc
 DOCDIR = doc
 CC = gcc
-#TARGET = unix
-TARGET= cygwin
+TARGET = unix
+#TARGET= cygwin
 #TARGET = win
 
 # Java files to be compiled
 # Needs to be a complete list so they work as target
-JAVAFILES = HelperUtility.java AnimationUtility.java Animation.java AFrame.java cubeWorker.java layerEditFrame.java Led3D.java frame.java
+JAVAFILES = HelperUtility.java AnimationUtility.java Animation.java AFrame.java cubeWorker.java layerEditFrame.java Led3D.java Frame.java
 
 ifeq ($(TARGET),win)
 INJAR = *.class *.png serialHelper.exe
@@ -19,7 +19,7 @@ RM = rm
 endif
 
 # Spit out jar file, documentation, delete intermediate files
-all: build doc/index.html clean
+all: build doc clean
 
 # Generate Documentation
 doc: doc/index.html
