@@ -27,6 +27,7 @@ import com.sun.j3d.utils.geometry.*;
 import javax.media.j3d.*;
 import javax.vecmath.*;
 import com.sun.j3d.utils.behaviors.mouse.*;
+import java.awt.Color;
 
 /**
  * This class is responsible for displaying the 3D View of our Cube.
@@ -68,46 +69,28 @@ public class Led3D {
 
 	transGroup = new TransformGroup(trans3D);
     ViewingPlatform viewingPlatform = new ViewingPlatform();
-    transGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
-    transGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-    transGroup.setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
-	transGroup.setCapability(TransformGroup.ALLOW_CHILDREN_WRITE);
-	transGroup.setCapability(TransformGroup.ALLOW_CHILDREN_READ);
     Viewer viewer = new Viewer(canvas);
     universe = new SimpleUniverse(viewingPlatform, viewer);
-    group.addChild(transGroup);
-	universe.addBranchGraph(group); // Add group to universe
 
     BoundingBox boundBox = new BoundingBox(new Point3d(-5.0, -5.0, -5.0), new Point3d(13.0, 13.0, 13.0));
     // roration with left mouse button
     MouseRotate behaviour = new MouseRotate(transGroup);
-    BranchGroup inBetween = new BranchGroup();
-    inBetween.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
-	inBetween.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
-	inBetween.setCapability(BranchGroup.ALLOW_CHILDREN_READ);
-    inBetween.addChild(behaviour);
-    transGroup.addChild(inBetween);
-    behaviour.setSchedulingBounds(boundBox);
+	behaviour.setSchedulingBounds(boundBox);
+    transGroup.addChild(behaviour);
 
     // zoom with middle mouse button
     MouseZoom beh2 = new MouseZoom(transGroup);
-    BranchGroup brM2 = new BranchGroup();
-    brM2.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
-	brM2.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
-	brM2.setCapability(BranchGroup.ALLOW_CHILDREN_READ);
-    brM2.addChild(beh2);
-    inBetween.addChild(brM2);
-    beh2.setSchedulingBounds(boundBox);
+	beh2.setSchedulingBounds(boundBox);
+	transGroup.addChild(beh2);
 
     // move with right mouse button
     MouseTranslate beh3 = new MouseTranslate(transGroup);
-    BranchGroup brM3 = new BranchGroup();
-    brM3.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
-	brM3.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
-	brM3.setCapability(BranchGroup.ALLOW_CHILDREN_READ);
-    brM3.addChild(beh3);
-    inBetween.addChild(brM3);
     beh3.setSchedulingBounds(boundBox);
+	transGroup.addChild(beh3);
+
+	Background bg = new Background(0.0f, 0.0f, 0.42f);
+	bg.setApplicationBounds(new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 100.0));
+	group.addChild(bg);
 
     // Add all our led sphares to the universe
     for (int x = 0; x < 8; x++) {
@@ -120,21 +103,12 @@ public class Led3D {
 		  leds[x][y][z] = new Sphere(0.05f, Sphere.ENABLE_APPEARANCE_MODIFY, a);
 
           TransformGroup tg = new TransformGroup();
-          tg.setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
-		  tg.setCapability(TransformGroup.ALLOW_CHILDREN_WRITE);
-		  tg.setCapability(TransformGroup.ALLOW_CHILDREN_READ);
           Transform3D transform = new Transform3D();
           Vector3f vector = new Vector3f(x, y, z);
           transform.setTranslation(vector);
           tg.setTransform(transform);
           tg.addChild(leds[x][y][z]);
-
-          BranchGroup allTheseGroupsScareMe = new BranchGroup();
-		  allTheseGroupsScareMe.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
-		  allTheseGroupsScareMe.setCapability(BranchGroup.ALLOW_CHILDREN_READ);
-		  allTheseGroupsScareMe.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
-          allTheseGroupsScareMe.addChild(tg);
-          inBetween.addChild(allTheseGroupsScareMe);
+          transGroup.addChild(tg);
         }
       }
     }
@@ -144,10 +118,10 @@ public class Led3D {
     AmbientLight light2 = new AmbientLight(light2Color);
     BoundingSphere bounds = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 100.0);
     light2.setInfluencingBounds(bounds);
-    BranchGroup fffuuuuu = new BranchGroup();
     light2.setEnable(true);
-    fffuuuuu.addChild(light2);
-    inBetween.addChild(fffuuuuu);
+    transGroup.addChild(light2);
+	group.addChild(transGroup);
+	universe.addBranchGraph(group); // Add group to universe
   }
 
 	/**
