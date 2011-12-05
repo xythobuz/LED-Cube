@@ -51,7 +51,7 @@ Return values:
 int main(int argc, char *argv[]) {
 	size_t length, written;
 
-		printf("Debugging Worker... Ignore me!\n");
+		// printf("Debugging Worker... Ignore me!\n");
 
 		if (argc < 2) {
 			usage(argv[0]);
@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
 				written = serialWrite(fileData, length);
 			}
 
-		} else {
+		} else if (argv[1][0] == 'r') {
 
 			if (argc != 4) {
 				usage(argv[0]);
@@ -120,6 +120,8 @@ int main(int argc, char *argv[]) {
 
 			printFileData(length);
 
+		} else {
+			printf("Unrecognized Option: %s\n", argv[1]);
 		}
 
 		free(fileData);

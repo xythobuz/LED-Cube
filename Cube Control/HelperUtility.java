@@ -83,28 +83,21 @@ public class HelperUtility {
 			BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String line;
 			boolean fin = false;
-			
-			do { // Wait for process to finish... Doesn't work...?
-				fin = false;
-				try {
-					p.waitFor();
-				} catch (Exception e) {
-					fin = true;
-				}
 
-				// Read output in same loop... Should work...!
-				line = br.readLine();
-				if (line != null) {
-					ret = ret + line + "\n";
-					fin = true;
-				}
-			} while (fin);
+			while ((line = br.readLine()) != null) {
+				ret = ret + line + "\n";
+			}
+			
+			p.waitFor();
+
+			while ((line = br.readLine()) != null) {
+				ret = ret + line + "\n";
+			}
 
 			br.close();
-			if (ret.length() == 0) {
-				ret = "g"; // We have added a last \n... We will remove it, so add garbage to be removed...
+			if (ret.length() > 0) {
+				ret = ret.substring(0, ret.length() - 1);
 			}
-			ret = ret.substring(0, ret.length() - 1);
 			return ret;
 		} catch(Exception e) {
 			e.printStackTrace();
