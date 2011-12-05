@@ -175,13 +175,6 @@ public class Frame extends JFrame implements ListSelectionListener {
     cp.setLayout(null);
     // Anfang Komponenten
 
-  // ledView init
-  short[] dat = new short[64];
-  for (int i = 0; i < dat.length; i++) {
-    dat[i] = 0xFF;
-  }
-  ledView.setData(dat);
-
     //----- 3D-----
     //-------------
     cubeCanvas.setBounds(8, 8, 250, 250);
@@ -770,9 +763,8 @@ public class Frame extends JFrame implements ListSelectionListener {
   Led3D l = f.get3D();
   java.util.Scanner sc = new java.util.Scanner(System.in);
 
-  System.out.println("## Cube Control Debug Console ##");
-  System.out.println("Enter a Command ('h' for help)\n");
-  
+  System.out.println("#### Cube Control Debug Console ####");
+  System.out.println("## Enter a Command ('h' for help) ##");
   System.out.print("$> ");
 
   do {

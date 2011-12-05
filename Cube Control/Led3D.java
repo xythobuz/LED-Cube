@@ -113,13 +113,11 @@ public class Led3D {
     for (int x = 0; x < 8; x++) {
       for (int y = 0; y < 8; y++) {
         for (int z = 0; z < 8; z++) {
-          leds[x][y][z] = new Sphere(0.05f);
-
           Appearance a = new Appearance();
           a.setMaterial(whiteMat);
 		  a.setColoringAttributes(whiteColor);
-          leds[x][y][z].setAppearance(a);
-		  leds[x][y][z].getShape().setCapability(Shape3D.ALLOW_APPEARANCE_WRITE);
+		  
+		  leds[x][y][z] = new Sphere(0.05f, Sphere.ENABLE_APPEARANCE_MODIFY, a);
 
           TransformGroup tg = new TransformGroup();
           tg.setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
