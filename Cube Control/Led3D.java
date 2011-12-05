@@ -28,6 +28,7 @@ import javax.media.j3d.*;
 import javax.vecmath.*;
 import com.sun.j3d.utils.behaviors.mouse.*;
 import java.awt.Color;
+import com.sun.j3d.utils.image.TextureLoader;
 
 /**
  * This class is responsible for displaying the 3D View of our Cube.
@@ -68,6 +69,8 @@ public class Led3D {
 	trans3D.set(mat);
 
 	transGroup = new TransformGroup(trans3D);
+	transGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
+	transGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
     ViewingPlatform viewingPlatform = new ViewingPlatform();
     Viewer viewer = new Viewer(canvas);
     universe = new SimpleUniverse(viewingPlatform, viewer);
@@ -88,9 +91,7 @@ public class Led3D {
     beh3.setSchedulingBounds(boundBox);
 	transGroup.addChild(beh3);
 
-	Background bg = new Background(0.0f, 0.0f, 0.42f);
-	bg.setApplicationBounds(new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 100.0));
-	group.addChild(bg);
+	group.addChild(createBackground());
 
     // Add all our led sphares to the universe
     for (int x = 0; x < 8; x++) {
@@ -100,7 +101,7 @@ public class Led3D {
           a.setMaterial(whiteMat);
 		  a.setColoringAttributes(whiteColor);
 		  
-		  leds[x][y][z] = new Sphere(0.05f, Sphere.ENABLE_APPEARANCE_MODIFY, a);
+		  leds[x][y][z] = new Sphere(0.08f, Sphere.ENABLE_APPEARANCE_MODIFY, a);
 
           TransformGroup tg = new TransformGroup();
           Transform3D transform = new Transform3D();
@@ -109,8 +110,16 @@ public class Led3D {
           tg.setTransform(transform);
           tg.addChild(leds[x][y][z]);
           transGroup.addChild(tg);
+
+		  drawLedFeetVertical((double)x, y + 0.5, (double)z, 0.9f, 0.01f);
+		  drawLedFeetHorizontal(x + 0.5, (double)y, (double)z, 0.9f, 0.01f, 0);
+
         }
       }
+	  // 8 times, use x as y
+	  drawLedFeetHorizontal(0.5, (double)x, 3.5, 7.0f, 0.02f, 90);
+	  drawLedFeetHorizontal(6.5, (double)x, 3.5, 7.0f, 0.02f, 90);
+	  drawLedFeetHorizontal(3.5, (double)x, 3.5, 7.0f, 0.02f, 90);
     }
 
     // Add an ambient light
@@ -123,6 +132,43 @@ public class Led3D {
 	group.addChild(transGroup);
 	universe.addBranchGraph(group); // Add group to universe
   }
+
+	private void drawLedFeetVertical(double x, double y, double z, float length, float rad) {
+		// draw Feet going down
+		Appearance feetApp = new Appearance();
+		feetApp.setMaterial(whiteMat);
+		feetApp.setColoringAttributes(whiteColor);
+		Cylinder c = new Cylinder(rad, length, feetApp);
+
+		TransformGroup tg = new TransformGroup();
+		Transform3D transform = new Transform3D();
+		Vector3d vector = new Vector3d(x, y, z);
+		transform.setTranslation(vector);
+		tg.setTransform(transform);
+		tg.addChild(c);
+
+		transGroup.addChild(tg);
+	}
+
+	private void drawLedFeetHorizontal(double x, double y, double z, float length, float rad, int deg) {
+		// draw Feet going down
+		Appearance feetApp = new Appearance();
+		feetApp.setMaterial(whiteMat);
+		feetApp.setColoringAttributes(whiteColor);
+		Cylinder c = new Cylinder(rad, length, feetApp);
+
+		TransformGroup tg = new TransformGroup();
+		Transform3D transform = new Transform3D();
+		Vector3d vector = new Vector3d(x, y, z);
+		transform.rotZ(Math.toRadians(90));
+		if (deg != 0)
+			transform.rotX(Math.toRadians(deg));
+		transform.setTranslation(vector);
+		tg.setTransform(transform);
+		tg.addChild(c);
+
+		transGroup.addChild(tg);
+	}
 
 	/**
 	 * Prints the translation matrix that is changed by moving/rotating the 3D Cube with your mouse.
@@ -158,5 +204,13 @@ public class Led3D {
 				}
 			}
 		}
+	}
+
+	// create nice background
+	private Background createBackground() {
+		ImageComponent2D image = new TextureLoader(getClass().getResource("bg.png"), null).getImage();
+		Background bg = new Background(image);
+		bg.setApplicationBounds(new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 100.0));
+		return bg;
 	}
 }
