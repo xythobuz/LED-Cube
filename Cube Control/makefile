@@ -2,7 +2,8 @@ JAVAC = javac
 JAVADOC = javadoc
 DOCDIR = doc
 CC = gcc
-TARGET = unix
+#TARGET = unix
+TARGET= cygwin
 #TARGET = win
 
 # Java files to be compiled
@@ -11,8 +12,10 @@ JAVAFILES = HelperUtility.java AnimationUtility.java Animation.java AFrame.java 
 
 ifeq ($(TARGET),win)
 INJAR = *.class *.png serialHelper.exe
+RM = del
 else
 INJAR = *.class *.png serialHelper
+RM = rm
 endif
 
 # Spit out jar file, documentation, delete intermediate files
@@ -47,9 +50,9 @@ endif
 # Delete intermediate files
 clean:
 ifeq ($(TARGET),win)
-	del *.class
-	del serialHelper.exe
+	$(RM) *.class
+	$(RM) serialHelper.exe
 else
-	rm -f *.class
-	rm -f serialHelper
+	$(RM) -f *.class
+	$(RM) -f serialHelper
 endif

@@ -46,13 +46,9 @@ public class Led3D {
 
 	private Sphere[][][] leds = new Sphere[8][8][8];
 	private static ColoringAttributes redColor = new ColoringAttributes(new Color3f(1.0f, 0.0f, 0.0f), ColoringAttributes.FASTEST);
-	private static ColoringAttributes whiteColor = new ColoringAttributes(new Color3f(1.0f, 1.0f, 1.0f), ColoringAttributes.FASTEST);
-	private static Material whiteMat = new Material(new Color3f(1.0f, 1.0f, 1.0f), new Color3f(1.0f, 1.0f, 1.0f), new Color3f(1.0f, 1.0f, 1.0f), new Color3f(1.0f, 1.0f, 1.0f), 64.0f);
+	private static ColoringAttributes whiteColor = new ColoringAttributes(new Color3f(0.2f, 0.2f, 0.2f), ColoringAttributes.FASTEST);
+	private static Material whiteMat = new Material(new Color3f(0.2f, 0.2f, 0.2f), new Color3f(0.0f, 0.0f, 0.0f), new Color3f(0.2f, 0.2f, 0.2f), new Color3f(0.2f, 0.2f, 0.2f), 64.0f);
 	private static Material redMat = new Material(new Color3f(1.0f, 0.0f, 0.0f), new Color3f(1.0f, 0.0f, 0.0f), new Color3f(1.0f, 0.0f, 0.0f), new Color3f(1.0f, 0.0f, 0.0f), 64.0f);
-
-	private Point3d eye = new Point3d(3.5, 3.5, -13.0);
-	private Point3d look = new Point3d(3.5, 3.5, 0.0);
-	private Vector3d lookVect = new Vector3d(1.0, 1.0, 1.0);
 
   /**
    * @param canv The Canvas3D we render our cube in
@@ -63,10 +59,14 @@ public class Led3D {
     group = new BranchGroup();
     // Position viewer, so we are looking at object
     trans3D = new Transform3D();
-    trans3D.lookAt(eye, look, lookVect);
-	trans3D.invert();
+	Matrix4d mat = new Matrix4d();
+	mat.setRow(0, 0.744, 0.0237, -0.66756, -0.34);
+	mat.setRow(1, 0.136, -0.9837, 0.117, 3.24);
+	mat.setRow(2, -0.6536, -0.1785, -0.735, -8.32);
+	mat.setRow(3, 0.0, 0.0, 0.0, 1.0);
+	trans3D.set(mat);
+
 	transGroup = new TransformGroup(trans3D);
-    transGroup = new TransformGroup();
     ViewingPlatform viewingPlatform = new ViewingPlatform();
     transGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
     transGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
@@ -76,8 +76,6 @@ public class Led3D {
     Viewer viewer = new Viewer(canvas);
     universe = new SimpleUniverse(viewingPlatform, viewer);
     group.addChild(transGroup);
-    universe.getViewingPlatform().getViewPlatformTransform().setTransform(trans3D);
-    // universe.getViewingPlatform().setNominalViewingTransform();
 	universe.addBranchGraph(group); // Add group to universe
 
     BoundingBox boundBox = new BoundingBox(new Point3d(-5.0, -5.0, -5.0), new Point3d(13.0, 13.0, 13.0));
