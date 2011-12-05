@@ -4,7 +4,7 @@
 *
 * Copyright 2011 Thomas Buck <xythobuz@me.com>
 * Copyright 2011 Max Nuding <max.nuding@gmail.com>
-* Copyright 2011 Felix Bäder <baeder.felix@gmail.com>
+* Copyright 2011 Felix BÃ¤der <baeder.felix@gmail.com>
 *
 * This file is part of LED-Cube.
 *
@@ -47,7 +47,7 @@ public class frame extends JFrame implements ListSelectionListener {
   private JButton editG = new JButton();
   private JButton editH = new JButton();
   private DefaultListModel frameListModel = new DefaultListModel();
-  private JList frameList = new JList();
+  public JList frameList = new JList();
   private JScrollPane frameListScrollPane = new JScrollPane(frameList);
   private JButton frameUp = new JButton();
   private JButton frameDown = new JButton();
@@ -101,27 +101,27 @@ public class frame extends JFrame implements ListSelectionListener {
   }
 
   public void valueChanged(ListSelectionEvent evt) {
-	if ((!evt.getValueIsAdjusting()) && ((evt.getSource() == animList) || (evt.getSource() == frameList))) {
-		// If animList or framsList is the source, we act...
+  if ((!evt.getValueIsAdjusting()) && ((evt.getSource() == animList) || (evt.getSource() == frameList))) {
+    // If animList or framsList is the source, we act...
 
-		// If both selections are valid, update frame duration and set 3D data
-		if ((animList.getSelectedIndex() != -1) && (frameList.getSelectedIndex() != -1)) {
-			ledView.setData(worker.getFrame(animList.getSelectedIndex(), frameList.getSelectedIndex()));
-			frmLngthTxt.setText(Integer.toString(worker.getFrameTime(animList.getSelectedIndex(), frameList.getSelectedIndex())));
-		} else {
-			// clear frame duration
-			frmLngthTxt.setText("");
-		}
+    // If both selections are valid, update frame duration and set 3D data
+    if ((animList.getSelectedIndex() != -1) && (frameList.getSelectedIndex() != -1)) {
+      ledView.setData(worker.getFrame(animList.getSelectedIndex(), frameList.getSelectedIndex()));
+      frmLngthTxt.setText(Integer.toString(worker.getFrameTime(animList.getSelectedIndex(), frameList.getSelectedIndex())));
+    } else {
+      // clear frame duration
+      frmLngthTxt.setText("");
+    }
 
-		if ((evt.getSource() == animList) && (animList.getSelectedIndex() != -1)) {
-			// animList selection changed, update frameList
-			frameListModel.clear();
-			for (int i = 0; i < worker.numOfFrames(animList.getSelectedIndex()); i++) {
-				frameListModel.addElement(worker.getFrameName(animList.getSelectedIndex(), i));
-			}
-			frameList.setModel(frameListModel);
-		}
-	}
+    if ((evt.getSource() == animList) && (animList.getSelectedIndex() != -1)) {
+      // animList selection changed, update frameList
+      frameListModel.clear();
+      for (int i = 0; i < worker.numOfFrames(animList.getSelectedIndex()); i++) {
+        frameListModel.addElement(worker.getFrameName(animList.getSelectedIndex(), i));
+      }
+      frameList.setModel(frameListModel);
+    }
+  }
   }
 
   private void save() {
@@ -175,12 +175,12 @@ public class frame extends JFrame implements ListSelectionListener {
     cp.setLayout(null);
     // Anfang Komponenten
 
-	// ledView init
-	short[] dat = new short[64];
-	for (int i = 0; i < dat.length; i++) {
-		dat[i] = 0xFF;
-	}
-	ledView.setData(dat);
+  // ledView init
+  short[] dat = new short[64];
+  for (int i = 0; i < dat.length; i++) {
+    dat[i] = 0xFF;
+  }
+  ledView.setData(dat);
 
     //----- 3D-----
     //-------------
@@ -504,7 +504,7 @@ public class frame extends JFrame implements ListSelectionListener {
     frameList.setFont(new Font("Dialog", Font.PLAIN, 13));
     // Ende Komponenten
     animList.addListSelectionListener(this);
-	frameList.addListSelectionListener(this);
+  frameList.addListSelectionListener(this);
     setResizable(false);
     setVisible(true);
   }
@@ -519,7 +519,8 @@ public class frame extends JFrame implements ListSelectionListener {
      } else if(frameList.getSelectedIndex() == -1){
        errorMessage("Please select a frame.");
      } else {
-       layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 0, worker);
+       layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 0, worker, this);
+
      }
   }
 
@@ -529,7 +530,7 @@ public class frame extends JFrame implements ListSelectionListener {
      } else if(frameList.getSelectedIndex() == -1){
        errorMessage("Please select a frame.");
      } else {
-       layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 1, worker);
+       layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 1, worker, this);
      }
   }
 
@@ -539,7 +540,7 @@ public class frame extends JFrame implements ListSelectionListener {
      } else if(frameList.getSelectedIndex() == -1){
        errorMessage("Please select a frame.");
      } else {
-       layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 2, worker);
+       layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 2, worker, this);
      }
   }
 
@@ -549,7 +550,7 @@ public class frame extends JFrame implements ListSelectionListener {
      } else if(frameList.getSelectedIndex() == -1){
        errorMessage("Please select a frame.");
      } else {
-       layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 3, worker);
+       layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 3, worker, this);
      }
   }
 
@@ -559,7 +560,7 @@ public class frame extends JFrame implements ListSelectionListener {
      } else if(frameList.getSelectedIndex() == -1){
        errorMessage("Please select a frame.");
      } else {
-       layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 4, worker);
+       layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 4, worker, this);
      }
   }
 
@@ -569,7 +570,7 @@ public class frame extends JFrame implements ListSelectionListener {
      } else if(frameList.getSelectedIndex() == -1){
        errorMessage("Please select a frame.");
      } else {
-       layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 5, worker);
+       layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 5, worker, this);
      }
   }
 
@@ -579,7 +580,7 @@ public class frame extends JFrame implements ListSelectionListener {
      } else if(frameList.getSelectedIndex() == -1){
        errorMessage("Please select a frame.");
      } else {
-       layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 6, worker);
+       layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 6, worker, this);
      }
   }
 
@@ -589,7 +590,7 @@ public class frame extends JFrame implements ListSelectionListener {
      } else if(frameList.getSelectedIndex() == -1){
        errorMessage("Please select a frame.");
      } else {
-       layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 7, worker);
+       layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 7, worker, this);
      }
   }
 
@@ -761,58 +762,58 @@ public class frame extends JFrame implements ListSelectionListener {
   }
 
   public Led3D get3D() {
-	  return ledView;
+    return ledView;
   }
 
   public static void main(String[] args) {
     frame f = new frame("Cube Control");
-	Led3D l = f.get3D();
-	java.util.Scanner sc = new java.util.Scanner(System.in);
+  Led3D l = f.get3D();
+  java.util.Scanner sc = new java.util.Scanner(System.in);
 
-	System.out.println("## Cube Control Debug Console ##");
-	System.out.println("Enter a Command ('h' for help)\n");
-	
-	System.out.print("$> ");
+  System.out.println("## Cube Control Debug Console ##");
+  System.out.println("Enter a Command ('h' for help)\n");
+  
+  System.out.print("$> ");
 
-	do {
-		if (sc.hasNext()) {
-			String s = sc.next();
-			
-			if (s.equals("p") || (s.equals("print")))
-				l.printTranslationData();
+  do {
+    if (sc.hasNext()) {
+      String s = sc.next();
+      
+      if (s.equals("p") || (s.equals("print")))
+        l.printTranslationData();
 
-			if (s.equals("q") || s.equals("quit"))
-				System.exit(0);
+      if (s.equals("q") || s.equals("quit"))
+        System.exit(0);
 
-			if (s.equals("on") || s.equals("1")) {
-				short[] d = new short[64];
-				for (int i = 0; i < d.length; i++) {
-					d[i] = 0xFF;
-				}
-				l.setData(d);
-				System.out.println("All LEDs on now...");
-			}
+      if (s.equals("on") || s.equals("1")) {
+        short[] d = new short[64];
+        for (int i = 0; i < d.length; i++) {
+          d[i] = 0xFF;
+        }
+        l.setData(d);
+        System.out.println("All LEDs on now...");
+      }
 
-			if (s.equals("off") || s.equals("0")) {
-				short[] d = new short[64];
-				for (int i = 0; i < d.length; i++) {
-					d[i] = 0x00;
-				}
-				l.setData(d);
-				System.out.println("All LEDs off now...");
-			}
+      if (s.equals("off") || s.equals("0")) {
+        short[] d = new short[64];
+        for (int i = 0; i < d.length; i++) {
+          d[i] = 0x00;
+        }
+        l.setData(d);
+        System.out.println("All LEDs off now...");
+      }
 
-			if (s.equals("h") || (s.equals("help"))) {
-				System.out.println("Commands:");
-				System.out.println("\t'on'    / '1'\t:\tToggle all LEDs on");
-				System.out.println("\t'off'   / '0'\t:\tToggle all LEDs off");
-				System.out.println("\t'print' / 'p'\t:\tPrint 3D Translation Matrix Data");
-				System.out.println("\t'help'  / 'h'\t:\tShow this message");
-				System.out.println("\t'quit'  / 'q'\t:\tExit Cube Control");
-			}
+      if (s.equals("h") || (s.equals("help"))) {
+        System.out.println("Commands:");
+        System.out.println("\t'on'    / '1'\t:\tToggle all LEDs on");
+        System.out.println("\t'off'   / '0'\t:\tToggle all LEDs off");
+        System.out.println("\t'print' / 'p'\t:\tPrint 3D Translation Matrix Data");
+        System.out.println("\t'help'  / 'h'\t:\tShow this message");
+        System.out.println("\t'quit'  / 'q'\t:\tExit Cube Control");
+      }
 
-			System.out.print("$> ");
-		}
-	} while (true);
+      System.out.print("$> ");
+    }
+  } while (true);
   }
 }
