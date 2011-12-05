@@ -4,7 +4,7 @@
 *
 * Copyright 2011 Thomas Buck <xythobuz@me.com>
 * Copyright 2011 Max Nuding <max.nuding@gmail.com>
-* Copyright 2011 Felix Bäder <baeder.felix@gmail.com>
+* Copyright 2011 Felix BÃ¤der <baeder.felix@gmail.com>
 *
 * This file is part of LED-Cube.
 *
@@ -42,13 +42,15 @@ public class layerEditFrame extends JFrame {
   cubeWorker worker = null;
   int animI;
   int frameI;
+  frame LedFrame;
 
   // Ende Attribute
 
-  public layerEditFrame(int animIndex, int frameIndex, int layerIndex, cubeWorker work) {
+  public layerEditFrame(int animIndex, int frameIndex, int layerIndex, cubeWorker work, frame LEDframe) {
     // Frame-Initialisierung
     super("Layer Edit");
     worker = work;
+    LedFrame = LEDframe;
     animI = animIndex;
     frameI = frameIndex;
     //frame =  byteToShortArray(worker.getFrame(animIndex, frameIndex));
@@ -144,8 +146,12 @@ public class layerEditFrame extends JFrame {
     }
 
   }
+  
+   public boolean isFinished(){
+     return finish;
+   }
 
-   short[] getFinalFrame(){
+   public short[] getFinalFrame(){
       if (finish == false) {
         return null;
       }
@@ -184,8 +190,9 @@ public class layerEditFrame extends JFrame {
       reihe = 0;
     }
       frame = tmpFrame;
-      //worker.setFrame(shortToByteArray(frame), animI, frameI);
       worker.setFrame(frame, animI, frameI);
+      ListSelectionEvent layerChanged = new ListSelectionEvent(LedFrame.frameList, LedFrame.frameList.getSelectedIndex(), LedFrame.frameList.getSelectedIndex(), false);
+      LedFrame.valueChanged(layerChanged);
       dispose();
   }
   
@@ -217,6 +224,5 @@ public class layerEditFrame extends JFrame {
     }
   }
 }
-
 
 
