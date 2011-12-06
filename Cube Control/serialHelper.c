@@ -122,6 +122,8 @@ int main(int argc, char *argv[]) {
 
 		} else {
 			printf("Unrecognized Option: %s\n", argv[1]);
+			usage(argv[0]);
+			return 1;
 		}
 
 		free(fileData);

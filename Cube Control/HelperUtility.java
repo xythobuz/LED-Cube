@@ -80,15 +80,20 @@ public class HelperUtility {
 				}
 			}
 			Process p = Runtime.getRuntime().exec(helperName);
-			BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()), 256);
 			String line;
-			boolean fin = false;
-
-			while ((line = br.readLine()) != null) {
-				ret = ret + line + "\n";
-			}
+			boolean fin;
 			
-			p.waitFor();
+			do {
+				fin = true;
+				try {
+					System.out.println("Returned " + p.waitFor());
+				} catch(InterruptedException e) {
+					// repeat
+					System.out.println("We got interrupted...");
+					fin = false;
+				}
+			} while (fin != true);
 
 			while ((line = br.readLine()) != null) {
 				ret = ret + line + "\n";
