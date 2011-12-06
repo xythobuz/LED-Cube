@@ -367,6 +367,15 @@ public class cubeWorker {
     }
 
 	/**
+	 * Try to speak with the cube.
+	 * @return TRUE if cube responds
+	 * @param port Name of serial port
+	 */
+	public boolean probeCubeConnected(String port) {
+		return false;
+	}
+
+	/**
 	 * Get the names of all available serial ports.
 	 * @return Array of port names. First entry is always "Select serial port..."
 	 */

@@ -742,7 +742,13 @@ public class Frame extends JFrame implements ListSelectionListener {
          if (jComboBox1.getSelectedItem().equals("Select serial port...")) {
             errorMessage("No serial port selected...");
          } else {
-           worker.uploadState((String)jComboBox1.getSelectedItem());
+			 if (worker.probeCubeConnected((String)jComboBox1.getSelectedItem())) {
+				 if (worker.uploadState((String)jComboBox1.getSelectedItem()) != 0) {
+					 errorMessage("Could not upload data!");
+				 }
+			 } else {
+				 errorMessage("Cube does not respond...");
+			 }
          }
   }
 
