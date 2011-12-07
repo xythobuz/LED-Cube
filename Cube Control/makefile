@@ -18,6 +18,12 @@ INJAR = *.class *.png serialHelper.exe
 RM = del
 endif
 
+#I always get 'missing separator', can somebody fix this?
+#Cygwin needs the .exe file, but the rm command!
+#ifeq($(TARGET), cygwin)
+#RM = rm
+#endif
+
 # Spit out jar file, documentation, delete intermediate files
 all: build doc clean
 
