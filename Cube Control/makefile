@@ -2,19 +2,19 @@ JAVAC = javac
 JAVADOC = javadoc
 DOCDIR = doc
 CC = gcc
-TARGET = unix
-#TARGET= cygwin
+#TARGET = unix
+TARGET= cygwin
 #TARGET = win
 
 # Java files to be compiled
 # Needs to be a complete list so they work as target
 JAVAFILES = HelperUtility.java AnimationUtility.java Animation.java AFrame.java cubeWorker.java layerEditFrame.java Led3D.java Frame.java
 
-ifeq ($(TARGET),win)
-INJAR = *.class *.png serialHelper.exe
+ifeq ($(TARGET),unix)
+INJAR = *.class *.png serialHelper
 RM = del
 else
-INJAR = *.class *.png serialHelper
+INJAR = *.class *.png serialHelper.exe
 RM = rm
 endif
 
@@ -39,20 +39,20 @@ doc/index.html: $(JAVAFILES)
 	$(JAVADOC) -d $(DOCDIR) $(JAVAFILES)
 
 # Compile serial Helper
-ifeq ($(TARGET),win)
-serialHelper: serialHelper.c helper/winSerial.c
-	$(CC) -o serialHelper.exe -D winHelper serialHelper.c
-else
+ifeq ($(TARGET),unix)
 serialHelper: serialHelper.c helper/unixSerial.c
 	$(CC) -o serialHelper serialHelper.c
+else
+serialHelper: serialHelper.c helper/winSerial.c
+	$(CC) -o serialHelper.exe -D winHelper serialHelper.c
 endif
 
 # Delete intermediate files
 clean:
-ifeq ($(TARGET),win)
-	$(RM) *.class
-	$(RM) serialHelper.exe
-else
+ifeq ($(TARGET),unix)
 	$(RM) -f *.class
 	$(RM) -f serialHelper
+else
+	$(RM) *.class
+	$(RM) serialHelper.exe
 endif
