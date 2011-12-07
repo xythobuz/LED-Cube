@@ -72,8 +72,8 @@ public class Frame extends JFrame implements ListSelectionListener {
   private JButton download = new JButton();
   private JLabel jLabel4 = new JLabel();
   private JTextField frameRemaining = new JTextField();
-  private JLabel frmLngthLbl = new JLabel();
-  private JTextField frmLngthTxt = new JTextField();
+  private JLabel frameLengthLabel = new JLabel();
+  private JTextField frameLengthText = new JTextField();
   private JButton frameDuration = new JButton();
   // Ende Attribute
 
@@ -107,10 +107,10 @@ public class Frame extends JFrame implements ListSelectionListener {
     // If both selections are valid, update Frame duration and set 3D data
     if ((animList.getSelectedIndex() != -1) && (frameList.getSelectedIndex() != -1)) {
       ledView.setData(worker.getFrame(animList.getSelectedIndex(), frameList.getSelectedIndex()));
-      frmLngthTxt.setText(Integer.toString(worker.getFrameTime(animList.getSelectedIndex(), frameList.getSelectedIndex())));
+      frameLengthText.setText(Integer.toString(worker.getFrameTime(animList.getSelectedIndex(), frameList.getSelectedIndex())));
     } else {
       // clear Frame duration
-      frmLngthTxt.setText("");
+      frameLengthText.setText("");
     }
 
     if ((evt.getSource() == animList) && (animList.getSelectedIndex() != -1)) {
@@ -142,6 +142,7 @@ public class Frame extends JFrame implements ListSelectionListener {
   public Frame(String title) {
     // Frame-Initialisierung
     super(title);
+    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
     String[] sPorts = worker.getSerialPorts();
     for(int i = 0; i < sPorts.length; i++){
@@ -328,15 +329,15 @@ public class Frame extends JFrame implements ListSelectionListener {
       }
     });
 
-    frmLngthLbl.setBounds(536, 160, 113, 24);
-    frmLngthLbl.setText("Time (1/24 sec)");
-    frmLngthLbl.setFont(new Font("Dialog", Font.PLAIN, 13));
-    cp.add(frmLngthLbl);
+    frameLengthLabel.setBounds(536, 160, 113, 24);
+    frameLengthLabel.setText("Time (1/24 sec)");
+    frameLengthLabel.setFont(new Font("Dialog", Font.PLAIN, 13));
+    cp.add(frameLengthLabel);
 
-    frmLngthTxt.setBounds(536, 184, 50, 24);
-    frmLngthTxt.setText("");
-    frmLngthTxt.setFont(new Font("Dialog", Font.PLAIN, 13));
-    cp.add(frmLngthTxt);
+    frameLengthText.setBounds(536, 184, 50, 24);
+    frameLengthText.setText("");
+    frameLengthText.setFont(new Font("Dialog", Font.PLAIN, 13));
+    cp.add(frameLengthText);
 
   frameDuration.setBounds(590, 184, 50, 24);
   frameDuration.setText("OK");
@@ -344,12 +345,12 @@ public class Frame extends JFrame implements ListSelectionListener {
   cp.add(frameDuration);
   frameDuration.addActionListener(new ActionListener() {
     public void actionPerformed(ActionEvent evt) {
-      if (frmLngthTxt.getText().equals("0")) {
+      if (frameLengthText.getText().equals("0")) {
         errorMessage("0 is not a valid value!");
-        frmLngthTxt.setText("1");
-      } else if (Integer.parseInt(frmLngthTxt.getText()) > 256) {
+        frameLengthText.setText("1");
+      } else if (Integer.parseInt(frameLengthText.getText()) > 256) {
         errorMessage("Value too high. Max: 256");
-        frmLngthTxt.setText("256");
+        frameLengthText.setText("256");
         return;
       } else {
         if (animList.getSelectedIndex() == -1) {
@@ -360,7 +361,7 @@ public class Frame extends JFrame implements ListSelectionListener {
           errorMessage("Please select a Frame!");
           return;
         }
-        worker.setFrameTime((byte)(Integer.parseInt(frmLngthTxt.getText()) - 1), animList.getSelectedIndex(), frameList.getSelectedIndex());
+        worker.setFrameTime((byte)(Integer.parseInt(frameLengthText.getText()) - 1), animList.getSelectedIndex(), frameList.getSelectedIndex());
       }
     }
   });
@@ -742,13 +743,13 @@ public class Frame extends JFrame implements ListSelectionListener {
          if (jComboBox1.getSelectedItem().equals("Select serial port...")) {
             errorMessage("No serial port selected...");
          } else {
-			 if (worker.probeCubeConnected((String)jComboBox1.getSelectedItem())) {
-				 if (worker.uploadState((String)jComboBox1.getSelectedItem()) != 0) {
-					 errorMessage("Could not upload data!");
-				 }
-			 } else {
-				 errorMessage("Cube does not respond...");
-			 }
+       if (worker.probeCubeConnected((String)jComboBox1.getSelectedItem())) {
+         if (worker.uploadState((String)jComboBox1.getSelectedItem()) != 0) {
+           errorMessage("Could not upload data!");
+         }
+       } else {
+         errorMessage("Cube does not respond...");
+       }
          }
   }
 
@@ -800,26 +801,26 @@ public class Frame extends JFrame implements ListSelectionListener {
         System.out.println("All LEDs off now...");
       }
 
-	  if (s.equals("e") || s.equals("exec")) {
-  	  		System.out.println(HelperUtility.runHelper(new String[0]));
-	  }
+    if (s.equals("e") || s.equals("exec")) {
+          System.out.println(HelperUtility.runHelper(new String[0]));
+    }
 
-	  if (s.startsWith("e ") || s.startsWith("exec ")) {
-			int pos = 0;
-			while (s.charAt(pos) != ' ') {
-				pos++;
-			}
-			String[] arr = new String[1];
-			arr[0] = s.substring(pos + 1);
-			System.out.println(HelperUtility.runHelper(arr));
-	  }
+    if (s.startsWith("e ") || s.startsWith("exec ")) {
+      int pos = 0;
+      while (s.charAt(pos) != ' ') {
+        pos++;
+      }
+      String[] arr = new String[1];
+      arr[0] = s.substring(pos + 1);
+      System.out.println(HelperUtility.runHelper(arr));
+    }
 
       if (s.equals("h") || (s.equals("help"))) {
         System.out.println("Commands:");
         System.out.println("\t'on'     / '1'\t:\tToggle all LEDs on");
         System.out.println("\t'off'    / '0'\t:\tToggle all LEDs off");
         System.out.println("\t'print'  / 'p'\t:\tPrint 3D Translation Matrix Data");
-		System.out.println("\t'exec'   / 'e'\t:\tExecute helper with given args");
+    System.out.println("\t'exec'   / 'e'\t:\tExecute helper with given args");
         System.out.println("\t'help'   / 'h'\t:\tShow this message");
         System.out.println("\t'quit'   / 'q'\t:\tExit Cube Control");
       }
