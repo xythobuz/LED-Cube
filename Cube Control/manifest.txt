@@ -1,1 +1,2 @@
 Main-Class: Frame
+Splashscreen-Image: splash.jpg
