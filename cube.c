@@ -85,15 +85,8 @@ inline void isrCall(void) {
 	}
 }
 
-inline void delay_ns(uint16_t ns) {
+inline void delay_ns(int16_t ns) {
 	// minimum 63 nanoseconds (= 1 tick)
-	uint16_t i = ns;
-	if (ns != 0) {
-		if (ns < 63) {
-			ns = 63;
-		}
-		for (; i > 0; i -= 63) {
-			asm volatile("nop"::);
-		}
-	}
+	for (ns > 0; ns -= 63)
+		asm volatile("nop"::);
 }
