@@ -11,10 +11,10 @@ TARGET = unix
 JAVAFILES = HelperUtility.java AnimationUtility.java Animation.java AFrame.java cubeWorker.java layerEditFrame.java Led3D.java Frame.java
 
 ifeq ($(TARGET),unix)
-INJAR = *.class *.png serialHelper splash.jpg
+INJAR = *.class *.png serialHelper
 RM = rm
 else
-INJAR = *.class *.png serialHelper.exe splash.jpg
+INJAR = *.class *.png serialHelper.exe
 RM = del
 endif
 
