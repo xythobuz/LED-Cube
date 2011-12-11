@@ -2,9 +2,9 @@ JAVAC = javac
 JAVADOC = javadoc
 DOCDIR = doc
 CC = gcc
-#TARGET = unix
+TARGET = unix
 #TARGET= cygwin
-TARGET = win
+#TARGET = win
 
 # Java files to be compiled
 # Needs to be a complete list so they work as target
@@ -18,11 +18,12 @@ INJAR = *.class *.png serialHelper.exe splash.jpg
 RM = del
 endif
 
-#I always get 'missing separator', can somebody fix this?
-#Cygwin needs the .exe file, but the rm command!
-#ifeq($(TARGET), cygwin)
-#RM = rm
-#endif
+# Cygwin needs the .exe file, but the rm command!
+# Don't add a space after the comma. You get 'missing separator'...
+# Also add a space after 'ifeq', else you get 'missing separator'...
+ifeq ($(TARGET),cygwin)
+RM = rm
+endif
 
 # Spit out jar file, documentation, delete intermediate files
 all: build doc clean
@@ -31,14 +32,14 @@ all: build doc clean
 doc: doc/index.html
 
 # Compile java files
-java: frame.class
+java: Frame.class
 
 # Spit out jar file, dont remove anything after that
-build: frame.class serialHelper
+build: Frame.class serialHelper
 	jar -cmf manifest.txt "Cube Control.jar" $(INJAR)
 
 # Compile java files
-frame.class: $(JAVAFILES)
+Frame.class: $(JAVAFILES)
 	$(JAVAC) $(JAVAFILES)
 
 doc/index.html: $(JAVAFILES)
@@ -55,10 +56,9 @@ endif
 
 # Delete intermediate files
 clean:
-ifeq ($(TARGET),unix)
-	$(RM) -f *.class
-	$(RM) -f serialHelper
-else
 	$(RM) *.class
+ifeq ($(TARGET),unix)
+	$(RM) serialHelper
+else
 	$(RM) serialHelper.exe
 endif
