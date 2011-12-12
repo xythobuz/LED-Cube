@@ -339,7 +339,7 @@ public class Frame extends JFrame implements ListSelectionListener {
     frameLengthText.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(frameLengthText);
 
-  frameDuration.setBounds(590, 184, 50, 24);
+  frameDuration.setBounds(590, 184, 60, 24);
   frameDuration.setText("OK");
   frameDuration.setFont(new Font("Dialog", Font.PLAIN, 13));
   cp.add(frameDuration);
@@ -815,12 +815,17 @@ public class Frame extends JFrame implements ListSelectionListener {
       System.out.println(HelperUtility.runHelper(arr));
     }
 
+	if (s.equals("r") || s.equals("reset")) {
+		l.resetView();
+	}
+
       if (s.equals("h") || (s.equals("help"))) {
         System.out.println("Commands:");
         System.out.println("\t'on'     / '1'\t:\tToggle all LEDs on");
         System.out.println("\t'off'    / '0'\t:\tToggle all LEDs off");
         System.out.println("\t'print'  / 'p'\t:\tPrint 3D Translation Matrix Data");
-    System.out.println("\t'exec'   / 'e'\t:\tExecute helper with given args");
+		System.out.println("\t'exec'   / 'e'\t:\tExecute helper with given args");
+		System.out.println("\t'reset'  / 'r'\t:\tReset rotation of cube");
         System.out.println("\t'help'   / 'h'\t:\tShow this message");
         System.out.println("\t'quit'   / 'q'\t:\tExit Cube Control");
       }

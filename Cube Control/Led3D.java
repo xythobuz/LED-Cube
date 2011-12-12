@@ -112,8 +112,8 @@ public class Led3D {
           transGroup.addChild(tg);
 
 		  drawLedFeetVertical((double)x, y + 0.5, (double)z, 0.9f, 0.01f);
-		  drawLedFeetHorizontal(x + 0.5, (double)y, (double)z, 0.9f, 0.01f, 0);
-
+		  if (x < 7)
+			  drawLedFeetHorizontal(x + 0.5, (double)y, (double)z, 0.9f, 0.01f, 0);
         }
       }
 	  // 8 times, use x as y
@@ -168,6 +168,19 @@ public class Led3D {
 		tg.addChild(c);
 
 		transGroup.addChild(tg);
+	}
+
+	/**
+	 * Rotate the cube back to its initial position.
+	 */
+	public void resetView() {
+		Matrix4d mat = new Matrix4d();
+		mat.setRow(0, 0.744, 0.0237, -0.66756, -0.34);
+		mat.setRow(1, 0.136, -0.9837, 0.117, 3.24);
+		mat.setRow(2, -0.6536, -0.1785, -0.735, -8.32);
+		mat.setRow(3, 0.0, 0.0, 0.0, 1.0);
+		trans3D.set(mat);
+		transGroup.setTransform(trans3D);
 	}
 
 	/**
