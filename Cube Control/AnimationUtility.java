@@ -131,17 +131,29 @@ public class AnimationUtility {
   }
 
   private static AFrame readFrame(Scanner sc, int index) {
-  AFrame frame = new AFrame();
-  frame.setName(sc.nextLine());
-  short[] d = {};
-  for (int i = 0; i < 8; i++) {
-    short[] data = hexConvert(sc.nextLine());
-    d = concat(data, d);
-  }
+    AFrame frame = new AFrame();
+    frame.setName(sc.nextLine());
+    short[] d = {};
+    for (int i = 0; i < 8; i++) {
+      short[] data = hexConvert(sc.nextLine());
+      d = concat(data, d);
+    }
+  
+  d = invert(d);
   frame.setData(d);
   d = hexConvert(sc.nextLine());
   frame.setTime(d[0]);
   return frame;
+  }
+  
+  private static short[] invert(short[] a){
+    short[] tmp = new short[a.length];
+    int j = 0;
+    for(int i = a.length-1; i >= 0; i--){
+      tmp[j] = a[i];
+      j++;
+    }
+    return tmp;
   }
 
   private static short[] concat(short[] a, short[] b) {
