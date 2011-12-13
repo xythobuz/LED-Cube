@@ -20,16 +20,19 @@
  * You should have received a copy of the GNU General Public License
  * along with LED-Cube.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <stdint.h>
+
 
 // Time one latch is active in ns
 #define LATCHDELAY 63
 
-extern volatile uint8_t **imgBuffer; // imgBuffer[8][8]
-extern volatile uint8_t imgFlag;
+/*
+ * Call init(). A picture you set a new picture it will be displayed.
+ * After the last part is applied to the latches, isFinished() will change
+ * to 1. Now you can place a new picture here.
+ */
+extern void init(void);
 
-extern void setFet(uint8_t data);
-extern void selectLatch(uint8_t latchNr);
-extern void setLatch(uint8_t latchNr, uint8_t data);
-extern void isrCall(void);
-extern void delay_ns(uint16_t ns);
+// Copies the data in img into its own buffer, so free img afterwards...
+extern void setImage(uint8_t **img); // img[8][8]
+extern uint8_t isFinished(void);
+extern void close(void);

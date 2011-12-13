@@ -24,6 +24,7 @@
 #include <avr/interrupt.h>
 #include <stdlib.h>
 
+#include "uart.h"
 #include "cube.h"
 
 #ifndef F_CPU
@@ -32,9 +33,62 @@
 
 volatile uint8_t _isrCounter = 0;
 volatile uint8_t **imgBuffer = NULL; // imgBuffer[8][8]
+volatile uint8_t changedFlag = 0;
 volatile uint8_t imgFlag = 0;
+volatile uint8_t layer = 0;
 
-// Wir zählen 21 mal bis 3968
+inline void delay_ns(int16_t ns);
+inline void isrCall(void);
+
+void setImage(uint8_t **img) {
+	uint8_t i = 0, j;
+
+	changedFlag = 1;
+	for (; i < 8; i++) {
+		for (j = 0; j < 8; j++) {
+			imgBuffer[i][j] = img[i][j];
+		}
+	}
+}
+
+uint8_t isFinished(void) {
+	return imgFlag;
+}
+
+void init(void) {
+	uint8_t ctr = 0;
+	DDRD = 0xFF; // Mosfets as Output
+	DDRB = 0xFF;
+	DDRC = 0xFF; // Latch Enable
+	DDRA = 0xFF; // Latch Data
+
+	TCCR1A |= (1 << WGM12); // CTC Mode
+	TCCR1B |= (1 << CS10); // No prescaler
+	OCR1A = 3968;
+	TIMSK = (1 << OCIE1A); // Enable Overflow Interrupt
+
+	// We just assume this works, because after reset,
+	// enough Memory should be available...
+	imgBuffer = malloc(8 * sizeof(uint8_t*));
+
+	for(ctr = 0; ctr < 8; ctr++) {
+		// Same reasoning here...
+		imgBuffer[ctr] = malloc(8 * sizeof(uint8_t));
+	}
+
+	sei(); // Enable Interrupts
+}
+
+void close(void) {
+	uint8_t ctr = 0;
+	for (; ctr < 8; ctr++) {
+		free((uint8_t *)imgBuffer[ctr]);
+	}
+	free(imgBuffer);
+	TIMSK &= ~(1 << OCIE1A); // Disable interrupt
+}
+
+// Count to 3968 21 times...
 ISR(TIMER1_COMPA_vect) {
 	if (_isrCounter < 20) {
 		_isrCounter++;
@@ -44,15 +98,14 @@ ISR(TIMER1_COMPA_vect) {
 	}
 }
 
+// Data is sent to 8 Fet bits...
 inline void setFet(uint8_t data) {
-	data &= ~((1 << 1) | 1);
-	PORTD = data;
-	data &= ~(3);
-	data = data << 3;
-	PORTB |= data;
+	PORTD = (data & ~(3)); // Doesn't interfere with serial communication...
+	PORTB &= ~(24);
+	PORTB |= ((data << 3) & 24);
 }
 
-
+// Give id of latch, 0 - 7
 inline void selectLatch(uint8_t latchNr) {
 	PORTC = 0;
 	if (latchNr < 8) {
@@ -70,9 +123,15 @@ inline void setLatch(uint8_t latchNr, uint8_t data) {
 }
 
 inline void isrCall(void) {
-	static uint8_t layer = 0;
 	uint8_t latchCtr = 0;
-	
+
+	if (changedFlag != 0) {
+		// The picture changed. Restart!
+		layer = 0;
+		imgFlag = 0;
+		changedFlag = 0;
+	}
+
 	for (; latchCtr < 8; latchCtr++) {
 		setLatch(latchCtr, imgBuffer[layer][latchCtr]); // Put out all the data
 	}
@@ -82,11 +141,12 @@ inline void isrCall(void) {
 		layer++;
 	} else {
 		layer = 0;
+		imgFlag = 1; // Finished
 	}
 }
 
 inline void delay_ns(int16_t ns) {
 	// minimum 63 nanoseconds (= 1 tick)
-	for (ns > 0; ns -= 63)
+	for (;ns > 0; ns -= 63)
 		asm volatile("nop"::);
 }
