@@ -136,17 +136,16 @@ public class AnimationUtility {
     short[] d = {};
     for (int i = 0; i < 8; i++) {
       short[] data = hexConvert(sc.nextLine());
-      d = concat(data, d);
+      d = concat(d, data);
     }
   
-  d = invert(d);
-  frame.setData(d);
-  d = hexConvert(sc.nextLine());
-  frame.setTime(d[0]);
-  return frame;
+    frame.setData(d);
+    d = hexConvert(sc.nextLine());
+    frame.setTime(d[0]);
+    return frame;
   }
   
-  private static short[] invert(short[] a){
+  /*private static short[] invert(short[] a){
     short[] tmp = new short[a.length];
     int j = 0;
     for(int i = a.length-1; i >= 0; i--){
@@ -154,7 +153,7 @@ public class AnimationUtility {
       j++;
     }
     return tmp;
-  }
+  }*/
 
   private static short[] concat(short[] a, short[] b) {
   short[] c = new short[a.length + b.length];
