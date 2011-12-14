@@ -2,8 +2,8 @@ JAVAC = javac
 JAVADOC = javadoc
 DOCDIR = doc
 CC = gcc
-TARGET = unix
-#TARGET= cygwin
+#TARGET = unix
+TARGET= cygwin
 #TARGET = win
 
 # Java files to be compiled
@@ -26,7 +26,7 @@ RM = rm
 endif
 
 # Spit out jar file, documentation, delete intermediate files
-all: build doc clean
+all: build clean
 
 # Generate Documentation
 doc: doc/index.html
