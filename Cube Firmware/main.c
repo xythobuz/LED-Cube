@@ -32,16 +32,23 @@
 #endif
 
 int main(void) {
-	
-	init(); // Initialize Cube Low-Level Code
+	uint8_t i;
+
+	// init(); // Initialize Cube Low-Level Code
 	uart_init(UART_BAUD_SELECT(19200, 16000000L)); // Initialize Serial
 
 	// Blink led :)
 	while (1) {
-		PORTB |= (1 << PB0);
+		/* PORTB |= (1 << PB0);
 		_delay_ms(1000);
 		PORTB &= ~(1 << PB0);
-		_delay_ms(1000);
+		_delay_ms(1000); */
+		for (i = 0; i < 8; i++) {
+			setFet(1 << i);
+			_delay_ms(500);
+		}
+		setFet(0);
+		_delay_ms(10000);
 	}
 
 	close();

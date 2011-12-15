@@ -36,3 +36,7 @@ extern void init(void);
 extern void setImage(uint8_t **img); // img[8][8]
 extern uint8_t isFinished(void);
 extern void close(void);
+
+// For debugging, not normal operation:
+extern void setFet(uint8_t data);
+extern void setLatch(uint8_t latchNr, uint8_t data);
