@@ -22,6 +22,8 @@
  */
 #include <stdlib.h>
 #include <stdio.h>
+#include <jni.h>
+#include "serialInterface.h"
 
 #ifdef winHelper
 #include "helper/winSerial.c"
@@ -29,200 +31,42 @@
 #include "helper/unixSerial.c"
 #endif
 
-char *fileData = NULL;
-
-void removeFromBeginning(size_t size, size_t remove);
-size_t readFile(char *path);
-size_t getFileSize(FILE *fp);
-void usage(char *name);
-int parseNumber(char *s);
-int power(int num, int pow);
-void printFileData(size_t size);
-void printSerialPorts(char ** ports);
-
-/*
-Return values:
-0: Success
-1: Usage error
-2: Serial Port Error
-3: Data File Error
-*/
-
-int main(int argc, char *argv[]) {
-	size_t length, written;
-
-		// printf("Debugging Worker... Ignore me!\n");
-
-		if (argc < 2) {
-			usage(argv[0]);
-			return 1;
+JNIEXPORT jstring JNICALL Java_HelperUtility_getPorts(JNIEnv *env, jclass class) {
+	char **ports = getSerialPorts();
+	char *string = NULL;
+	int length = 0, leng2 = 0, lengthabs = 0;;
+	while (ports[length] != NULL) {
+		while (ports[length][leng2] != '\0') {
+			leng2++;
 		}
-
-		if (argv[1][0] == 'p') {
-
-			if (argc != 2) {
-				usage(argv[0]);
-				return 1;
-			}
-			char** ports = getSerialPorts();
-			printSerialPorts(ports);
-			free(ports);
-			return 0;
-
-		} else if (argv[1][0] == 'w') {
-
-			if (argc != 4) {
-				usage(argv[0]);
-				return 1;
-			}
-			if (serialOpen(argv[2]) != 0) {
-				printf("Error: Could not open %s\n", argv[1]);
-				return 2;
-			}
-			// write file to com port
-			length = readFile(argv[3]);
-			if (length == 0) {
-				printf("Error while reading %s\n", argv[2]);
-				return 3;
-			}
+		lengthabs += leng2;
+		leng2 = 0;
+		length++;
+	}
 	
-			written = serialWrite(fileData, length);
-			while (written < length) {
-				removeFromBeginning(length, written);
-				length -= written;
-				written = serialWrite(fileData, length);
-			}
-
-		} else if (argv[1][0] == 'r') {
-
-			if (argc != 4) {
-				usage(argv[0]);
-				return 1;
-			}
-			if (serialOpen(argv[2]) != 0) {
-				printf("Error: Could not open %s\n", argv[1]);
-				return 2;
-			}
-			// Read from com port to file
-			if (argc < 5) {
-				printf("No size given. ");
-				usage(argv[0]);
-				return 1;
-			}
-			
-			length = parseNumber(argv[3]);
-			fileData = (char *)malloc(length * sizeof(char));
-			// fill fileData with serial Port data
-			written = 0;
-			while (written < length) {
-				written = serialRead(fileData + written, length - written);
-			}
-
-			printFileData(length);
-
-		} else {
-			printf("Unrecognized Option: %s\n", argv[1]);
-			usage(argv[0]);
-			return 1;
+	length += lengthabs;
+	string = (char *)malloc((length * sizeof(char)) + 1);
+	
+	length = 0;
+	lengthabs = 0;
+	while (ports[length] != NULL) {
+		leng2 = 0;
+		while (ports[length][leng2] != '\0') {
+			string[lengthabs++] = ports[length][leng2++];
 		}
-
-		free(fileData);
-		fileData = NULL;
-		serialClose();
-		return 0;
-	// }
-}
-
-void removeFromBeginning(size_t size, size_t remove) {
-	size_t i;
-	char *tmp = (char *)malloc((size - remove) * sizeof(char));
-
-	for (i = 0; i < (size - remove); i++) {
-		tmp[i] = fileData[i + remove];
+		string[lengthabs++] = '\n';
+		length++;
 	}
-	free(fileData);
-	fileData = tmp;
+	string[lengthabs] = '\0';
+
+	jstring ret = (*env)->NewStringUTF(env, string);
+	return ret;
 }
 
-size_t readFile(char *path) {
-	size_t size, i;
-	FILE *fp;
-
-	fp = fopen(path, "r");
-	if (!fp) {
-		return 0;
-	}
-
-	size = getFileSize(fp);
-	fileData = (char *)malloc(size * sizeof(char));
-	for (i = 0; i < size; i++) {
-		fileData[i] = fgetc(fp);
-	}
-
-	fclose(fp);
-	return size;
+JNIEXPORT jshortArray JNICALL Java_HelperUtility_readData(JNIEnv *env, jclass class, jint length) {
+	return NULL;
 }
 
-size_t getFileSize(FILE *fp) {
-	size_t size = 0;
-	int c;
-
-	fseek(fp, 0, 0); // Set file pointer to beginning
-	
-	do { // Calculate size
-		c = fgetc(fp);
-		size++;
-	} while (c != EOF);
-	size--;
-	
-	fseek(fp, 0, 0);
-
-	return size;
+JNIEXPORT void JNICALL Java_HelperUtility_writeData(JNIEnv *env, jclass class, jshortArray data, jint length) {
+	return;
 }
-
-void usage(char *name) {
-#ifdef winHelper
-	printf("Usage:\n%s r|w|p [COM1 [C:\\file\\to\\send.txt] [sizeToRead]]\n", name);
-#else
-	printf("Usage:\n%s r|w|p [/dev/SerialPort [/file/to/send] [sizeToRead]]\n", name);
-#endif
-}
-
-int parseNumber(char *s) {
-	int i, size = 0, result = 0;
-	while (*(s++) != '\0') {
-		size++;
-	}
-	for (i = 0; i < size; i++) {
-		result += (s[i] - '0') * power(10, (size - i));
-	}
-	return result;
-}
-
-int power(int num, int pow) {
-	int result = 1;
-	while (pow > 0) {
-		result *= num;
-		pow--;
-	}
-	return result;
-}
-
-void printFileData(size_t size) {
-	int i;
-	for (i = 0; i < size; i++) {
-		printf("%x", fileData[i]);
-		if (i % 8 == 0) {
-			printf("\n");
-		}
-	}
-}
-
-void printSerialPorts(char ** ports) {
-	int i = 0;
-	while (ports[i] != NULL) {
-		printf("%s\n", ports[i]);
-		i++;
-	}
-}
-

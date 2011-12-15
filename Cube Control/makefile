@@ -1,20 +1,23 @@
 JAVAC = javac
 JAVADOC = javadoc
+JAVAH = javah
 DOCDIR = doc
 CC = gcc
-#TARGET = unix
-TARGET= cygwin
+TARGET = unix
+#TARGET= cygwin
 #TARGET = win
+
+HEADERPATH = /System/Library/Frameworks/JavaVM.framework/Headers
 
 # Java files to be compiled
 # Needs to be a complete list so they work as target
 JAVAFILES = HelperUtility.java AnimationUtility.java Animation.java AFrame.java cubeWorker.java layerEditFrame.java Led3D.java Frame.java
 
 ifeq ($(TARGET),unix)
-INJAR = *.class *.png serialHelper
-RM = rm
+INJAR = *.class *.png
+RM = rm -f
 else
-INJAR = *.class *.png serialHelper.exe
+INJAR = *.class *.png
 RM = del
 endif
 
@@ -26,7 +29,7 @@ RM = rm
 endif
 
 # Spit out jar file, documentation, delete intermediate files
-all: build clean
+all: build
 
 # Generate Documentation
 doc: doc/index.html
@@ -35,7 +38,7 @@ doc: doc/index.html
 java: Frame.class
 
 # Spit out jar file, dont remove anything after that
-build: Frame.class serialHelper
+build: Frame.class libSerial
 	jar -cmf manifest.txt "Cube Control.jar" $(INJAR)
 
 # Compile java files
@@ -47,18 +50,27 @@ doc/index.html: $(JAVAFILES)
 
 # Compile serial Helper
 ifeq ($(TARGET),unix)
-serialHelper: serialHelper.c helper/unixSerial.c
-	$(CC) -o serialHelper serialHelper.c
+libSerial: serialInterface.h serialHelper.c helper/unixSerial.c
+	$(CC) -x c -I$(HEADERPATH) -c serialHelper.c -o serialHelper.o
+	$(CC) -dynamiclib -o libSerial.jnilib serialHelper.o
 else
-serialHelper: serialHelper.c helper/winSerial.c
-	$(CC) -o serialHelper.exe -D winHelper serialHelper.c
+libSerial: serialInterface.h serialHelper.c helper/winSerial.c
+	$(CC) -x c -I$(HEADERPATH) -c serialHelper.c -o serialHelper.o -D winHelper
+	$(CC) -dynamiclib -o libSerial.dll serialHelper.o
 endif
+
+serialInterface.h:
+	$(JAVAC) HelperUtility.java
+	$(JAVAH) -o serialInterface.h HelperUtility
 
 # Delete intermediate files
 clean:
 	$(RM) *.class
+	$(RM) *.h
+	$(RM) *.o
+	$(RM) *.jar
 ifeq ($(TARGET),unix)
-	$(RM) serialHelper
+	$(RM) *.jnilib
 else
-	$(RM) serialHelper.exe
+	$(RM) *.dll
 endif

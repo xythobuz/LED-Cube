@@ -134,6 +134,7 @@ char** namesInDev(int *siz) {
 		tmp[3] = 'v';
 		tmp[4] = '/';
 		files[i] = strncat(tmp, files[i], strlen(files[i]));
+		free(tmp);
 	}
 
 	*siz = size;

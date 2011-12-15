@@ -381,15 +381,7 @@ public class cubeWorker {
 	 */
     public String[] getSerialPorts() {
 		String[] ports = {"Select serial port..."};
-		String helperName;
-		if ((System.getProperty("os.name").toLowerCase()).indexOf("win") >= 0) {
-			helperName = "serialHelper.exe";
-		} else {
-			helperName = "serialHelper";
-		}
-		String[] arg = {"p"};
-		String portLines = HelperUtility.runHelper(arg);
-		// System.out.println("Output: " + portLines);
+		String portLines = HelperUtility.getPorts();
 		if (portLines == null) {
 			return ports;
 		}
