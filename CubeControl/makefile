@@ -44,7 +44,7 @@ libSerial.jnilib: serialHelper.c helper/unixSerial.c serialInterface.h
 
 Serial.dll: serialHelper.c helper/winSerial.c serialInterface.h
 	$(CC) -x c -I$(HEADERPATH) -c serialHelper.c -o serialHelper.o -D winHelper
-	$(CC) -shared -o Serial.dll serialHelper.o
+	$(CC) -dynamiclib -o Serial.dll serialHelper.o
 	del serialHelper.o
 
 doc/index.html: $(JAVAFILES)
