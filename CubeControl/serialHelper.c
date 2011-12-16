@@ -34,19 +34,31 @@
 JNIEXPORT jstring JNICALL Java_HelperUtility_getPorts(JNIEnv *env, jclass class) {
 	char **ports = getSerialPorts();
 	char *string = NULL;
-	int length = 0, leng2 = 0, lengthabs = 0;;
+	int length = 0, leng2 = 0, lengthabs = 0;
+
+	printf("JNI: Got serial ports...\n");
+
+	// Count how much memory we need for string of all ports, with \n in between
 	while (ports[length] != NULL) {
+		printf("JNI: Startin count...\n");
 		while (ports[length][leng2] != '\0') {
 			leng2++;
 		}
+		printf("JNI: Counted %s\n", ports[length]);
 		lengthabs += leng2;
 		leng2 = 0;
 		length++;
 	}
-	
 	length += lengthabs;
-	string = (char *)malloc((length * sizeof(char)) + 1);
-	
+
+	printf("JNI: Counted serial ports...\n");
+
+	string = (char *)malloc((length + 1) * sizeof(char));
+	if (string == NULL) {
+		printf("JNI: Not enough memory!\n");
+		return (*env)->NewStringUTF(env, NULL);
+	}
+
 	length = 0;
 	lengthabs = 0;
 	while (ports[length] != NULL) {

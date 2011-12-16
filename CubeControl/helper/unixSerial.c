@@ -114,7 +114,7 @@ char** namesInDev(int *siz) {
 		size++;
 	}
 	files = (char **)malloc((size + 1) * sizeof(char *));
-	files[size] = NULL;
+	files[size++] = NULL;
 	closedir(dir);
 	dir = opendir("/dev/");
 	while ((ent = readdir(dir)) != NULL) {
@@ -126,7 +126,7 @@ char** namesInDev(int *siz) {
 
 	char *tmp = NULL;
 	// Fix every string, addin /dev/ in front of it...
-	for (i = 0; i < size; i++) {
+	for (i = 0; i < (size - 1); i++) {
 		tmp = (char *)malloc((strlen(files[i]) + 6) * sizeof(char));
 		tmp[0] = '/';
 		tmp[1] = 'd';
@@ -146,8 +146,10 @@ char** getSerialPorts(void) {
 	char** fin = NULL;
 	int i = 0, j = 0, f, g;
 
-	fin = (char **)malloc((size + 1) * sizeof(char *));
-	fin[size] = NULL;
+	printf("JNI: Got files in /dev/\n");
+
+	fin = (char **)malloc(size * sizeof(char *));
+	fin[size - 1] = NULL;
 	while (files[i] != NULL) {
 		if (strstr(files[i], SEARCH) != NULL) {
 			f = serialOpen(files[i]);
@@ -160,11 +162,5 @@ char** getSerialPorts(void) {
 	}
 	free(files);
 
-	char** finish = (char **)malloc((j + 1) * sizeof(char *));
-	for (i = 0; i < (j + 1); i++) {
-		finish[i] = fin[i];
-	}
-	free(fin);
-
-	return finish;
+	return fin;
 }
