@@ -15,11 +15,11 @@ JAVAFILES = HelperUtility.java AnimationUtility.java Animation.java AFrame.java 
 INJAR = *.class *.png
 
 
-all: CubeControl.jar
+all: CubeControl.jar libSerial
 
 doc: doc/index.html
 
-CubeControl.jar: libSerial HelperUtility.class manifest.txt
+CubeControl.jar: HelperUtility.class manifest.txt
 	jar -cmf manifest.txt "CubeControl.jar" $(INJAR)
 
 serialInterface.h: HelperUtility.class
