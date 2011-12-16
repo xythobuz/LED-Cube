@@ -67,7 +67,7 @@ public class Frame extends JFrame implements ListSelectionListener {
   private JButton load = new JButton();
   private JButton save = new JButton();
   private JButton saveAs = new JButton();
-  private JComboBox jComboBox1 = new JComboBox();
+  public JComboBox jComboBox1 = new JComboBox();
   private JButton upload = new JButton();
   private JButton download = new JButton();
   private JLabel jLabel4 = new JLabel();
@@ -805,8 +805,43 @@ public class Frame extends JFrame implements ListSelectionListener {
 		l.resetView();
 	}
 
+	if (s.startsWith("port ")) {
+		s = s.substring(5);
+		f.jComboBox1.addItem(s);
+		f.jComboBox1.setSelectedItem(s);
+	}
+
+	if (s.startsWith("send ")) {
+		s = s.substring(5);
+		HelperUtility.openPort(((String)f.jComboBox1.getSelectedItem()) + "\n");
+		short[] dat = toShortArray(s);
+		HelperUtility.writeData(dat, dat.length);
+		HelperUtility.closePort();
+	}
+
+	if (s.startsWith("read ")) {
+		s = s.substring(5);
+		int leng = Integer.parseInt(s);
+		HelperUtility.openPort((String)f.jComboBox1.getSelectedItem());
+		short[] data = HelperUtility.readData(leng);
+		System.out.println(shortToString(data));
+		HelperUtility.closePort();
+	}
+
+	if (s.equals("s") || s.equals("scan")) {
+		String[] sPorts = f.worker.getSerialPorts();
+		f.jComboBox1.removeAllItems();
+		for(int i = 0; i < sPorts.length; i++){
+			f.jComboBox1.addItem(sPorts[i]);
+		}
+	}
+
       if (s.equals("h") || (s.equals("help"))) {
         System.out.println("Commands:");
+		System.out.println("\t'port *name*'\t:\tSet serial port to this");
+		System.out.println("\t'send *datas*'\t:\tSend data to serial port");
+		System.out.println("\t'read *leng*'\t:\tRead data from serial port");
+		System.out.println("\t'scan'   / 's'\t:\tScan for serial ports");
         System.out.println("\t'on'     / '1'\t:\tToggle all LEDs on");
         System.out.println("\t'off'    / '0'\t:\tToggle all LEDs off");
         System.out.println("\t'print'  / 'p'\t:\tPrint 3D Translation Matrix Data");
@@ -818,5 +853,23 @@ public class Frame extends JFrame implements ListSelectionListener {
       System.out.print("$> ");
     }
   } while (true);
+  }
+
+  private static short[] toShortArray(String s) {
+	  char[] d = s.toCharArray();
+	  System.out.println("Length: " + d.length);
+	  short[] r = new short[d.length];
+	  for (int i = 0; i < d.length; i++) {
+		  r[i] = (short)d[i];
+	  }
+	  return r;
+  }
+
+  private static String shortToString(short[] d) {
+	  String s = "";
+	  for (int i = 0; i < d.length; i++) {
+		  s += String.valueOf((char)d[i]);
+	  }
+	  return s;
   }
 }

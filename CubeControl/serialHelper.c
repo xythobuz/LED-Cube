@@ -77,9 +77,43 @@ JNIEXPORT jstring JNICALL Java_HelperUtility_getPorts(JNIEnv *env, jclass class)
 }
 
 JNIEXPORT jshortArray JNICALL Java_HelperUtility_readData(JNIEnv *env, jclass class, jint length) {
-	return NULL;
+	jshortArray arr = (*env)->NewShortArray(env, length);
+	int toBeRead = 0, read;
+	char *data = (char *)malloc(length * sizeof(char));
+
+	while (length > 0) {
+		read = serialRead(data + toBeRead, length);
+		toBeRead += read;
+		length -= read;
+	}
+
+	(*env)->SetShortArrayRegion(env, arr, 0, (*env)->GetArrayLength(env, arr), (jshort *)data);
+	return arr;
 }
 
 JNIEXPORT void JNICALL Java_HelperUtility_writeData(JNIEnv *env, jclass class, jshortArray data, jint length) {
-	return;
+	int written = 0;
+	int lastIndex = length;
+	char *dat = (char *)malloc(length * sizeof(char));
+
+	while (length > 0) {
+		(*env)->GetShortArrayRegion(env, data, written, length, (jshort *)dat);
+		written = serialWrite(dat, length);
+		length -= written;
+	}
+}
+
+JNIEXPORT void JNICALL Java_HelperUtility_closePort(JNIEnv * env, jclass class) {
+	serialClose();
+}
+
+JNIEXPORT jboolean JNICALL Java_HelperUtility_openPort(JNIEnv *env, jclass class, jstring name) {
+	jboolean isCopy;
+	const char *path = (*env)->GetStringUTFChars(env, name, &isCopy);
+	int ret = serialOpen((char *)path);
+	if (ret == 0) {
+		return JNI_TRUE;
+	} else {
+		return JNI_FALSE;
+	}
 }

@@ -42,6 +42,18 @@ public class HelperUtility {
 	public static native String getPorts();
 
 	/**
+	 * Open Connection to a port
+	 * @return TRUE if successful
+	 * @param name Port to open
+	 */
+	public static native boolean openPort(String name);
+
+	/**
+	 * Close Connection to port
+	 */
+	public static native void closePort();
+
+	/**
 	 * Read data from Cube
 	 * @param length Amount of data to read
 	 * @return Data read
