@@ -377,7 +377,7 @@ public class cubeWorker {
 
 	/**
 	 * Get the names of all available serial ports.
-	 * @return Array of port names. First entry is always "Select serial port..."
+	 * @return Array of port names. First entry is "Select serial port..." if no others
 	 */
     public String[] getSerialPorts() {
 		String[] ports = {"Select serial port..."};
@@ -386,10 +386,9 @@ public class cubeWorker {
 			return ports;
 		}
 		StringTokenizer sT = new StringTokenizer(portLines, "\n");
-		int size = sT.countTokens() + 1;
+		int size = sT.countTokens();
 		ports = new String[size];
-		ports[0] = "Select serial port...";
-		for (int i = 1; i < size; i++) {
+		for (int i = 0; i < size; i++) {
 			ports[i] = sT.nextToken();
 		}
 		return ports;

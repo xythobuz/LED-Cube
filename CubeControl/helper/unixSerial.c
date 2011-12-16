@@ -143,24 +143,45 @@ char** namesInDev(int *siz) {
 char** getSerialPorts(void) {
 	int size;
 	char** files = namesInDev(&size);
-	char** fin = NULL;
+	char **fin = NULL, **finish = NULL;
 	int i = 0, j = 0, f, g;
 
-	printf("JNI: Got files in /dev/\n");
+	// printf("JNI: Got files in /dev (%d)\n", size);
 
 	fin = (char **)malloc(size * sizeof(char *));
-	fin[size - 1] = NULL;
+	// Has space for all files in dev!
+
 	while (files[i] != NULL) {
+		// Filter for SEARCH and if it is a serial port
 		if (strstr(files[i], SEARCH) != NULL) {
+			// We have a match
+			// printf("JNI: %s matched %s", files[i], SEARCH);
 			f = serialOpen(files[i]);
-			if (fd != -1) {
+			if (f != -1) {
+				// printf(" and is a serial port\n");
 				fin[j++] = files[i];
 				serialClose();
+			} else {
+				// printf(" and is not a serial port\n");
+				free(files[i]);
 			}
+		} else {
+			free(files[i]);
 		}
 		i++;
 	}
 	free(files);
 
-	return fin;
+	// printf("JNI: Found %d serial ports\n", j);
+
+	// Copy in memory with matching size, NULL at end
+	finish = (char **)malloc((j + 1) * sizeof(char *));
+	finish[j] = NULL; 
+	for (i = 0; i < j; i++) {
+		finish[i] = fin[i];
+	}
+
+	free(fin);
+
+	return finish;
 }
