@@ -4,7 +4,7 @@ CC = gcc
 HEADERPATH = /System/Library/Frameworks/JavaVM.framework/Headers
 
 ifdef SystemRoot
-HEADERPATH = C:/Program\ Files/Java/jdk1.6.0_29/include
+HEADERPATH = C:\Program\ Files\Java\jdk1.6.0_29\include
 endif
 
 # All java files to be compiled
