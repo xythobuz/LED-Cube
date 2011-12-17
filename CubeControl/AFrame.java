@@ -21,7 +21,6 @@
  * along with LED-Cube.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**

@@ -26,6 +26,7 @@ import java.io.File;
 import java.util.Scanner;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A helper class that loads animations from a file or saves them to one.
@@ -44,10 +45,9 @@ public class AnimationUtility {
    * @return Populated ArrayList
    * @throws Excpetion When something goes wrong with the Scanner...
    */
-  public static ArrayList<Animation> readFile(String path) throws Exception {
+  public static List<Animation> readFile(String path) throws Exception {
     Scanner sc = new Scanner(new File(path));
-  ArrayList<Animation> animations = new ArrayList<Animation>();
-
+  List<Animation> animations = new ArrayList<Animation>();
   do {
   Animation tmp = readAnimation(sc);
   if (tmp == null) {
@@ -68,7 +68,7 @@ public class AnimationUtility {
    * @param animations ArrayList with all animations to be saved
    * @see AnimationUtility#getLastError() getLastError()
    */
-  public static void writeFile(String path, ArrayList<Animation> animations) {
+  public static void writeFile(String path, List<Animation> animations) {
     File f = new File(path);
     if (f.exists()) {
       try {

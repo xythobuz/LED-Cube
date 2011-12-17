@@ -26,6 +26,7 @@
  * many animations, but has to be only 1Mbit in size (128*1024 Byte).
  */
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Collections;
 import java.util.StringTokenizer;
 
@@ -50,7 +51,7 @@ public class cubeWorker {
 // Fields
 // --------------------
 
-  private ArrayList<Animation> animations = new ArrayList<Animation>();
+  private List<Animation> animations = new ArrayList<Animation>();
   private int framesRemaining = 2016; // (128 * 1024) / 65 = 2016,...
   private boolean changedState = false;
 
@@ -71,7 +72,7 @@ public class cubeWorker {
    * Creates a worker from the given animation list
    * @param anims List of animations
    */
-  cubeWorker(ArrayList<Animation> anims) {
+  cubeWorker(List<Animation> anims) {
     animations = anims;
   }
 

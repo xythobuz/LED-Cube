@@ -22,6 +22,7 @@
  */
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A collection of frames that represent an entire animation.
@@ -32,7 +33,7 @@ import java.util.ArrayList;
  */
 
 public class Animation {
-  ArrayList<AFrame> frames = new ArrayList<AFrame>();
+  List<AFrame> frames = new ArrayList<AFrame>();
   private int lastFrameIndex = 0;
   private String name = "Animation";
 
