@@ -25,7 +25,7 @@
  * This class handles one animation file. This file can contain
  * many animations, but has to be only 1Mbit in size (128*1024 Byte).
  */
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.StringTokenizer;
 
@@ -50,7 +50,7 @@ public class cubeWorker {
 // Fields
 // --------------------
 
-  private LinkedList<Animation> animations = new LinkedList<Animation>();
+  private ArrayList<Animation> animations = new ArrayList<Animation>();
   private int framesRemaining = 2016; // (128 * 1024) / 65 = 2016,...
   private boolean changedState = false;
 
@@ -71,7 +71,7 @@ public class cubeWorker {
    * Creates a worker from the given animation list
    * @param anims List of animations
    */
-  cubeWorker(LinkedList<Animation> anims) {
+  cubeWorker(ArrayList<Animation> anims) {
     animations = anims;
   }
 

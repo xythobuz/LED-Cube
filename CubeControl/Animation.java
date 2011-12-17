@@ -21,7 +21,7 @@
  * along with LED-Cube.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 /**
  * A collection of frames that represent an entire animation.
@@ -32,9 +32,7 @@ import java.util.LinkedList;
  */
 
 public class Animation {
-  public LinkedList<AFrame> frames = new LinkedList<AFrame>();
-  // Public so moveFrame can access it
-  
+  ArrayList<AFrame> frames = new ArrayList<AFrame>();
   private int lastFrameIndex = 0;
   private String name = "Animation";
 
