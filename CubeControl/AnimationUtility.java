@@ -25,7 +25,7 @@ import java.io.FileWriter;
 import java.io.File;
 import java.util.Scanner;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * A helper class that loads animations from a file or saves them to one.
@@ -39,14 +39,14 @@ public class AnimationUtility {
   private static String lastError = null;
 
   /**
-   * Read a file, return ArrayList with all animations in the file.
+   * Read a file, return LinkedList with all animations in the file.
    * @param path Path of file
-   * @return Populated ArrayList
+   * @return Populated LinkedList
    * @throws Excpetion When something goes wrong with the Scanner...
    */
-  public static ArrayList<Animation> readFile(String path) throws Exception {
+  public static LinkedList<Animation> readFile(String path) throws Exception {
     Scanner sc = new Scanner(new File(path));
-  ArrayList<Animation> animations = new ArrayList<Animation>();
+  LinkedList<Animation> animations = new LinkedList<Animation>();
 
   do {
   Animation tmp = readAnimation(sc);
@@ -63,12 +63,12 @@ public class AnimationUtility {
   }
 
   /**
-   * Write a file with all Animations of an ArrayList
+   * Write a file with all Animations of an LinkedList
    * @param path Path to write to
-   * @param animations ArrayList with all animations to be saved
+   * @param animations LinkedList with all animations to be saved
    * @see AnimationUtility#getLastError() getLastError()
    */
-  public static void writeFile(String path, ArrayList<Animation> animations) {
+  public static void writeFile(String path, LinkedList<Animation> animations) {
     File f = new File(path);
     if (f.exists()) {
       try {
@@ -102,7 +102,7 @@ public class AnimationUtility {
   /**
    * Get the last error that occured while writing
    * @return Text of the exception that occured
-   * @see AnimationUtility#writeFile(String, ArrayList) writeFile()
+   * @see AnimationUtility#writeFile(String, LinkedList) writeFile()
    */
   public static String getLastError() {
     String tmp = lastError;

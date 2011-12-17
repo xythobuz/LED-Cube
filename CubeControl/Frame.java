@@ -103,6 +103,14 @@ public class Frame extends JFrame implements ListSelectionListener {
   public void valueChanged(ListSelectionEvent evt) {
   if ((!evt.getValueIsAdjusting()) && ((evt.getSource() == animList) || (evt.getSource() == frameList))) {
     // If animList or framsList is the source, we act...
+	if ((evt.getSource() == animList) && (animList.getSelectedIndex() != -1)) {
+      // animList selection changed, update frameList
+      frameListModel.clear();
+      for (int i = 0; i < worker.numOfFrames(animList.getSelectedIndex()); i++) {
+        frameListModel.addElement(worker.getFrameName(animList.getSelectedIndex(), i));
+      }
+      frameList.setModel(frameListModel);
+    }
 
     // If both selections are valid, update Frame duration and set 3D data
     if ((animList.getSelectedIndex() != -1) && (frameList.getSelectedIndex() != -1)) {
@@ -111,15 +119,6 @@ public class Frame extends JFrame implements ListSelectionListener {
     } else {
       // clear Frame duration
       frameLengthText.setText("");
-    }
-
-    if ((evt.getSource() == animList) && (animList.getSelectedIndex() != -1)) {
-      // animList selection changed, update frameList
-      frameListModel.clear();
-      for (int i = 0; i < worker.numOfFrames(animList.getSelectedIndex()); i++) {
-        frameListModel.addElement(worker.getFrameName(animList.getSelectedIndex(), i));
-      }
-      frameList.setModel(frameListModel);
     }
   }
   }
