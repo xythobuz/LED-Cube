@@ -39,7 +39,21 @@ public class HelperUtility {
 	 * Get all the existing serial port names
 	 * @return List of port names. \n between entries
 	 */
-	public static native String getPorts();
+	public static String getPorts() {
+		String os = System.getProperty("os.name").toLowerCase();
+		if (os.indexOf("windows") > -1) {
+			return getThePorts("COM");
+		} else if (os.indexOf("linux") > -1) {
+			return getThePorts("tty");
+		} else if (os.indexOf("mac") > -1) {
+			return getThePorts("tty.");
+		}
+
+		// Not linux, windows or mac?
+		return getThePorts("wtf?");
+	}
+
+	private static native String getThePorts(String search);
 
 	/**
 	 * Open Connection to a port

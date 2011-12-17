@@ -32,8 +32,6 @@
 #include <termios.h>
 #include <dirent.h>
 
-#define SEARCH "tty."
-
 #define BAUD B19200
 
 int fd = -1;
@@ -140,7 +138,7 @@ char** namesInDev(int *siz) {
 	return files;
 }
 
-char** getSerialPorts(void) {
+char** getSerialPorts(const char *search) {
 	int size;
 	char** files = namesInDev(&size);
 	char **fin = NULL, **finish = NULL;
@@ -153,18 +151,25 @@ char** getSerialPorts(void) {
 
 	while (files[i] != NULL) {
 		// Filter for SEARCH and if it is a serial port
-		if (strstr(files[i], SEARCH) != NULL) {
+		if (strstr(files[i], search) != NULL) {
 			// We have a match
-			// printf("JNI: %s matched %s", files[i], SEARCH);
-			f = serialOpen(files[i]);
-			if (f != -1) {
+			// printf("JNI: %s matched %s", files[i], search);
+			
+			// Don't actually check if it is a serial port
+			// It causes long delays while trying to connect
+			// to Bluetooth devices...
+			
+			// f = serialOpen(files[i]);
+			// if (f != -1) {
 				// printf(" and is a serial port\n");
 				fin[j++] = files[i];
-				serialClose();
-			} else {
+			// 	serialClose();
+			// } else {
 				// printf(" and is not a serial port\n");
-				free(files[i]);
-			}
+			// 	free(files[i]);
+			// }
+
+
 		} else {
 			free(files[i]);
 		}

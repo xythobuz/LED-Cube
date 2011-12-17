@@ -31,8 +31,9 @@
 #include "helper/unixSerial.c"
 #endif
 
-JNIEXPORT jstring JNICALL Java_HelperUtility_getPorts(JNIEnv *env, jclass class) {
-	char **ports = getSerialPorts();
+JNIEXPORT jstring JNICALL Java_HelperUtility_getThePorts(JNIEnv *env, jclass class, jstring s) {
+	jboolean tmp;
+	char **ports = getSerialPorts((*env)->GetStringUTFChars(env, s, &tmp));
 	char *string = NULL;
 	int length = 0, leng2 = 0, lengthabs = 0;
 
