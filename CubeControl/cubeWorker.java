@@ -163,12 +163,16 @@ public class cubeWorker {
     if (dir == UP){
         //animation moved up
       if (selectedAnimation > 0) {
-        Collections.swap(animations, selectedAnimation, selectedAnimation - 1);
+        Animation tmp = animations.get(selectedAnimation);
+		animations.set(selectedAnimation, animations.get(selectedAnimation - 1));
+		animations.set(selectedAnimation - 1, tmp);
     }
     } else if (dir == DOWN){
       //animation moved down
     if (selectedAnimation < (animations.size() - 1)) {
-      Collections.swap(animations, selectedAnimation, selectedAnimation + 1);
+        Animation tmp = animations.get(selectedAnimation);
+		animations.set(selectedAnimation, animations.get(selectedAnimation + 1));
+		animations.set(selectedAnimation + 1, tmp);
   }
     }
   }
@@ -280,12 +284,16 @@ public class cubeWorker {
     if (dir == UP){
         // frame moved up
         if (frame > 0) {
-          Collections.swap(animations.get(anim).frames, frame, frame - 1);
+          AFrame tmp = animations.get(anim).frames.get(frame);
+		  animations.get(anim).frames.set(frame, animations.get(anim).frames.get(frame - 1));
+		  animations.get(anim).frames.set(frame - 1, tmp);
       }
     } else if (dir == DOWN){
       // frame moved down
     if (frame < (animations.get(anim).size() - 1)) {
-      Collections.swap(animations.get(anim).frames, frame, frame + 1);
+      AFrame tmp = animations.get(anim).frames.get(frame);
+		  animations.get(anim).frames.set(frame, animations.get(anim).frames.get(frame + 1));
+		  animations.get(anim).frames.set(frame + 1, tmp);
     }
     }
   }
