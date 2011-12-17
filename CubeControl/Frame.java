@@ -104,15 +104,6 @@ public class Frame extends JFrame implements ListSelectionListener {
   if ((!evt.getValueIsAdjusting()) && ((evt.getSource() == animList) || (evt.getSource() == frameList))) {
     // If animList or framsList is the source, we act...
 
-    // If both selections are valid, update Frame duration and set 3D data
-    if ((animList.getSelectedIndex() != -1) && (frameList.getSelectedIndex() != -1)) {
-      ledView.setData(worker.getFrame(animList.getSelectedIndex(), frameList.getSelectedIndex()));
-      frameLengthText.setText(Integer.toString(worker.getFrameTime(animList.getSelectedIndex(), frameList.getSelectedIndex())));
-    } else {
-      // clear Frame duration
-      frameLengthText.setText("");
-    }
-
     if ((evt.getSource() == animList) && (animList.getSelectedIndex() != -1)) {
       // animList selection changed, update frameList
       frameListModel.clear();
@@ -120,6 +111,15 @@ public class Frame extends JFrame implements ListSelectionListener {
         frameListModel.addElement(worker.getFrameName(animList.getSelectedIndex(), i));
       }
       frameList.setModel(frameListModel);
+    }
+
+    // If both selections are valid, update Frame duration and set 3D data
+    if ((animList.getSelectedIndex() != -1) && (frameList.getSelectedIndex() != -1)) {
+      ledView.setData(worker.getFrame(animList.getSelectedIndex(), frameList.getSelectedIndex()));
+      frameLengthText.setText(Integer.toString(worker.getFrameTime(animList.getSelectedIndex(), frameList.getSelectedIndex())));
+    } else {
+      // clear Frame duration
+      frameLengthText.setText("");
     }
   }
   }
