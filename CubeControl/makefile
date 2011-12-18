@@ -3,27 +3,28 @@ CC = gcc
 # Path to jni.h
 ifdef SystemRoot
 HEADERPATH = C:/Program\ Files/Java/jdk1.6.0_29/include
-$(RM) = del
+RM = del
+INJAR = *.class *.png Serial.dll
+PLATFORM = Win
 else
 HEADERPATH = /System/Library/Frameworks/JavaVM.framework/Headers
-$(RM) = rm -f
+RM = rm -f
+INJAR = *.class *.png libSerial.jnilib
+PLATFORM = Mac
 endif
 
 # All java files to be compiled
 # List so it works as target
 JAVAFILES = HelperUtility.java AnimationUtility.java Animation.java AFrame.java cubeWorker.java layerEditFrame.java Led3D.java Frame.java
 
-# Files that go in the jar
-INJAR = *.class *.png
-
 # --------------------------------------
 
-all: libSerial CubeControl.jar
+all: libSerial CubeControl.jar clean
 
 doc: doc/index.html
 
-CubeControl.jar: HelperUtility.class manifest.txt
-	jar -cmf manifest.txt "CubeControl.jar" $(INJAR)
+CubeControl.jar: HelperUtility.class manifest.txt libSerial
+	jar -cmf manifest.txt "CubeControl$(PLATFORM).jar" $(INJAR)
 
 serialInterface.h: HelperUtility.class
 	javah -o serialInterface.h HelperUtility
@@ -54,7 +55,6 @@ clean:
 	$(RM) *.class
 	$(RM) *.h
 	$(RM) *.o
-	$(RM) *.jar
 ifdef SystemRoot
 	$(RM) *.dll
 else

@@ -13,10 +13,10 @@ It will use [Peter Fleury's UART and TWI Library](http://homepage.hispeed.ch/pet
 
 ## Cube Control
 
-We also build a software to create and load animations into the cube. This software is written in Java and C and is Compatible between Windows and Unix.
-It's source is in the "Cube Control" directory. It has it's own makefile, in which you can specify the Target OS. "unix" means any Unix like OS (Linux, OS X...), "win" means Windows.
-You obviously need a working JDK and a C Compiler Environment (we use gcc).
+We also build a software to create and load animations into the cube. This software is written in Java and C and should work on Windows and Unix.
+It's source is in the "Cube Control" directory.
 
 ## Build instructions
 
-Theres a global makefile in the top folder. If you run it, it will (probably) create CubeControl.jar, CubeFirmware.hex and a OS-dependent serial library (Serial.dll or libSerial.jnilib...). If not, you should take a look at the makefile in CubeControl. Hard-Coded include directorys are probably different than on your system...
+Theres a global makefile in the top folder. If you run it, it will (probably) create CubeControl.jar, CubeFirmware.hex and a OS-dependent serial library (Serial.dll or libSerial.jnilib...). If not, you should take a look at the makefile in CubeControl. Hard-Coded include directorys are probably different than on your system... You obviously need a working JDK and a C Compiler Environment (we use gcc).
+CubeControls makefile will autodetect a Windows Host and compile a Windows Version accordingly. If it is not on Windows, it will compile a Mac Version. Unix is currently not supported by the makefile, but should work if compiled manually.
