@@ -1,4 +1,4 @@
-all: Control Firmware
+all: Control Firmware Audio
 
 Control:
 	make -C CubeControl
@@ -10,6 +10,11 @@ else
 endif
 	make -C CubeControl clean
 
+Audio:
+	make -C AudioFirmware
+	mv AudioFirmware/main.hex AudioFirmware.hex
+	make -C AudioFirmware clean
+
 Firmware:
 	make -C CubeFirmware
 	mv CubeFirmware/main.hex CubeFirmware.hex
@@ -19,9 +24,11 @@ clean:
 ifdef SystemRoot
 	del CubeControl.jar
 	del CubeFirmware.hex
+	del AudioFirmware.hex
 	del Serial.dll
 else
 	rm -f CubeControl.jar
 	rm -f CubeFirmware.hex
+	rm -f AudioFirmware.hex
 	rm -f libSerial.jnilib
 endif
