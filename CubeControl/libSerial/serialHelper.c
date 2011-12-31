@@ -26,9 +26,9 @@
 #include "serialInterface.h"
 
 #ifdef winHelper
-#include "helper/winSerial.c"
+#include "winSerial.c"
 #else
-#include "helper/unixSerial.c"
+#include "unixSerial.c"
 #endif
 
 JNIEXPORT jstring JNICALL Java_HelperUtility_getThePorts(JNIEnv *env, jclass class, jstring s) {

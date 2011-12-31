@@ -28,7 +28,6 @@
  * @author Felix Bäder
  * @version 1.0
  */
-
 import java.io.*;
 import java.nio.channels.*;
 import java.nio.*;
@@ -65,7 +64,8 @@ public class HelperUtility {
 			// have to use a stream
 			InputStream in = HelperUtility.class.getResourceAsStream(name);
 			// System.out.println("Input Stream: " + in);
-			File fileOut = new File(System.getProperty("java.io.tmpdir") + "/" + path + name);
+			File fileOut = new File(System.getProperty("java.io.tmpdir") + "/"
+					+ path + name);
 			OutputStream out = new FileOutputStream(fileOut);
 			ReadableByteChannel inChannel = Channels.newChannel(in);
 			WritableByteChannel outChannel = Channels.newChannel(out);
@@ -80,7 +80,8 @@ public class HelperUtility {
 	}
 
 	// http://thomaswabner.wordpress.com/2007/10/09/fast-stream-copy-using-javanio-channels/
-	public static void fastChannelCopy(ReadableByteChannel src, WritableByteChannel dest) throws IOException {
+	public static void fastChannelCopy(ReadableByteChannel src,
+			WritableByteChannel dest) throws IOException {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(16 * 1024);
 		while (src.read(buffer) != -1) {
 			// prepare the buffer to be drained
@@ -101,6 +102,7 @@ public class HelperUtility {
 
 	/**
 	 * Get all the existing serial port names
+	 * 
 	 * @return List of port names. \n between entries
 	 */
 	public static String getPorts() {
@@ -121,8 +123,10 @@ public class HelperUtility {
 
 	/**
 	 * Open Connection to a port
+	 * 
 	 * @return TRUE if successful
-	 * @param name Port to open
+	 * @param name
+	 *            Port to open
 	 */
 	public static native boolean openPort(String name);
 
@@ -133,15 +137,20 @@ public class HelperUtility {
 
 	/**
 	 * Read data from Cube
-	 * @param length Amount of data to read
+	 * 
+	 * @param length
+	 *            Amount of data to read
 	 * @return Data read
 	 */
 	public static native short[] readData(int length);
 
 	/**
 	 * Write data to Cube
-	 * @param data Data to write
-	 * @param length Length of data
+	 * 
+	 * @param data
+	 *            Data to write
+	 * @param length
+	 *            Length of data
 	 */
 	public static native void writeData(short[] data, int length);
 }

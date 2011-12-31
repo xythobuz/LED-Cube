@@ -20,11 +20,12 @@
  * You should have received a copy of the GNU General Public License
  * along with LED-Cube.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 import java.util.Arrays;
 
 /**
- * The representation of a single frame. Contains the data of all 512 LEDs in a given time.
+ * The representation of a single frame. Contains the data of all 512 LEDs in a
+ * given time.
+ * 
  * @author Thomas Buck
  * @author Max Nuding
  * @author Felix Bäder
@@ -32,65 +33,72 @@ import java.util.Arrays;
  */
 
 public class AFrame {
-  private short[] data = new short[64];
-  private short duration = 1;
-  private String name = "Frame";
+	private short[] data = new short[64];
+	private short duration = 1;
+	private String name = "Frame";
 
-  /**
-   * Gets the Name of this Frame
-   * @return Name of the Frame
-   */
-  public String getName() {
-    return name;
-  }
+	/**
+	 * Gets the Name of this Frame
+	 * 
+	 * @return Name of the Frame
+	 */
+	public String getName() {
+		return name;
+	}
 
-  /**
-   * Sets the Name of this Frame
-   * @param s New Name
-   */
-  public void setName(String s) {
-    name = s;
-  }
+	/**
+	 * Sets the Name of this Frame
+	 * 
+	 * @param s New Name
+	 */
+	public void setName(String s) {
+		name = s;
+	}
 
-  /**
-   * Sets the Data of this Frame
-   * @param d 64 bytes that contain data (8 bit per byte, so 8 LEDs)
-   */
-  public void setData(short[] d) {
-    data = d;
-  }
+	/**
+	 * Sets the Data of this Frame
+	 * 
+	 * @param d 64 bytes that contain data (8 bit per byte, so 8 LEDs)
+	 */
+	public void setData(short[] d) {
+		data = d;
+	}
 
-  /**
-   * Gets tha Data of this Frame
-   * @return 64 bytes that contain data (8 bits / LEDs per byte)
-   */
-  public short[] getData() {
-    return data;
-  }
+	/**
+	 * Gets tha Data of this Frame
+	 * 
+	 * @return 64 bytes that contain data (8 bits / LEDs per byte)
+	 */
+	public short[] getData() {
+		return data;
+	}
 
-  /**
-   * Sets the Duration of this Frame
-   * @param t Duration of frame in (( t * (1/24) ) + (1/24)) seconds
-   */
-  public void setTime(short t) {
-    duration = t;
-  }
+	/**
+	 * Sets the Duration of this Frame
+	 * 
+	 * @param t Duration of frame in (( t * (1/24) ) + (1/24)) seconds
+	 */
+	public void setTime(short t) {
+		duration = t;
+	}
 
-  /**
-   * Gets the Duration of this Frame
-   * @return Duration of frame.
-   * @see AFrame#setTime(short) setTime()
-   */
-  public short getTime() {
-    return duration;
-  }
+	/**
+	 * Gets the Duration of this Frame
+	 * 
+	 * @return Duration of frame.
+	 * @see AFrame#setTime(short) setTime()
+	 */
+	public short getTime() {
+		return duration;
+	}
 
-  /**
-   * Gets the Data of the Layer you want
-   * @param i Number of Layer you want
-   * @return 8 byte array with data of selected layer
-   */
-  public short[] getLayer(int i) {
-    return Arrays.copyOfRange(data, (i * 8), (i * 8) + 8);
-  }
+	/**
+	 * Gets the Data of the Layer you want
+	 * 
+	 * @param i Number of Layer you want
+	 * @return 8 byte array with data of selected layer
+	 */
+	public short[] getLayer(int i) {
+		return Arrays.copyOfRange(data, (i * 8), (i * 8) + 8);
+	}
 }

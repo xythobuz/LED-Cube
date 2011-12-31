@@ -1,15 +1,16 @@
 # Name of your C-Compiler
 CC = gcc
+INJAR = *.class LEDoff.png LEDon.png splash.png bg.png
 # Path to jni.h
 ifdef SystemRoot
 HEADERPATH = C:/Program\ Files/Java/jdk1.6.0_29/include
 RM = del
-INJAR = *.class *.png Serial.dll
+INJAR += Serial.dll
 PLATFORM = Win
 else
 HEADERPATH = /System/Library/Frameworks/JavaVM.framework/Headers
 RM = rm -f
-INJAR = *.class *.png libSerial.jnilib
+INJAR += libSerial.jnilib
 PLATFORM = Mac
 endif
 
@@ -19,7 +20,7 @@ JAVAFILES = HelperUtility.java AnimationUtility.java Animation.java AFrame.java 
 
 # --------------------------------------
 
-all: libSerial CubeControl.jar clean
+all: CubeControl.jar clean
 
 doc: doc/index.html
 
@@ -32,28 +33,29 @@ serialInterface.h: HelperUtility.class
 HelperUtility.class: $(JAVAFILES)
 	javac $(JAVAFILES)
 
-libSerial.jnilib: serialHelper.c helper/unixSerial.c serialInterface.h
-	$(CC) -x c -I$(HEADERPATH) -c serialHelper.c -o serialHelper.o
-	$(CC) -dynamiclib -o libSerial.jnilib serialHelper.o
-
-Serial.dll: serialHelper.c helper/winSerial.c serialInterface.h
-	$(CC) -x c -I$(HEADERPATH) -c serialHelper.c -o serialHelper.o -D winHelper
-	$(CC) -shared -o Serial.dll serialHelper.o
-
 doc/index.html: $(JAVAFILES)
 	javadoc -d doc $(JAVAFILES)
 
-# SystemRoot is only defined in Windows
 ifdef SystemRoot
 libSerial: Serial.dll
 else
 libSerial: libSerial.jnilib
 endif
 
+Serial.dll: libSerial/serialHelper.c libSerial/winSerial.c
+	make -C libSerial
+	mv libSerial/Serial.dll Serial.dll
+	make -C libSerial clean
+
+libSerial.jnilib: libSerial/serialHelper.c libSerial/unixSerial.c
+	make -C libSerial
+	mv libSerial/libSerial.jnilib libSerial.jnilib
+	make -C libSerial clean
+
 # Delete intermediate files
 clean:
 	$(RM) *.class
-	$(RM) *.h
+	$(RM) *.
 	$(RM) *.o
 ifdef SystemRoot
 	$(RM) *.dll
