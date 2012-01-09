@@ -31,6 +31,7 @@
 #include <fcntl.h>
 #include <termios.h>
 #include <dirent.h>
+#include <errno.h>
 
 #define BAUD B19200
 
@@ -94,7 +95,12 @@ ssize_t serialWrite(char *data, size_t length) {
 
 // Read from port. Return number of characters read, 0 if none available, -1 on error
 ssize_t serialRead(char *data, size_t length) {
-	return read(fd, data, length);
+	ssize_t temp = read(fd, data, length);
+	if ((temp == -1) && (errno == EAGAIN)) {
+		return 0;
+	} else {
+		return temp;
+	}
 }
 
 // Close the serial Port

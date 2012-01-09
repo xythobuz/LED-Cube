@@ -18,5 +18,7 @@ It's source is in the "Cube Control" directory.
 
 ## Build instructions
 
-Theres a global makefile in the top folder. If you run it, it will (probably) create CubeControl.jar, CubeFirmware.hex and a OS-dependent serial library (Serial.dll or libSerial.jnilib...). If not, you should take a look at the makefile in CubeControl. Hard-Coded include directorys are probably different than on your system... You obviously need a working JDK and a C Compiler Environment (we use gcc).
+There is a makefile in every source code directory. Running make inside CubeControl should produce a file called CubeControlMac.jar or CubeControlWin.jar. If not, you should take a look at the makefile. Hard-Coded include directorys are probably different than on your system... You obviously need a working JDK and a C Compiler Environment (we use gcc).
 CubeControls makefile will autodetect a Windows Host and compile a Windows Version accordingly. If it is not on Windows, it will compile a Mac Version. Unix is currently not supported by the makefile, but should work if compiled manually.
+
+The same goes for AudioFirmware and CubeFirmware. You need avr-gcc to compile these projects.
