@@ -75,6 +75,7 @@ public class Frame extends JFrame implements ListSelectionListener {
 	private JLabel frameLengthLabel = new JLabel();
 	private JTextField frameLengthText = new JTextField();
 	private JButton frameDuration = new JButton();
+    private JButton fullScreenButton = new JButton();
 	// Ende Attribute
 
 	public cubeWorker worker = new cubeWorker();
@@ -181,7 +182,7 @@ public class Frame extends JFrame implements ListSelectionListener {
 			}
 		});
 		int frameWidth = 661;
-		int frameHeight = 417;
+		int frameHeight = 440;
 		setSize(frameWidth, frameHeight);
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (d.width - getSize().width) / 2;
@@ -356,6 +357,16 @@ public class Frame extends JFrame implements ListSelectionListener {
 		frameLengthText.setText("");
 		frameLengthText.setFont(new Font("Dialog", Font.PLAIN, 13));
 		cp.add(frameLengthText);
+		
+		fullScreenButton.setText("Fullscreen");
+		fullScreenButton.setBounds(504, 390, 147, 25);
+		fullScreenButton.setFont(new Font("Dialog", Font.PLAIN, 13));
+		cp.add(fullScreenButton);
+		fullScreenButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				enterFullscreen(evt);
+			}
+		});
 
 		frameDuration.setBounds(590, 184, 60, 24);
 		frameDuration.setText("OK");
@@ -386,6 +397,7 @@ public class Frame extends JFrame implements ListSelectionListener {
 				}
 			}
 		});
+        
 
 		animScrollPane.setBounds(8, 264, 209, 121);
 		animList.setModel(animModel);
@@ -530,6 +542,11 @@ public class Frame extends JFrame implements ListSelectionListener {
 	// Anfang Methoden
 
 	// Anfang Ereignisprozeduren
+	
+	public void enterFullscreen(ActionEvent evt) {
+		FullscreenWindow fw = new FullscreenWindow(worker);
+	}
+	
 	public void editA_ActionPerformed(ActionEvent evt) {
 
 		if (animList.getSelectedIndex() == -1) {
