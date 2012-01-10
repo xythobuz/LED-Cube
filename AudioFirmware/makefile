@@ -36,7 +36,8 @@ TARGET = main
 
 # List C source files here. (C dependencies are automatically generated.)
 SRC = $(TARGET).c
-#SRC += uart.c # Additional Source-File
+SRC += adc.c # Additional Source-File
+SRC += eq.c
 
 # List Assembler source files here.
 # Make them always end in a capital .S.  Files ending in a lowercase .s
@@ -256,7 +257,7 @@ ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 
 
 # Default target.
-all: begin gccversion sizebefore build sizeafter finished end
+all: begin gccversion sizebefore build sizeafter finished end clean
 
 build: elf hex eep lss sym
 
@@ -389,7 +390,6 @@ clean: begin clean_list finished end
 clean_list :
 	@echo
 	@echo $(MSG_CLEANING)
-	$(REMOVE) $(TARGET).hex
 	$(REMOVE) $(TARGET).eep
 	$(REMOVE) $(TARGET).obj
 	$(REMOVE) $(TARGET).cof

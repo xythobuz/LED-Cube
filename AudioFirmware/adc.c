@@ -1,5 +1,5 @@
 /*
- * main.c
+ * adc.c
  *
  * Copyright 2011 Thomas Buck <xythobuz@me.com>
  * Copyright 2011 Max Nuding <max.nuding@gmail.com>
@@ -20,58 +20,41 @@
  * You should have received a copy of the GNU General Public License
  * along with LED-Cube.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <stdlib.h>
-#include <stdint.h>
 #include <avr/io.h>
-#include <util/delay.h>
+#include <stdint.h>
 
 #include "adc.h"
-#include "eq.h"
 
-#ifndef F_CPU
-#define F_CPU 16000000L
-#endif
-
-void blinkStatus(void) {
-	PORTB |= (1 << PB2);
-	_delay_ms(250);
-	PORTB &= ~(1 << PB2);
-	_delay_ms(250);
+void adcInit(void) {
+	uint16_t tmp;
+	
+	DDRC &= ~(3);
+	ADMUX = 0;
+	ADMUX |= (1 << REFS0); // Ref. Voltage: Vcc
+	ADCSRA |= (1 << ADPS2) | (1 << ADPS0); // Prescaler 64
+	ADCSRA |= (1 << ADEN); // Enable adc
+	adcStartConversion(0);
+	while (adcIsFinished() == 0);
+	tmp = ADCW;
 }
 
-int main(void) {
-	uint8_t *music;
-	uint8_t i;
-	uint16_t val;
+void adcStartConversion(uint8_t channel) {
+	ADMUX &= 0xF0; // Clear channel selection bits
+	ADMUX |= (channel & 0x0F); // Set channel
+	ADCSRA |= (1 << ADSC); // start conversion
+}
 
-	DDRB = 0x3F;
-	DDRC = 0x0C;
-	DDRD = 0xFF;
-	
-	adcInit();
-	// equalizerInit();
+uint8_t adcIsFinished(void) {
+	return (ADCSRA & (1 << ADSC)); // Return start bit
+}
 
-	blinkStatus();
-	blinkStatus();
+uint16_t adcGetResult(void) {
+	while (adcIsFinished() == 0);
+	return ADCW;
+}
 
-	// Blink led :)
-	while (1) {
-		/* music = equalizerGet();
-		val = 0;
-		for (i = 0; i < 7; i++) {
-			val += music[i];
-		}
-		val /= 7; */
-
-		adcStartConversion(0x01); // 0x0E -> 1,3 V Ref.
-		val = adcGetResult();
-
-		if (val >= 512) {
-			PORTB |= (1 << PB2);
-		} else {
-			PORTB &= ~(1 << PB2);
-		}
-	}
-
-	return 0;
+uint8_t adcGetByte(void) {
+	uint16_t tmp = adcGetResult();
+	tmp = tmp >> 2;
+	return tmp;
 }
