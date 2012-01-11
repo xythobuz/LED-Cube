@@ -9,6 +9,9 @@ import java.io.File;
 public class FullscreenWindow extends JFrame {
 	private Container cp = getContentPane();
 	private cubeWorker worker;
+	private JButton exitButton;
+	private int width;
+	private int height;
 	
 	public FullscreenWindow (cubeWorker cw) {
 		//Basic layout stuff
@@ -20,6 +23,16 @@ public class FullscreenWindow extends JFrame {
 		setResizable(false);
 		
 		worker = cw;
+		width = d.width;
+		height = d.height;
+		exitButton = new JButton("Exit Fullscreen");
+		exitButton.setBounds(width-150, height-25, 150, 25);
+		exitButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				dispose();
+			}
+		});
+		cp.add(exitButton);
 		
 		setVisible(true);
 	}
