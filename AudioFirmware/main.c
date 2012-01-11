@@ -34,43 +34,64 @@
 
 void blinkStatus(void) {
 	PORTB |= (1 << PB2);
+	PORTB &= ~(1 << PB1);
 	_delay_ms(250);
 	PORTB &= ~(1 << PB2);
+	PORTB |= (1 << PB1);
 	_delay_ms(250);
 }
 
-int main(void) {
+void showMusicOnLED(void) {
 	uint8_t *music;
-	uint8_t i;
-	uint16_t val;
+	uint8_t i, val;
 
+	music = equalizerGet();
+	val = 0;
+	for (i = 0; i < 7; i++) {
+		val += music[i];
+	}
+	val /= 7;
+
+	free(music);
+
+	if (val >= 20) {
+		PORTB |= (1 << PB2);
+	} else {
+		PORTB &= ~(1 << PB2);
+	}
+}
+
+void showPotOnLED(void) {
+	uint8_t val = 0;
+	adcStartConversion(0x01); // 0x0E -> 1,3 V Ref.
+	val = adcGetByte();
+
+	if (val >= 127) {
+		PORTB |= (1 << PB1);
+	} else {
+		PORTB &= ~(1 << PB1);
+	}
+}
+
+int main(void) {
 	DDRB = 0x3F;
 	DDRC = 0x0C;
 	DDRD = 0xFF;
 	
 	adcInit();
-	// equalizerInit();
+	equalizerInit();
 
 	blinkStatus();
 	blinkStatus();
 
 	// Blink led :)
-	while (1) {
-		/* music = equalizerGet();
-		val = 0;
-		for (i = 0; i < 7; i++) {
-			val += music[i];
-		}
-		val /= 7; */
-
-		adcStartConversion(0x01); // 0x0E -> 1,3 V Ref.
-		val = adcGetResult();
-
-		if (val >= 512) {
-			PORTB |= (1 << PB2);
-		} else {
-			PORTB &= ~(1 << PB2);
-		}
+	while (1) {		
+		//showPotOnLED();
+		showMusicOnLED();
+		
+		// Heartbeat
+		PORTB ^= (1 << PB1);
+		_delay_ms(1);
 	}
 
 	return 0;

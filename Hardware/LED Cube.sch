@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.05" altunitdist="inch" altunit="inch"/>
+<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="no" active="no"/>
@@ -10800,6 +10800,9 @@ Distributor Buerklin, 11G810</description>
 <part name="R28" library="resistor" deviceset="R-EU_" device="0204/7" value="100k"/>
 <part name="R29" library="resistor" deviceset="R-EU_" device="0204/7" value="100k"/>
 <part name="R30" library="resistor" deviceset="R-EU_" device="0204/7" value="100k"/>
+<part name="LED66" library="led" deviceset="LED" device="5MM"/>
+<part name="R31" library="resistor" deviceset="R-EU_" device="0204/7" value="1k"/>
+<part name="GND38" library="supply1" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -10939,6 +10942,9 @@ Distributor Buerklin, 11G810</description>
 <instance part="R28" gate="G$1" x="88.9" y="-33.02"/>
 <instance part="R29" gate="G$1" x="88.9" y="-43.18"/>
 <instance part="R30" gate="G$1" x="88.9" y="-53.34"/>
+<instance part="LED66" gate="G$1" x="-17.78" y="-124.46" rot="R90"/>
+<instance part="R31" gate="G$1" x="-5.08" y="-124.46" rot="R180"/>
+<instance part="GND38" gate="1" x="5.08" y="-124.46" rot="R90"/>
 </instances>
 <busses>
 </busses>
@@ -11300,6 +11306,11 @@ Distributor Buerklin, 11G810</description>
 <wire x1="-7.62" y1="-83.82" x2="-7.62" y2="-81.28" width="0.1524" layer="91"/>
 <pinref part="GND37" gate="1" pin="GND"/>
 <pinref part="R22" gate="G$1" pin="A"/>
+</segment>
+<segment>
+<pinref part="R31" gate="G$1" pin="1"/>
+<pinref part="GND38" gate="1" pin="GND"/>
+<wire x1="0" y1="-124.46" x2="2.54" y2="-124.46" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="VCC" class="0">
@@ -12444,6 +12455,20 @@ Distributor Buerklin, 11G810</description>
 <wire x1="2.54" y1="-134.62" x2="-25.4" y2="-134.62" width="0.1524" layer="91"/>
 <pinref part="JP6" gate="G$1" pin="SCK"/>
 <pinref part="IC13" gate="G$1" pin="PB5(SCK)"/>
+</segment>
+</net>
+<net name="N$82" class="0">
+<segment>
+<pinref part="IC13" gate="G$1" pin="PB1(OC1A)"/>
+<pinref part="LED66" gate="G$1" pin="A"/>
+<wire x1="-25.4" y1="-124.46" x2="-20.32" y2="-124.46" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$83" class="0">
+<segment>
+<pinref part="LED66" gate="G$1" pin="C"/>
+<pinref part="R31" gate="G$1" pin="2"/>
+<wire x1="-12.7" y1="-124.46" x2="-10.16" y2="-124.46" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>

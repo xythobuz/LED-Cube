@@ -26,16 +26,13 @@
 #include "adc.h"
 
 void adcInit(void) {
-	uint16_t tmp;
-	
 	DDRC &= ~(3);
 	ADMUX = 0;
 	ADMUX |= (1 << REFS0); // Ref. Voltage: Vcc
 	ADCSRA |= (1 << ADPS2) | (1 << ADPS0); // Prescaler 64
 	ADCSRA |= (1 << ADEN); // Enable adc
 	adcStartConversion(0);
-	while (adcIsFinished() == 0);
-	tmp = ADCW;
+	adcGetResult();
 }
 
 void adcStartConversion(uint8_t channel) {
@@ -45,11 +42,17 @@ void adcStartConversion(uint8_t channel) {
 }
 
 uint8_t adcIsFinished(void) {
-	return (ADCSRA & (1 << ADSC)); // Return start bit
+	// Return 1 if ADSC is 0
+	if (ADCSRA & (1 << ADSC)) {
+		return 0;
+	} else {
+		return 1;
+	}
 }
 
 uint16_t adcGetResult(void) {
 	while (adcIsFinished() == 0);
+	ADCSRA &= ~(1 << ADSC);
 	return ADCW;
 }
 
