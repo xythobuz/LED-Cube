@@ -259,14 +259,18 @@ public class Led3D {
 	}
 	
 	public void enterFullscreen() {
-
-		group.removeChild(background);
+		if(group.indexOfChild(background) != -1){
+			group.removeChild(background);
+		}
 		group.addChild(fullscreenBackground);
 		
 	}
 	
 	public void leaveFullscreen() {
-		group.removeChild(fullscreenBackground);
+		if(group.indexOfChild(fullscreenBackground) != -1) {
+			group.removeChild(fullscreenBackground);
+		}
+		
 		group.addChild(background);
 		
 	}
