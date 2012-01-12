@@ -27,6 +27,7 @@ import javax.media.j3d.*;
 import javax.vecmath.*;
 import com.sun.j3d.utils.behaviors.mouse.*;
 import com.sun.j3d.utils.image.TextureLoader;
+import java.awt.Toolkit;
 
 /**
  * This class is responsible for displaying the 3D View of our Cube.
@@ -55,6 +56,8 @@ public class Led3D {
 	private static Material redMat = new Material(
 			new Color3f(1.0f, 0.0f, 0.0f), new Color3f(1.0f, 0.0f, 0.0f),
 			new Color3f(1.0f, 0.0f, 0.0f), new Color3f(1.0f, 0.0f, 0.0f), 64.0f);
+	private Background background;
+	private Background fullscreenBackground;
 
 	/**
 	 * @param canv The Canvas3D we render our cube in
@@ -96,7 +99,11 @@ public class Led3D {
 		beh3.setSchedulingBounds(boundBox);
 		transGroup.addChild(beh3);
 
-		group.addChild(createBackground());
+		background = createBackground();
+		fullscreenBackground = createFullscreenBackground();
+		group.addChild(background);
+		
+		
 
 		// Add all our led sphares to the universe
 		for (int x = 0; x < 8; x++) {
@@ -240,5 +247,27 @@ public class Led3D {
 		bg.setApplicationBounds(new BoundingSphere(new Point3d(0.0, 0.0, 0.0),
 				100.0));
 		return bg;
+	}
+	
+	//create fullscreen background
+	private Background createFullscreenBackground() {
+		Background bg = new Background();
+		int radius = Toolkit.getDefaultToolkit().getScreenSize().width;
+		bg.setApplicationBounds(new BoundingSphere(new Point3d(0.0, 0.0, 0.0), radius));
+		return bg;
+
+	}
+	
+	public void enterFullscreen() {
+
+		group.removeChild(background);
+		group.addChild(fullscreenBackground);
+		
+	}
+	
+	public void leaveFullscreen() {
+		group.removeChild(fullscreenBackground);
+		group.addChild(background);
+		
 	}
 }

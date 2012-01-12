@@ -544,7 +544,8 @@ public class Frame extends JFrame implements ListSelectionListener {
 	// Anfang Ereignisprozeduren
 	
 	public void enterFullscreen(ActionEvent evt) {
-		FullscreenWindow fw = new FullscreenWindow(worker);
+		ledView.enterFullscreen();
+		FullscreenWindow fw = new FullscreenWindow(worker, cubeCanvas, ledView);
 	}
 	
 	public void editA_ActionPerformed(ActionEvent evt) {
