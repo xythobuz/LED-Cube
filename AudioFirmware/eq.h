@@ -26,3 +26,5 @@ void equalizerInit(void);
 // 7 elements in byte array
 // lowest to highest frequency
 uint8_t *equalizerGet(void);
+
+void eqLed(uint8_t *d);

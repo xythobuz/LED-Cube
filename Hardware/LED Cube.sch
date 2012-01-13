@@ -10802,6 +10802,21 @@ Distributor Buerklin, 11G810</description>
 <part name="R30" library="resistor" deviceset="R-EU_" device="0204/7" value="100k"/>
 <part name="LED66" library="led" deviceset="LED" device="5MM"/>
 <part name="R31" library="resistor" deviceset="R-EU_" device="0204/7" value="1k"/>
+<part name="LED67" library="led" deviceset="LED" device="5MM"/>
+<part name="LED68" library="led" deviceset="LED" device="5MM"/>
+<part name="LED69" library="led" deviceset="LED" device="5MM"/>
+<part name="LED70" library="led" deviceset="LED" device="5MM"/>
+<part name="LED71" library="led" deviceset="LED" device="5MM"/>
+<part name="LED72" library="led" deviceset="LED" device="5MM"/>
+<part name="LED73" library="led" deviceset="LED" device="5MM"/>
+<part name="R32" library="resistor" deviceset="R-EU_" device="0204/7" value="1k"/>
+<part name="R33" library="resistor" deviceset="R-EU_" device="0204/7" value="1k"/>
+<part name="R34" library="resistor" deviceset="R-EU_" device="0204/7" value="1k"/>
+<part name="R35" library="resistor" deviceset="R-EU_" device="0204/7" value="1k"/>
+<part name="R36" library="resistor" deviceset="R-EU_" device="0204/7" value="1k"/>
+<part name="R37" library="resistor" deviceset="R-EU_" device="0204/7" value="1k"/>
+<part name="R38" library="resistor" deviceset="R-EU_" device="0204/7" value="1k"/>
+<part name="P+15" library="supply1" deviceset="VCC" device=""/>
 <part name="GND38" library="supply1" deviceset="GND" device=""/>
 </parts>
 <sheets>
@@ -10928,9 +10943,9 @@ Distributor Buerklin, 11G810</description>
 <instance part="JP6" gate="G$1" x="25.4" y="-132.08"/>
 <instance part="GND35" gate="1" x="48.26" y="-139.7" rot="R90"/>
 <instance part="P+13" gate="VCC" x="48.26" y="-124.46" rot="R270"/>
-<instance part="LED65" gate="G$1" x="15.24" y="-116.84" rot="R90"/>
-<instance part="R21" gate="G$1" x="27.94" y="-116.84" rot="R180"/>
-<instance part="GND36" gate="1" x="38.1" y="-116.84" rot="R90"/>
+<instance part="LED65" gate="G$1" x="-15.24" y="-127" rot="R90"/>
+<instance part="R21" gate="G$1" x="-2.54" y="-127" rot="R180"/>
+<instance part="GND36" gate="1" x="7.62" y="-127" rot="R90"/>
 <instance part="R22" gate="G$1" x="-7.62" y="-76.2" rot="R180"/>
 <instance part="GND37" gate="1" x="-2.54" y="-83.82" rot="R90"/>
 <instance part="P+14" gate="VCC" x="-2.54" y="-68.58" rot="R270"/>
@@ -10942,9 +10957,24 @@ Distributor Buerklin, 11G810</description>
 <instance part="R28" gate="G$1" x="88.9" y="-33.02"/>
 <instance part="R29" gate="G$1" x="88.9" y="-43.18"/>
 <instance part="R30" gate="G$1" x="88.9" y="-53.34"/>
-<instance part="LED66" gate="G$1" x="-17.78" y="-124.46" rot="R90"/>
+<instance part="LED66" gate="G$1" x="-15.24" y="-124.46" rot="R270"/>
 <instance part="R31" gate="G$1" x="-5.08" y="-124.46" rot="R180"/>
-<instance part="GND38" gate="1" x="5.08" y="-124.46" rot="R90"/>
+<instance part="LED67" gate="G$1" x="-12.7" y="-119.38" rot="R90"/>
+<instance part="LED68" gate="G$1" x="-15.24" y="-116.84" rot="R90"/>
+<instance part="LED69" gate="G$1" x="-12.7" y="-114.3" rot="R90"/>
+<instance part="LED70" gate="G$1" x="-15.24" y="-111.76" rot="R90"/>
+<instance part="LED71" gate="G$1" x="-12.7" y="-109.22" rot="R90"/>
+<instance part="LED72" gate="G$1" x="-15.24" y="-106.68" rot="R90"/>
+<instance part="LED73" gate="G$1" x="-12.7" y="-104.14" rot="R90"/>
+<instance part="R32" gate="G$1" x="-2.54" y="-119.38" rot="R180"/>
+<instance part="R33" gate="G$1" x="-5.08" y="-116.84" rot="R180"/>
+<instance part="R34" gate="G$1" x="-2.54" y="-114.3" rot="R180"/>
+<instance part="R35" gate="G$1" x="-5.08" y="-111.76" rot="R180"/>
+<instance part="R36" gate="G$1" x="-2.54" y="-109.22" rot="R180"/>
+<instance part="R37" gate="G$1" x="-5.08" y="-106.68" rot="R180"/>
+<instance part="R38" gate="G$1" x="-2.54" y="-104.14" rot="R180"/>
+<instance part="P+15" gate="VCC" x="5.08" y="-124.46" rot="R270"/>
+<instance part="GND38" gate="1" x="10.16" y="-106.68" rot="R90"/>
 </instances>
 <busses>
 </busses>
@@ -11297,20 +11327,44 @@ Distributor Buerklin, 11G810</description>
 <pinref part="JP6" gate="G$1" pin="GND@2"/>
 </segment>
 <segment>
-<wire x1="35.56" y1="-116.84" x2="33.02" y2="-116.84" width="0.1524" layer="91"/>
-<pinref part="GND36" gate="1" pin="GND"/>
-<pinref part="R21" gate="G$1" pin="1"/>
-</segment>
-<segment>
 <wire x1="-5.08" y1="-83.82" x2="-7.62" y2="-83.82" width="0.1524" layer="91"/>
 <wire x1="-7.62" y1="-83.82" x2="-7.62" y2="-81.28" width="0.1524" layer="91"/>
 <pinref part="GND37" gate="1" pin="GND"/>
 <pinref part="R22" gate="G$1" pin="A"/>
 </segment>
 <segment>
-<pinref part="R31" gate="G$1" pin="1"/>
+<pinref part="R38" gate="G$1" pin="1"/>
+<wire x1="2.54" y1="-104.14" x2="5.08" y2="-104.14" width="0.1524" layer="91"/>
+<wire x1="5.08" y1="-104.14" x2="5.08" y2="-106.68" width="0.1524" layer="91"/>
 <pinref part="GND38" gate="1" pin="GND"/>
-<wire x1="0" y1="-124.46" x2="2.54" y2="-124.46" width="0.1524" layer="91"/>
+<wire x1="5.08" y1="-106.68" x2="7.62" y2="-106.68" width="0.1524" layer="91"/>
+<pinref part="R37" gate="G$1" pin="1"/>
+<wire x1="0" y1="-106.68" x2="5.08" y2="-106.68" width="0.1524" layer="91"/>
+<junction x="5.08" y="-106.68"/>
+<pinref part="R32" gate="G$1" pin="1"/>
+<wire x1="2.54" y1="-119.38" x2="5.08" y2="-119.38" width="0.1524" layer="91"/>
+<wire x1="5.08" y1="-119.38" x2="5.08" y2="-116.84" width="0.1524" layer="91"/>
+<pinref part="R36" gate="G$1" pin="1"/>
+<wire x1="5.08" y1="-116.84" x2="5.08" y2="-114.3" width="0.1524" layer="91"/>
+<wire x1="5.08" y1="-114.3" x2="5.08" y2="-111.76" width="0.1524" layer="91"/>
+<wire x1="5.08" y1="-111.76" x2="5.08" y2="-109.22" width="0.1524" layer="91"/>
+<wire x1="5.08" y1="-109.22" x2="5.08" y2="-106.68" width="0.1524" layer="91"/>
+<wire x1="2.54" y1="-109.22" x2="5.08" y2="-109.22" width="0.1524" layer="91"/>
+<junction x="5.08" y="-109.22"/>
+<pinref part="R35" gate="G$1" pin="1"/>
+<wire x1="0" y1="-111.76" x2="5.08" y2="-111.76" width="0.1524" layer="91"/>
+<junction x="5.08" y="-111.76"/>
+<pinref part="R34" gate="G$1" pin="1"/>
+<wire x1="2.54" y1="-114.3" x2="5.08" y2="-114.3" width="0.1524" layer="91"/>
+<junction x="5.08" y="-114.3"/>
+<pinref part="R33" gate="G$1" pin="1"/>
+<wire x1="0" y1="-116.84" x2="5.08" y2="-116.84" width="0.1524" layer="91"/>
+<junction x="5.08" y="-116.84"/>
+</segment>
+<segment>
+<pinref part="R21" gate="G$1" pin="1"/>
+<pinref part="GND36" gate="1" pin="GND"/>
+<wire x1="2.54" y1="-127" x2="5.08" y2="-127" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="VCC" class="0">
@@ -11438,6 +11492,11 @@ Distributor Buerklin, 11G810</description>
 <wire x1="-7.62" y1="-68.58" x2="-7.62" y2="-71.12" width="0.1524" layer="91"/>
 <pinref part="P+14" gate="VCC" pin="VCC"/>
 <pinref part="R22" gate="G$1" pin="E"/>
+</segment>
+<segment>
+<pinref part="R31" gate="G$1" pin="1"/>
+<wire x1="0" y1="-124.46" x2="2.54" y2="-124.46" width="0.1524" layer="91"/>
+<pinref part="P+15" gate="VCC" pin="VCC"/>
 </segment>
 </net>
 <net name="N$3" class="0">
@@ -12405,13 +12464,6 @@ Distributor Buerklin, 11G810</description>
 <pinref part="IC13" gate="G$1" pin="AREF"/>
 </segment>
 </net>
-<net name="N$76" class="0">
-<segment>
-<wire x1="22.86" y1="-116.84" x2="20.32" y2="-116.84" width="0.1524" layer="91"/>
-<pinref part="R21" gate="G$1" pin="2"/>
-<pinref part="LED65" gate="G$1" pin="C"/>
-</segment>
-</net>
 <net name="N$77" class="0">
 <segment>
 <wire x1="-25.4" y1="-78.74" x2="-15.24" y2="-78.74" width="0.1524" layer="91"/>
@@ -12419,15 +12471,6 @@ Distributor Buerklin, 11G810</description>
 <wire x1="-15.24" y1="-76.2" x2="-12.7" y2="-76.2" width="0.1524" layer="91"/>
 <pinref part="IC13" gate="G$1" pin="PC1(ADC1)"/>
 <pinref part="R22" gate="G$1" pin="S"/>
-</segment>
-</net>
-<net name="N$75" class="0">
-<segment>
-<wire x1="-25.4" y1="-127" x2="7.62" y2="-127" width="0.1524" layer="91"/>
-<wire x1="7.62" y1="-127" x2="7.62" y2="-116.84" width="0.1524" layer="91"/>
-<wire x1="7.62" y1="-116.84" x2="12.7" y2="-116.84" width="0.1524" layer="91"/>
-<pinref part="IC13" gate="G$1" pin="PB2(SS/OC1B)"/>
-<pinref part="LED65" gate="G$1" pin="A"/>
 </segment>
 </net>
 <net name="N$79" class="0">
@@ -12457,18 +12500,125 @@ Distributor Buerklin, 11G810</description>
 <pinref part="IC13" gate="G$1" pin="PB5(SCK)"/>
 </segment>
 </net>
+<net name="N$84" class="0">
+<segment>
+<pinref part="LED67" gate="G$1" pin="C"/>
+<pinref part="R32" gate="G$1" pin="2"/>
+</segment>
+</net>
+<net name="N$85" class="0">
+<segment>
+<pinref part="LED68" gate="G$1" pin="C"/>
+<pinref part="R33" gate="G$1" pin="2"/>
+</segment>
+</net>
+<net name="N$86" class="0">
+<segment>
+<pinref part="LED69" gate="G$1" pin="C"/>
+<pinref part="R34" gate="G$1" pin="2"/>
+</segment>
+</net>
+<net name="N$87" class="0">
+<segment>
+<pinref part="LED70" gate="G$1" pin="C"/>
+<pinref part="R35" gate="G$1" pin="2"/>
+</segment>
+</net>
+<net name="N$88" class="0">
+<segment>
+<pinref part="LED71" gate="G$1" pin="C"/>
+<pinref part="R36" gate="G$1" pin="2"/>
+</segment>
+</net>
+<net name="N$89" class="0">
+<segment>
+<pinref part="LED72" gate="G$1" pin="C"/>
+<pinref part="R37" gate="G$1" pin="2"/>
+</segment>
+</net>
+<net name="N$90" class="0">
+<segment>
+<pinref part="LED73" gate="G$1" pin="C"/>
+<pinref part="R38" gate="G$1" pin="2"/>
+</segment>
+</net>
+<net name="N$91" class="0">
+<segment>
+<pinref part="IC13" gate="G$1" pin="PB0(ICP)"/>
+<wire x1="-25.4" y1="-121.92" x2="-20.32" y2="-121.92" width="0.1524" layer="91"/>
+<wire x1="-20.32" y1="-121.92" x2="-20.32" y2="-119.38" width="0.1524" layer="91"/>
+<pinref part="LED67" gate="G$1" pin="A"/>
+<wire x1="-20.32" y1="-119.38" x2="-15.24" y2="-119.38" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$92" class="0">
+<segment>
+<pinref part="LED68" gate="G$1" pin="A"/>
+<pinref part="IC13" gate="G$1" pin="PD7(AIN1)"/>
+<wire x1="-17.78" y1="-116.84" x2="-25.4" y2="-116.84" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$93" class="0">
+<segment>
+<pinref part="IC13" gate="G$1" pin="PD6(AIN0)"/>
+<pinref part="LED69" gate="G$1" pin="A"/>
+<wire x1="-25.4" y1="-114.3" x2="-15.24" y2="-114.3" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$94" class="0">
+<segment>
+<pinref part="LED70" gate="G$1" pin="A"/>
+<pinref part="IC13" gate="G$1" pin="PD5(T1)"/>
+<wire x1="-17.78" y1="-111.76" x2="-25.4" y2="-111.76" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$95" class="0">
+<segment>
+<pinref part="IC13" gate="G$1" pin="PD4(XCK/T0)"/>
+<pinref part="LED71" gate="G$1" pin="A"/>
+<wire x1="-25.4" y1="-109.22" x2="-15.24" y2="-109.22" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$96" class="0">
+<segment>
+<pinref part="LED72" gate="G$1" pin="A"/>
+<pinref part="IC13" gate="G$1" pin="PD3(INT1)"/>
+<wire x1="-17.78" y1="-106.68" x2="-25.4" y2="-106.68" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$97" class="0">
+<segment>
+<pinref part="IC13" gate="G$1" pin="PD2(INT0)"/>
+<pinref part="LED73" gate="G$1" pin="A"/>
+<wire x1="-25.4" y1="-104.14" x2="-15.24" y2="-104.14" width="0.1524" layer="91"/>
+</segment>
+</net>
 <net name="N$82" class="0">
 <segment>
-<pinref part="IC13" gate="G$1" pin="PB1(OC1A)"/>
+<pinref part="R31" gate="G$1" pin="2"/>
 <pinref part="LED66" gate="G$1" pin="A"/>
-<wire x1="-25.4" y1="-124.46" x2="-20.32" y2="-124.46" width="0.1524" layer="91"/>
+<wire x1="-10.16" y1="-124.46" x2="-12.7" y2="-124.46" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$83" class="0">
 <segment>
 <pinref part="LED66" gate="G$1" pin="C"/>
-<pinref part="R31" gate="G$1" pin="2"/>
-<wire x1="-12.7" y1="-124.46" x2="-10.16" y2="-124.46" width="0.1524" layer="91"/>
+<pinref part="IC13" gate="G$1" pin="PB1(OC1A)"/>
+<wire x1="-20.32" y1="-124.46" x2="-25.4" y2="-124.46" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$75" class="0">
+<segment>
+<pinref part="IC13" gate="G$1" pin="PB2(SS/OC1B)"/>
+<pinref part="LED65" gate="G$1" pin="A"/>
+<wire x1="-25.4" y1="-127" x2="-17.78" y2="-127" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$76" class="0">
+<segment>
+<pinref part="LED65" gate="G$1" pin="C"/>
+<pinref part="R21" gate="G$1" pin="2"/>
+<wire x1="-10.16" y1="-127" x2="-7.62" y2="-127" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
