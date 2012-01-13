@@ -99,6 +99,10 @@ public class Led3D {
 		beh3.setSchedulingBounds(boundBox);
 		transGroup.addChild(beh3);
 
+		
+		group.setCapability(BranchGroup.ALLOW_CHILDREN_READ);
+		group.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
+		group.setCapability(BranchGroup.ALLOW_DETACH);
 		background = createBackground();
 		fullscreenBackground = createFullscreenBackground();
 		group.addChild(background);
@@ -251,7 +255,7 @@ public class Led3D {
 	
 	//create fullscreen background
 	private Background createFullscreenBackground() {
-		Background bg = new Background();
+		Background bg = new Background(0.0f, 0.0f, 1.0f);
 		int radius = Toolkit.getDefaultToolkit().getScreenSize().width;
 		bg.setApplicationBounds(new BoundingSphere(new Point3d(0.0, 0.0, 0.0), radius));
 		return bg;
@@ -259,19 +263,22 @@ public class Led3D {
 	}
 	
 	public void enterFullscreen() {
+		group.detach();
 		if(group.indexOfChild(background) != -1){
 			group.removeChild(background);
 		}
 		group.addChild(fullscreenBackground);
+		universe.addBranchGraph(group);
 		
 	}
 	
 	public void leaveFullscreen() {
+		group.detach();
 		if(group.indexOfChild(fullscreenBackground) != -1) {
 			group.removeChild(fullscreenBackground);
 		}
-		
 		group.addChild(background);
+		universe.addBranchGraph(group);
 		
 	}
 }
