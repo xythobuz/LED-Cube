@@ -28,3 +28,4 @@ void equalizerInit(void);
 uint8_t *equalizerGet(void);
 
 void eqLed(uint8_t *d);
+uint8_t getOffset(void);
