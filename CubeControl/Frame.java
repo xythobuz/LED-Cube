@@ -36,7 +36,7 @@ public class Frame extends JFrame implements ListSelectionListener {
 	private GraphicsConfiguration gConfig = SimpleUniverse
 			.getPreferredConfiguration();
 	private Canvas3D cubeCanvas = new Canvas3D(gConfig);
-	private Led3D ledView = new Led3D(cubeCanvas);
+	public Led3D ledView = new Led3D(cubeCanvas);
 
 	// Anfang Attribute
 	private JButton editA = new JButton();
@@ -545,7 +545,8 @@ public class Frame extends JFrame implements ListSelectionListener {
 	
 	public void enterFullscreen(ActionEvent evt) {
 		ledView.enterFullscreen();
-		FullscreenWindow fw = new FullscreenWindow(worker, cubeCanvas, ledView);
+		FullscreenWindow fw = new FullscreenWindow(worker, cubeCanvas, ledView, this);
+	
 	}
 	
 	public void editA_ActionPerformed(ActionEvent evt) {

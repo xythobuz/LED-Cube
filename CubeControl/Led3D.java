@@ -277,6 +277,7 @@ public class Led3D {
 		if(group.indexOfChild(fullscreenBackground) != -1) {
 			group.removeChild(fullscreenBackground);
 		}
+		background = createBackground();
 		group.addChild(background);
 		universe.addBranchGraph(group);
 		

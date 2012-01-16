@@ -48,8 +48,9 @@ public class FullscreenWindow extends JFrame {
 	private Led3D led;
 	private int width;
 	private int height;
+	private Frame frame;
 	
-	public FullscreenWindow (cubeWorker cw, Canvas3D cv, Led3D ledview) {
+	public FullscreenWindow (cubeWorker cw, Canvas3D cv, Led3D ledview, Frame f) {
 		//Basic layout stuff
 		this.setUndecorated(true);
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
@@ -63,12 +64,13 @@ public class FullscreenWindow extends JFrame {
 		height = d.height;
 		canvas = cv;
 		led = ledview;
+		frame = f;
 		exitButton = new JButton("Exit Fullscreen");
 		exitButton.setBounds(width-150, height-25, 150, 25);
 		exitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				dispose();
-				led.leaveFullscreen();
+				frame.ledView.leaveFullscreen();
 			}
 		});
 		
