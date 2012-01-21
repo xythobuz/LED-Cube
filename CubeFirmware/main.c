@@ -32,22 +32,29 @@
 #endif
 
 int main(void) {
-	uint8_t i;
+	uint8_t i, j = 1;
+
+	DDRD = 0xFF; // Mosfets as Output
+	DDRB = 0xFF;
+	DDRC = 0xFF; // Latch Enable
+	DDRA = 0xFF; // Latch Data
 
 	// init(); // Initialize Cube Low-Level Code
 	uart_init(UART_BAUD_SELECT(19200, 16000000L)); // Initialize Serial
 
 
-	setFet(0xFF);
+	setFet(0x01);
 	// Blink led :)
 	while (1) {
-		 PORTB |= (1 << PB0);
-		_delay_ms(1000);
-		PORTB &= ~(1 << PB0);
-		_delay_ms(1000);
-		
-		//setFet(0);
-		//_delay_ms(10000);
+		for (i = 0; i < 8; i++) {
+			setLatch(i, j);
+			_delay_ms(100);
+		}
+		if (j < 128) {
+			j *= 2;
+		} else {
+			j = 1;
+		}
 	}
 
 	close();

@@ -57,10 +57,6 @@ uint8_t isFinished(void) {
 
 void init(void) {
 	uint8_t ctr = 0;
-	DDRD = 0xFF; // Mosfets as Output
-	DDRB = 0xFF;
-	DDRC = 0xFF; // Latch Enable
-	DDRA = 0xFF; // Latch Data
 
 	TCCR1A |= (1 << WGM12); // CTC Mode
 	TCCR1B |= (1 << CS10); // No prescaler
