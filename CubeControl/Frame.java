@@ -562,7 +562,13 @@ public class Frame extends JFrame implements ListSelectionListener {
 		} else {
 			for(int i = 0; i < frameList.getModel().getSize(); i++){
 				frameList.setSelectedIndex(i);
-			
+				short time1 = worker.getFrameTime(animList.getSelectedIndex(), frameList.getSelectedIndex());
+				long time = (long) (((time1+1) * 1/24) * 1000);
+				try{
+					Thread.sleep(time);
+				}catch(Exception e){
+					System.out.println(e);
+				}
 			}	
 		}
 	
