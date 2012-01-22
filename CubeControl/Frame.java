@@ -76,6 +76,7 @@ public class Frame extends JFrame implements ListSelectionListener {
 	private JTextField frameLengthText = new JTextField();
 	private JButton frameDuration = new JButton();
     private JButton fullScreenButton = new JButton();
+	private JButton playAnimation = new JButton();
 	// Ende Attribute
 
 	public cubeWorker worker = new cubeWorker();
@@ -368,6 +369,16 @@ public class Frame extends JFrame implements ListSelectionListener {
 			}
 		});
 
+		playAnimation.setText("Play");
+		playAnimation.setBounds(344, 390, 147, 25);
+		playAnimation.setFont(new Font("Dialog", Font.PLAIN, 13));
+		cp.add(playAnimation);
+		playAnimation.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt){
+				playAnimation(evt);		
+			}
+		});
+
 		frameDuration.setBounds(590, 184, 60, 24);
 		frameDuration.setText("OK");
 		frameDuration.setFont(new Font("Dialog", Font.PLAIN, 13));
@@ -542,6 +553,20 @@ public class Frame extends JFrame implements ListSelectionListener {
 	// Anfang Methoden
 
 	// Anfang Ereignisprozeduren
+	
+	public void playAnimation(ActionEvent evt){
+			if (animList.getSelectedIndex() == -1) {
+			errorMessage("Please select an animation.");
+		} else if (frameList.getSelectedIndex() == -1) {
+			errorMessage("Please select a Frame.");
+		} else {
+			for(int i = 0; i < frameList.getModel().getSize(); i++){
+				frameList.setSelectedIndex(i);
+			
+			}	
+		}
+	
+	}
 	
 	public void enterFullscreen(ActionEvent evt) {
 		ledView.enterFullscreen();
