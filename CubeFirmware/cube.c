@@ -23,6 +23,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdlib.h>
+#include <util/atomic.h>
 
 #include "uart.h"
 #include "cube.h"
@@ -31,7 +32,11 @@
 #define F_CPU 16000000L
 #endif
 
-volatile uint8_t _isrCounter = 0;
+// Should be 41666
+#define FIRSTCOUNT 41666
+// Time one latch is active in ns, should be 63
+#define LATCHDELAY 63
+
 volatile uint8_t **imgBuffer = NULL; // imgBuffer[8][8]
 volatile uint8_t changedFlag = 0;
 volatile uint8_t imgFlag = 0;
@@ -41,12 +46,27 @@ inline void delay_ns(int16_t ns);
 inline void isrCall(void);
 
 void setImage(uint8_t **img) {
-	uint8_t i = 0, j;
+	uint8_t i, j;
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+		changedFlag = 1;
+		imgFlag = 0;
+		for (i = 0; i < 8; i++) {
+			for (j = 0; j < 8; j++) {
+				imgBuffer[i][j] = img[i][j];
+			}
+		}
+	}
+}
 
-	changedFlag = 1;
-	for (; i < 8; i++) {
-		for (j = 0; j < 8; j++) {
-			imgBuffer[i][j] = img[i][j];
+void fillBuffer(uint8_t val) {
+	uint8_t i, j;
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+		changedFlag = 1;
+		imgFlag = 0;
+		for (i = 0; i < 8; i++) {
+			for (j = 0; j < 8; j++) {
+				imgBuffer[i][j] = val;
+			}
 		}
 	}
 }
@@ -59,9 +79,9 @@ void init(void) {
 	uint8_t ctr = 0;
 
 	TCCR1A |= (1 << WGM12); // CTC Mode
-	TCCR1B |= (1 << CS10); // No prescaler
-	OCR1A = 3968;
-	TIMSK = (1 << OCIE1A); // Enable Overflow Interrupt
+	TCCR1B |= (1 << CS10); // Prescaler: 1
+	OCR1A = FIRSTCOUNT;
+	TIMSK = (1 << OCIE1A); // Enable Output Compare Interrupt
 
 	// We just assume this works, because after reset,
 	// enough Memory should be available...
@@ -84,21 +104,15 @@ void close(void) {
 	TIMSK &= ~(1 << OCIE1A); // Disable interrupt
 }
 
-// Count to 3968 21 times...
+// Count to FIRSTCOUNT SECONDCOUNT times...
 ISR(TIMER1_COMPA_vect) {
-	if (_isrCounter < 20) {
-		_isrCounter++;
-	} else {
-		_isrCounter = 0;
-		isrCall();
-	}
+	isrCall();
 }
 
 // Data is sent to 8 Fet bits...
 inline void setFet(uint8_t data) {
 	PORTD = (data & ~(3)); // Doesn't interfere with serial communication...
-	PORTB &= ~(24);
-	PORTB |= ((data << 3) & 24);
+	PORTB = (PORTB & ~(24)) | ((data << 3) & 24);
 }
 
 // Give id of latch, 0 - 7
@@ -110,12 +124,9 @@ inline void selectLatch(uint8_t latchNr) {
 }
 
 inline void setLatch(uint8_t latchNr, uint8_t data) {
-	setFet(0); // All LEDs off
 	selectLatch(latchNr); // Activate current latch
 	PORTA = data; // Put latch data
 	delay_ns(LATCHDELAY); // Wait for latch
-	selectLatch(8); // Deactivate all latches
-	setFet(1 << latchNr); // Activate current plane
 }
 
 inline void isrCall(void) {
@@ -124,13 +135,13 @@ inline void isrCall(void) {
 	if (changedFlag != 0) {
 		// The picture changed. Restart!
 		layer = 0;
-		imgFlag = 0;
 		changedFlag = 0;
 	}
-
+	setFet(0);
 	for (; latchCtr < 8; latchCtr++) {
 		setLatch(latchCtr, imgBuffer[layer][latchCtr]); // Put out all the data
 	}
+	setFet(1 << layer);
 	
 	// Select next layer
 	if (layer < 7) {

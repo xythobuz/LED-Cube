@@ -21,10 +21,6 @@
  * along with LED-Cube.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-// Time one latch is active in ns
-#define LATCHDELAY 63
-
 /*
  * Call init(). A picture you set a new picture it will be displayed.
  * After the last part is applied to the latches, isFinished() will change
@@ -36,6 +32,8 @@ extern void init(void);
 extern void setImage(uint8_t **img); // img[8][8]
 extern uint8_t isFinished(void);
 extern void close(void);
+
+extern void fillBuffer(uint8_t val);
 
 // For debugging, not normal operation:
 extern void setFet(uint8_t data);
