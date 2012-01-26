@@ -21,5 +21,6 @@
  * along with LED-Cube.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-void twiInit(uint8_t adress);
-void twiSetDataToSend(uint8_t *data);
+void twiInit(uint8_t address);
+void twiSetDataToSend(uint8_t *d); // 7 bytes
+uint8_t twiDataWasSent(void);

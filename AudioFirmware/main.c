@@ -27,6 +27,7 @@
 
 #include "adc.h"
 #include "eq.h"
+#include "twislave.h"
 
 #ifndef F_CPU
 #define F_CPU 16000000L
@@ -55,6 +56,7 @@ int main(void) {
 	DDRC = 0x0C;
 	DDRD = 0xFF;
 	
+	twiInit(0x42); // All TWI action happens completely in the background.
 	adcInit();
 	equalizerInit();
 
