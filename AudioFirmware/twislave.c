@@ -1,5 +1,5 @@
 /*
- * twislave.h
+ * twislave.c
  *
  * Copyright 2011 Thomas Buck <xythobuz@me.com>
  * Copyright 2011 Max Nuding <max.nuding@gmail.com>

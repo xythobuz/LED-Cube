@@ -391,6 +391,7 @@ clean: begin clean_list finished end
 clean_list :
 	@echo
 	@echo $(MSG_CLEANING)
+	$(REMOVE) $(TARGET).hex
 	$(REMOVE) $(TARGET).eep
 	$(REMOVE) $(TARGET).obj
 	$(REMOVE) $(TARGET).cof

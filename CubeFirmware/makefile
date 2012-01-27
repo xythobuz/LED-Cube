@@ -39,6 +39,8 @@ SRC = $(TARGET).c
 SRC += uart.c # Additional Source-File
 SRC += cube.c
 SRC += twi.c
+SRC += mem.c
+SRC += audio.c
 
 # List Assembler source files here.
 # Make them always end in a capital .S.  Files ending in a lowercase .s

@@ -63,14 +63,22 @@ int main(void) {
 	blinkStatus();
 	blinkStatus();
 
+	music = equalizerGet();
+	twiSetDataToSend(music);
+	free(music);
+
 	while (1) {
 		music = equalizerGet();
-
+		if (twiDataWasSent()) {
+			twiSetDataToSend(music);
+		}
+		eqLed(music);
 		free(music);
 
 		// Heartbeat
 		PORTB ^= (1 << PB1);
 		_delay_ms(1); // Everything locks if this is removed :(
+		// still don't know why...
 	}
 
 	return 0;
