@@ -44,6 +44,8 @@ public class Led3D {
 	private BranchGroup group = null;
 	private Transform3D trans3D = null;
 	private TransformGroup transGroup = null;
+	private Matrix4d mat = null;
+	private Matrix4d fullScreenMat = null;
 
 	private Sphere[][][] leds = new Sphere[8][8][8];
 	private static ColoringAttributes redColor = new ColoringAttributes(
@@ -68,11 +70,19 @@ public class Led3D {
 		group = new BranchGroup();
 		// Position viewer, so we are looking at object
 		trans3D = new Transform3D();
-		Matrix4d mat = new Matrix4d();
+		mat = new Matrix4d();
 		mat.setRow(0, 0.744, 0.0237, -0.66756, -0.34);
 		mat.setRow(1, 0.136, -0.9837, 0.117, 3.24);
 		mat.setRow(2, -0.6536, -0.1785, -0.735, -8.32);
 		mat.setRow(3, 0.0, 0.0, 0.0, 1.0);
+
+		fullScreenMat = new Matrix4d();
+		fullScreenMat.setRow(0, 0.744, 0.0237, -0.66756, -0.34);
+		fullScreenMat.setRow(1, 0.136, -0.9837, 0.117, 3.24);
+		fullScreenMat.setRow(2, -0.6536, -0.1785, -0.735, -18.0);
+		fullScreenMat.setRow(3, 0.0, 0.0, 0.0, 1.0);
+
+
 		trans3D.set(mat);
 
 		transGroup = new TransformGroup(trans3D);
@@ -269,7 +279,8 @@ public class Led3D {
 		}
 		group.addChild(fullscreenBackground);
 		universe.addBranchGraph(group);
-		
+		trans3D.set(fullScreenMat);
+		transGroup.setTransform(trans3D);
 	}
 	
 	public void leaveFullscreen() {
@@ -280,6 +291,7 @@ public class Led3D {
 		background = createBackground();
 		group.addChild(background);
 		universe.addBranchGraph(group);
-		
+		trans3D.set(mat);
+		transGroup.setTransform(trans3D);
 	}
 }
