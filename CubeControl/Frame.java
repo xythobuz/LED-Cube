@@ -77,6 +77,7 @@ public class Frame extends JFrame implements ListSelectionListener {
 	private JButton frameDuration = new JButton();
     private JButton fullScreenButton = new JButton();
 	private JButton playAnimation = new JButton();
+	private JButton exitButton;
 	// Ende Attribute
 
 	public cubeWorker worker = new cubeWorker();
@@ -369,6 +370,16 @@ public class Frame extends JFrame implements ListSelectionListener {
 			}
 		});
 
+		exitButton = new JButton("Exit Fullscreen");
+		exitButton.setBounds(Toolkit.getDefaultToolkit().getScreenSize().width-300, Toolkit.getDefaultToolkit().getScreenSize().height-80, 150, 25);
+		cp.add(exitButton);
+		exitButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				exitFullscreen();
+			}
+		});
+
+
 		playAnimation.setText("Play");
 		playAnimation.setBounds(344, 390, 147, 25);
 		playAnimation.setFont(new Font("Dialog", Font.PLAIN, 13));
@@ -576,8 +587,29 @@ public class Frame extends JFrame implements ListSelectionListener {
 	
 	public void enterFullscreen(ActionEvent evt) {
 		ledView.enterFullscreen();
-		FullscreenWindow fw = new FullscreenWindow(worker, cubeCanvas, ledView, this);
+		//FullscreenWindow fw = new FullscreenWindow(worker, cubeCanvas, ledView, this);
+		setLocation(0,0);
+		setSize(700, 700);
+		int w = Toolkit.getDefaultToolkit().getScreenSize().width;
+		int h = Toolkit.getDefaultToolkit().getScreenSize().height;
+		System.out.println(w);
+		System.out.println(h);
+		setSize(w-5, h-30);
+		//setSize(Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height);
+		//Y U NO WORK????
+		cubeCanvas.setBounds(0,0,Toolkit.getDefaultToolkit().getScreenSize().width-5, Toolkit.getDefaultToolkit().getScreenSize().height-80);
 	
+	}
+	public void exitFullscreen(){
+	//661, 440
+	setLocation(0,0);
+		setSize(661, 440);
+		ledView.leaveFullscreen();
+		cubeCanvas.setBounds(8,8, 250,250);
+		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+		int x = (d.width - getSize().width) / 2;
+		int y = (d.height - getSize().height) / 2;
+		setLocation(x, y);
 	}
 	
 	public void editA_ActionPerformed(ActionEvent evt) {

@@ -16,7 +16,7 @@ endif
 
 # All java files to be compiled
 # List so it works as target
-JAVAFILES = HelperUtility.java AnimationUtility.java Animation.java AFrame.java cubeWorker.java layerEditFrame.java Led3D.java Frame.java FullscreenWindow.java
+JAVAFILES = HelperUtility.java AnimationUtility.java Animation.java AFrame.java cubeWorker.java layerEditFrame.java Led3D.java Frame.java
 
 # --------------------------------------
 
