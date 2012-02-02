@@ -1,0 +1,44 @@
+Partlist
+
+Quantity Value          Device          Package        Library             Bought?
+
+// Capacitors
+22       100n           C-EUC0603       C0603          resistor            Yes
+4        22p            C-EUC0603       C0603          resistor            Yes
+1        4u7            C-EUC0603       C0603          resistor            Yes
+1        33p            C-EUC0603       C0603          resistor            Yes
+1        10n            C-EUC0603       C0603          resistor            Yes
+1        4u7            CPOL-EUTAP5-80  TAP5-80        resistor            Yes
+
+// Resistors
+8        15             R-EU_R0603      R0603          resistor            Yes
+3        10k            R-EU_R0603      R0603          resistor            Yes
+8        100k           R-EU_R0603      R0603          resistor            Yes
+67       1k             R-EU_R0603      R0603          resistor            Yes
+3        200k           R-EU_R0603      R0603          resistor            Yes
+2        2k             R-EU_R0603      R0603          resistor            Yes
+1        4k7            R-EU_R0603      R0603          resistor            Yes
+64       112.5			0603			0603                               Yes
+
+// IC
+64       PNP            PNP             SOT323         0-xythobuz          Yes
+8        IRF530         IRF530          TO220-3V       0-xythobuz          Yes
+8        74HC573D       74HC573D        SO20W          74xx-eu             Yes
+1        MEGA8-AI       MEGA8-AI        TQFP32-08      atmel               Yes
+1        FT232RL        FT232RL         SSOP28         ftdichip            Yes
+1        FM24V10        FM24V10         SOIC8          0-xythobuz          Yes
+1        MSGEQ7         MSGEQ7          DIP8           0-xythobuz          Yes
+1        7805           78XXS           78XXS          v-reg               Yes
+1        MEGA32-A       MEGA32-A        TQFP44         atmel               Yes
+
+// Misc
+1        POTI           TRIM_EU-PT10S   PT-10S         pot                 Yes
+1        Connector      ML64            ML64           con-ml              Yes
+1        KLINKENBUCHSE  KLINKENBUCHSE   KLINKEPRINT    0-xythobuz          Yes
+1        TASTER         TASTER          SMDTASTER      0-xythobuz          Yes
+1        DC-Stecker     733980-62       733980-62      con-conrad          Yes
+1        USB-B mini     USB-B-MINI-SMD  USB-B-MINI-SMD 1_USER              Yes
+
+==> Ohne Versand: 48,63€ / 3 = 16,21€ pro Person
+	Gespeichert in myReichelt.
+	https://secure.reichelt.de/index.html?;ACTION=20;AWKID=538158;PROVID=2084

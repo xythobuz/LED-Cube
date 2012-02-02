@@ -13823,10 +13823,10 @@ Source: http://www.ftdichip.com/Documents/DataSheets/DS_FT232R_v104.pdf</descrip
 <library name="0-xythobuz">
 <packages>
 <package name="SOIC8">
-<wire x1="0" y1="3.81" x2="5.08" y2="3.81" width="0.127" layer="20"/>
-<wire x1="5.08" y1="3.81" x2="5.08" y2="-0.635" width="0.127" layer="20"/>
-<wire x1="5.08" y1="-0.635" x2="0" y2="-0.635" width="0.127" layer="20"/>
-<wire x1="0" y1="-0.635" x2="0" y2="3.81" width="0.127" layer="20"/>
+<wire x1="0" y1="3.81" x2="5.08" y2="3.81" width="0.127" layer="21"/>
+<wire x1="5.08" y1="3.81" x2="5.08" y2="-0.635" width="0.127" layer="21"/>
+<wire x1="5.08" y1="-0.635" x2="0" y2="-0.635" width="0.127" layer="21"/>
+<wire x1="0" y1="-0.635" x2="0" y2="3.81" width="0.127" layer="21"/>
 <circle x="0.75" y="1" radius="0.559" width="0.127" layer="21"/>
 <smd name="PH" x="0.635" y="4.2" dx="2" dy="0.65" layer="1" rot="R90"/>
 <smd name="PG" x="1.905" y="4.2" dx="2" dy="0.65" layer="1" rot="R90"/>
@@ -13912,14 +13912,14 @@ Source: http://www.ftdichip.com/Documents/DataSheets/DS_FT232R_v104.pdf</descrip
 <rectangle x1="1.651" y1="1.27" x2="3.429" y2="1.778" layer="51"/>
 </package>
 <package name="SMDTASTER">
-<wire x1="1.27" y1="-1.905" x2="12.67" y2="-1.905" width="0.127" layer="21"/>
-<wire x1="12.67" y1="-1.905" x2="12.67" y2="9.495" width="0.127" layer="21"/>
-<wire x1="12.67" y1="9.495" x2="1.27" y2="9.495" width="0.127" layer="21"/>
-<wire x1="1.27" y1="9.495" x2="1.27" y2="-1.905" width="0.127" layer="21"/>
 <smd name="B" x="0" y="0" dx="3" dy="2" layer="1" rot="R180"/>
 <smd name="A" x="0" y="7.5" dx="3" dy="2" layer="1"/>
 <smd name="B2" x="14" y="0" dx="3" dy="2" layer="1"/>
 <smd name="A2" x="14" y="7.5" dx="3" dy="2" layer="1"/>
+<wire x1="0" y1="-1.905" x2="13.97" y2="-1.905" width="0.127" layer="21"/>
+<wire x1="13.97" y1="-1.905" x2="13.97" y2="9.525" width="0.127" layer="21"/>
+<wire x1="13.97" y1="9.525" x2="0" y2="9.525" width="0.127" layer="21"/>
+<wire x1="0" y1="9.525" x2="0" y2="-1.905" width="0.127" layer="21"/>
 </package>
 </packages>
 <symbols>
@@ -18165,20 +18165,20 @@ Distributor Conrad</description>
 <part name="IC13" library="v-reg" deviceset="78XXS" device=""/>
 <part name="GND38" library="supply1" deviceset="GND" device=""/>
 <part name="P+10" library="supply1" deviceset="VCC" device=""/>
-<part name="C19" library="resistor" deviceset="C-EU" device="C0603"/>
-<part name="C20" library="resistor" deviceset="C-EU" device="C0603"/>
-<part name="C21" library="resistor" deviceset="CPOL-EU" device="TAP5-80"/>
+<part name="C19" library="resistor" deviceset="C-EU" device="C0603" value="100n"/>
+<part name="C20" library="resistor" deviceset="C-EU" device="C0603" value="100n"/>
+<part name="C21" library="resistor" deviceset="CPOL-EU" device="TAP5-80" value="4u7"/>
 <part name="JP2" library="jumper" deviceset="JP1E" device=""/>
 <part name="X1" library="con-conrad" deviceset="73398?" device="0-62"/>
-<part name="C22" library="resistor" deviceset="C-EU" device="C0603"/>
-<part name="C23" library="resistor" deviceset="C-EU" device="C0603"/>
-<part name="C24" library="resistor" deviceset="C-EU" device="C0603"/>
-<part name="C25" library="resistor" deviceset="C-EU" device="C0603"/>
-<part name="C26" library="resistor" deviceset="C-EU" device="C0603"/>
-<part name="C27" library="resistor" deviceset="C-EU" device="C0603"/>
-<part name="C28" library="resistor" deviceset="C-EU" device="C0603"/>
-<part name="C29" library="resistor" deviceset="C-EU" device="C0603"/>
-<part name="C30" library="resistor" deviceset="C-EU" device="C0603"/>
+<part name="C22" library="resistor" deviceset="C-EU" device="C0603" value="100n"/>
+<part name="C23" library="resistor" deviceset="C-EU" device="C0603" value="100n"/>
+<part name="C24" library="resistor" deviceset="C-EU" device="C0603" value="100n"/>
+<part name="C25" library="resistor" deviceset="C-EU" device="C0603" value="100n"/>
+<part name="C26" library="resistor" deviceset="C-EU" device="C0603" value="100n"/>
+<part name="C27" library="resistor" deviceset="C-EU" device="C0603" value="100n"/>
+<part name="C28" library="resistor" deviceset="C-EU" device="C0603" value="100n"/>
+<part name="C29" library="resistor" deviceset="C-EU" device="C0603" value="100n"/>
+<part name="C30" library="resistor" deviceset="C-EU" device="C0603" value="100n"/>
 <part name="P+80" library="supply1" deviceset="VCC" device=""/>
 <part name="GND40" library="supply1" deviceset="GND" device=""/>
 </parts>
