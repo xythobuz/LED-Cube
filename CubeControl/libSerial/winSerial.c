@@ -101,7 +101,7 @@ void serialClose(void) {
 }
 
 // Last element has to be NULL
-char** getSerialPorts(void) {
+char** getSerialPorts(const char *search) {
 	LPTSTR ports;
 	DWORD num;
 	char **files;
