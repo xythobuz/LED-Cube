@@ -80,7 +80,7 @@ public class HelperUtility {
 	}
 
 	// http://thomaswabner.wordpress.com/2007/10/09/fast-stream-copy-using-javanio-channels/
-	public static void fastChannelCopy(ReadableByteChannel src,
+	private static void fastChannelCopy(ReadableByteChannel src,
 			WritableByteChannel dest) throws IOException {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(16 * 1024);
 		while (src.read(buffer) != -1) {

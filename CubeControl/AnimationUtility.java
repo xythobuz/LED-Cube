@@ -106,7 +106,7 @@ public class AnimationUtility {
 	 * Get the last error that occured while writing
 	 * 
 	 * @return Text of the exception that occured
-	 * @see AnimationUtility#writeFile(String, ArrayList) writeFile()
+	 * @see AnimationUtility#writeFile(String, List) writeFile()
 	 */
 	public static String getLastError() {
 		String tmp = lastError;

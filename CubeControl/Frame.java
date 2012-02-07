@@ -98,12 +98,12 @@ public class Frame extends JFrame implements ListSelectionListener {
 		}
 	}
 
-	private String askString(String title, String text) {
+	public String askString(String title, String text) {
 		return JOptionPane.showInputDialog(null, text, title,
 				JOptionPane.QUESTION_MESSAGE);
 	}
 
-	private void errorMessage(String s) {
+	public void errorMessage(String s) {
 		String[] Optionen = { "OK" };
 		JOptionPane.showOptionDialog(this, s, "Error!", JOptionPane.YES_OPTION,
 				JOptionPane.ERROR_MESSAGE, null, Optionen, Optionen[0]);

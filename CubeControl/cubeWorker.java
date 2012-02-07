@@ -54,7 +54,7 @@ public class cubeWorker {
 	// --------------------
 
 	private List<Animation> animations = new ArrayList<Animation>();
-	private int framesRemaining = 2016; // (128 * 1024) / 65 = 2016,...
+	private final int framesRemaining = 2016; // (128 * 1024) / 65 = 2016,...
 	private boolean changedState = false;
 
 	// --------------------
@@ -67,7 +67,6 @@ public class cubeWorker {
 		animations.get(0).setName("Animation 1");
 		animations.get(0).add(0);
 		animations.get(0).get(0).setName("Frame 1");
-		framesRemaining--;
 	}
 
 	/**
@@ -77,6 +76,19 @@ public class cubeWorker {
 	 */
 	cubeWorker(List<Animation> anims) {
 		animations = anims;
+	}
+
+	/**
+	 * Returns number of frames in this cubeWorker.
+	 *
+	 * @return number of frames.
+	 */
+	public int completeNumOfFrames() {
+		int count = 0;
+		for (int i = 0; i < numOfAnimations(); i++) {
+			count += numOfFrames(i);
+		}
+		return count;
 	}
 
 	// --------------------
@@ -108,7 +120,7 @@ public class cubeWorker {
 	 * @return number of frames remaining
 	 */
 	public int framesRemaining() {
-		return framesRemaining;
+		return framesRemaining - completeNumOfFrames();
 	}
 
 	// --------------------
@@ -122,7 +134,7 @@ public class cubeWorker {
 	 */
 	public int addAnimation() {
 		changedState = true;
-		if (framesRemaining <= 0) {
+		if (framesRemaining() <= 0) {
 			return -1;
 		} else {
 			int s = animations.size();
@@ -223,10 +235,9 @@ public class cubeWorker {
 	 */
 	public int addFrame(int anim) {
 		changedState = true;
-		if (framesRemaining <= 0) {
+		if (framesRemaining() <= 0) {
 			return -1;
 		}
-		framesRemaining--;
 		int s = animations.get(anim).size();
 		animations.get(anim).add(s);
 		animations.get(anim).get(s)
@@ -344,7 +355,6 @@ public class cubeWorker {
 		for (int i = 0; i < animations.size(); i++) {
 			size += animations.get(i).size();
 		}
-		framesRemaining = 2016 - size;
 		if (size > 2016) {
 			return -1;
 		}
