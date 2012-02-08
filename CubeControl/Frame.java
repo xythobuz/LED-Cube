@@ -81,7 +81,7 @@ public class Frame extends JFrame implements ListSelectionListener {
 	private JButton playAnimationFullscreen = new JButton();
 	// Ende Attribute
 
-	public cubeWorker worker = new cubeWorker();
+	public cubeWorker worker = new cubeWorker(this);
 	private boolean fileSelected = false;
 
 	// Ende Variablen
@@ -107,6 +107,12 @@ public class Frame extends JFrame implements ListSelectionListener {
 	public void errorMessage(String s) {
 		String[] Optionen = { "OK" };
 		JOptionPane.showOptionDialog(this, s, "Error!", JOptionPane.YES_OPTION,
+				JOptionPane.ERROR_MESSAGE, null, Optionen, Optionen[0]);
+	}
+
+	public void errorMessage(String title, String msg) {
+		String[] Optionen = { "OK" };
+		JOptionPane.showOptionDialog(this, msg, title, JOptionPane.YES_OPTION,
 				JOptionPane.ERROR_MESSAGE, null, Optionen, Optionen[0]);
 	}
 
@@ -965,8 +971,8 @@ public class Frame extends JFrame implements ListSelectionListener {
 
 				if (s.startsWith("send ")) {
 					s = s.substring(5);
-					HelperUtility.openPort(((String) f.jComboBox1
-							.getSelectedItem()) + "\n");
+					HelperUtility.openPort((String) f.jComboBox1
+							.getSelectedItem());
 					short[] dat = toShortArray(s);
 					HelperUtility.writeData(dat, dat.length);
 					HelperUtility.closePort();

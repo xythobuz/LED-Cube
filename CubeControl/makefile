@@ -20,7 +20,7 @@ JAVAFILES = HelperUtility.java AnimationUtility.java Animation.java AFrame.java 
 
 # --------------------------------------
 
-all: CubeControl.jar clean
+all: CubeControl.jar
 
 doc: doc/index.html
 
@@ -45,15 +45,14 @@ endif
 Serial.dll: libSerial/serialHelper.c libSerial/winSerial.c
 	make -C libSerial
 	mv libSerial/Serial.dll Serial.dll
-	make -C libSerial clean
 
 libSerial.jnilib: libSerial/serialHelper.c libSerial/unixSerial.c
 	make -C libSerial
 	mv libSerial/libSerial.jnilib libSerial.jnilib
-	make -C libSerial clean
 
 # Delete intermediate files
 clean:
+	make -C libSerial clean
 	$(RM) *.class
 	$(RM) *.
 	$(RM) *.o

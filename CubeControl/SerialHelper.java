@@ -29,22 +29,28 @@
  * @version 1.0
  */
 
- import java.util.Date;
+import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SerialHelper {
 
 	private final short OK = 0x42;
 	private final short ERROR = 0x23;
 
+	private Frame frame;
+
 	/**
 	 * Create new SerialHelper.
 	 * @param serialPort Name of serial port to use.
+	 * @param frame Frame to show error messages 
 	 * @throws Exception Could not open serial port.
 	 */
-	public SerialHelper(String serialPort) throws Exception {
+	public SerialHelper(String serialPort, Frame frame) throws Exception {
 		if (HelperUtility.openPort(serialPort) == false) {
 			throw new Exception("Could not open serial port \"" + serialPort + "\"");
 		}
+		this.frame = frame;
 	}
 
 	/**
@@ -52,27 +58,127 @@ public class SerialHelper {
 	 * @return A cubeWorker populated with the new data or null.
 	 */
 	public cubeWorker getAnimationsFromCube() {
-		return null;
+		List<Animation> animations = new ArrayList<Animation>();
+		int animationCount, frameCount;
+		short[] data, tmp = new short[1];
+
+		// Send download command
+		tmp[0] = 'g';
+		if (!writeData(tmp)) {
+			printErrorMessage("Timout Command");
+			return null;
+		}
+		data = readData(1);
+		if ((data == null) || (data[0] != OK)) {
+			printErrorMessage("Response Error");
+			return null;
+		}
+
+		// Get animation count
+		data = readData(1);
+		if (data == null) {
+			printErrorMessage("Response Error");
+			return null;
+		} else {
+			animationCount = data[0];
+		}
+		tmp[0] = OK;
+		if (!writeData(tmp)) {
+			printErrorMessage("Timout Response");
+			return null;
+		}
+
+		// Get animations
+		for (int a = 0; a < animationCount; a++) {
+			Animation currentAnim = new Animation();
+
+			// Get number of frames
+			data = readData(1);
+			if (data == null) {
+				printErrorMessage("Response Error");
+				return null;
+			} else {
+				frameCount = data[0];
+			}
+			tmp[0] = OK;
+			if (!writeData(tmp)) {
+				printErrorMessage("Timout Response");
+				return null;
+			}
+
+			// Get frames
+			for (int f = 0; f < frameCount; f++) {
+				AFrame currentFrame = new AFrame();
+
+				// Get frame duration
+				data = readData(1);
+				if (data == null) {
+					printErrorMessage("Response Error");
+					return null;
+				} else {
+					currentFrame.setTime(data[0]);
+				}
+				tmp[0] = OK;
+				if (!writeData(tmp)) {
+					printErrorMessage("Timout Response");
+					return null;
+				}
+
+				// Get frame data
+				data = readData(64);
+				if (data == null) {
+					printErrorMessage("Response Error");
+					return null;
+				} else {
+					currentFrame.setData(data);
+				}
+				tmp[0] = OK;
+				if (!writeData(tmp)) {
+					printErrorMessage("Timout Response");
+					return null;
+				}
+
+				// Add frame to animation
+				currentAnim.add(f, currentFrame);
+			}
+
+			// Add animation to animations list
+			animations.add(a, currentAnim);
+		}
+
+		return new cubeWorker(animations, frame);
 	}
 
 	/**
 	 * Send all animations in a cubeWorker to the Cube.
 	 * @param worker cubeWorker that containts data.
+	 * @return 0 on success. -1 on error.
 	 */
-	public void sendAnimationsToCube(cubeWorker worker) {
-		short[] data;
-		short[] tmp = new short[1];
+	public int sendAnimationsToCube(cubeWorker worker) {
+		short[] data, tmp = new short[1];
+
+		// Send upload command
+		tmp[0] = 's';
+		if (!writeData(tmp)) {
+			printErrorMessage("Timout Command");
+			return -1;
+		}
+		data = readData(1);
+		if ((data == null) || (data[0] != OK)) {
+			printErrorMessage("Response Error");
+			return -1;
+		}
 
 		// Send animation count
 		tmp[0] = (short)worker.numOfAnimations();
 		if (!writeData(tmp)) {
-			System.out.println("SerialHelper: Timeout numOfAnimations");
-			return;
+			printErrorMessage("Timeout numOfAnimations");
+			return -1;
 		}
 		data = readData(1);
-		if ((data != null) && (data[0] != OK)) {
-			System.out.println("SerialHelper: Response Error");
-			return;
+		if ((data == null) || (data[0] != OK)) {
+			printErrorMessage("Response Error");
+			return -1;
 		}
 
 		// Send animations
@@ -80,13 +186,13 @@ public class SerialHelper {
 			// Send frame count
 			tmp[0] = (short)worker.numOfFrames(a);
 			if (!writeData(tmp)) {
-				System.out.println("SerialHelper: Timeout numOfFrames");
-				return;
+				printErrorMessage("Timeout numOfFrames");
+				return -1;
 			}
 			data = readData(1);
-			if ((data != null) && (data[0] != OK)) {
-				System.out.println("SerialHelper: Response Error");
-				return;
+			if ((data == null) || (data[0] != OK)) {
+				printErrorMessage("Response Error");
+				return -1;
 			}
 
 			// Send frames
@@ -94,24 +200,24 @@ public class SerialHelper {
 				// Frame duration
 				tmp[0] = worker.getFrameTime(a, f);
 				if (!writeData(tmp)) {
-					System.out.println("SerialHelper: Timeout Frame duration");
-					return;
+					printErrorMessage("Timeout Frame duration");
+					return -1;
 				}
 				data = readData(1);
-				if ((data != null) && (data[0] != OK)) {
-					System.out.println("SerialHelper: Response Error");
-					return;
+				if ((data == null) || (data[0] != OK)) {
+					printErrorMessage("Response Error");
+					return -1;
 				}
 
 				// Frame data
 				if (!writeData(worker.getFrame(a, f))) {
-					System.out.println("SerialHelper: Timeout Frame");
-					return;
+					printErrorMessage("Timeout Frame");
+					return -1;
 				}
 				data = readData(1);
-				if ((data != null) && (data[0] != OK)) {
-					System.out.println("SerialHelper: Response Error");
-					return;
+				if ((data == null) || (data[0] != OK)) {
+					printErrorMessage("Response Error");
+					return -1;
 				}
 			}
 		}
@@ -123,14 +229,15 @@ public class SerialHelper {
 		tmp[2] = OK;
 		tmp[3] = OK;
 		if (!writeData(tmp)) {
-			System.out.println("SerialHelper: Timeout Finish");
-			return;
+			printErrorMessage("Timeout Finish");
+			return -1;
 		}
 		data = readData(1);
-		if ((data != null) && (data[0] != OK)) {
-			System.out.println("SerialHelper: Response Error");
-			return;
+		if ((data == null) || (data[0] != OK)) {
+			printErrorMessage("Response Error");
+			return -1;
 		}
+		return 0;
 	}
 
 	/**
@@ -138,6 +245,11 @@ public class SerialHelper {
 	 */
 	public void closeSerialPort() {
 		HelperUtility.closePort();
+	}
+
+	private void printErrorMessage(String s) {
+		System.out.println("SerialHelper: " + s);
+		frame.errorMessage("Serial Error", s);
 	}
 
 	private boolean writeData(short[] data) {

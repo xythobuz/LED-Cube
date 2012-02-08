@@ -61,7 +61,9 @@ public class AFrame {
 	 * @param d 64 bytes that contain data (8 bit per byte, so 8 LEDs)
 	 */
 	public void setData(short[] d) {
-		data = d;
+		for (int i = 0; i < 64; i++) {
+			data[i] = d[i];
+		}
 	}
 
 	/**

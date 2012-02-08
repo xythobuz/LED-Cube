@@ -56,17 +56,19 @@ public class cubeWorker {
 	private List<Animation> animations = new ArrayList<Animation>();
 	private final int framesRemaining = 2016; // (128 * 1024) / 65 = 2016,...
 	private boolean changedState = false;
+	private Frame parentFrame;
 
 	// --------------------
 
 	/**
 	 * Creates a worker with one animation, containing an empty frame.
 	 */
-	cubeWorker() {
+	public cubeWorker(Frame parent) {
 		animations.add(new Animation());
 		animations.get(0).setName("Animation 1");
 		animations.get(0).add(0);
 		animations.get(0).get(0).setName("Frame 1");
+		parentFrame = parent;
 	}
 
 	/**
@@ -74,8 +76,9 @@ public class cubeWorker {
 	 * 
 	 * @param anims List of animations
 	 */
-	cubeWorker(List<Animation> anims) {
+	public cubeWorker(List<Animation> anims, Frame parent) {
 		animations = anims;
+		parentFrame = parent;
 	}
 
 	/**
@@ -397,18 +400,47 @@ public class cubeWorker {
 	 * @return 0 on success, -1 on error
 	 */
 	public int uploadState(String port) {
-
-		return -1;
+		try {
+			SerialHelper sh = new SerialHelper(port, parentFrame);
+			int ret = sh.sendAnimationsToCube(this);
+			sh.closeSerialPort();
+			return ret;
+		} catch (Exception e) {
+			System.out.println("Serial Exception: " + e.getMessage());
+			return -1;
+		}
 	}
 
 	/**
 	 * Get all animations from the cube, place it in this object
 	 * 
-	 * @param port Name of serial port to use  @return 0 on success, -1 on error
+	 * @param port Name of serial port to use
+	 * @return 0 on success, -1 on error
 	 */
 	public int downloadState(String port) {
+		try {
+			SerialHelper sh = new SerialHelper(port, parentFrame);
+			cubeWorker ret = sh.getAnimationsFromCube();
+			sh.closeSerialPort();
+			if (ret == null) {
+				return -1;
+			} else {
+				changedState = true;
+				animations = ret.getAnimationList();
+				return 0;
+			}
+		} catch (Exception e) {
+			System.out.println("Serial Exception: " + e.getMessage());
+			return -1;
+		}
+	}
 
-		return -1;
+	/**
+	 * Get the list used internally to store all the animations.
+	 * @return The list.
+	 */
+	public List<Animation> getAnimationList() {
+		return animations;
 	}
 
 	/**
