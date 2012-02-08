@@ -78,6 +78,7 @@ public class Frame extends JFrame implements ListSelectionListener {
     private JButton fullScreenButton = new JButton();
 	private JButton playAnimation = new JButton();
 	private JButton exitButton;
+	private JButton playAnimationFullscreen = new JButton();
 	// Ende Attribute
 
 	public cubeWorker worker = new cubeWorker();
@@ -371,7 +372,7 @@ public class Frame extends JFrame implements ListSelectionListener {
 		});
 
 		exitButton = new JButton("Exit Fullscreen");
-		exitButton.setBounds(Toolkit.getDefaultToolkit().getScreenSize().width-300, Toolkit.getDefaultToolkit().getScreenSize().height-80, 150, 25);
+		exitButton.setBounds(Toolkit.getDefaultToolkit().getScreenSize().width-150, Toolkit.getDefaultToolkit().getScreenSize().height-80, 150, 25);
 		cp.add(exitButton);
 		exitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -389,6 +390,18 @@ public class Frame extends JFrame implements ListSelectionListener {
 				playAnimation(evt);		
 			}
 		});
+
+		playAnimationFullscreen.setText("Play");
+		playAnimationFullscreen.setBounds(Toolkit.getDefaultToolkit().getScreenSize().width-310, Toolkit.getDefaultToolkit().getScreenSize().height-80, 150, 25);
+		playAnimationFullscreen.setFont(new Font("Dialog", Font.PLAIN, 13));
+		playAnimationFullscreen.setVisible(false);
+		cp.add(playAnimationFullscreen);
+		playAnimationFullscreen.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt){
+				playAnimation(evt);		
+			}
+		});
+
 
 		frameDuration.setBounds(590, 184, 60, 24);
 		frameDuration.setText("OK");
@@ -595,6 +608,8 @@ public class Frame extends JFrame implements ListSelectionListener {
 		System.out.println(w);
 		System.out.println(h);
 		setSize(w-5, h-30);
+
+		playAnimationFullscreen.setVisible(true);
 		//setSize(Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height);
 		//Y U NO WORK????
 		cubeCanvas.setBounds(0,0,Toolkit.getDefaultToolkit().getScreenSize().width-5, Toolkit.getDefaultToolkit().getScreenSize().height-80);
@@ -602,7 +617,8 @@ public class Frame extends JFrame implements ListSelectionListener {
 	}
 	public void exitFullscreen(){
 	//661, 440
-	setLocation(0,0);
+		playAnimationFullscreen.setVisible(false);
+		setLocation(0,0);
 		setSize(661, 440);
 		ledView.leaveFullscreen();
 		cubeCanvas.setBounds(8,8, 250,250);
