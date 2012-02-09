@@ -22,6 +22,7 @@
  */
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 
 /**
  * A collection of frames that represent an entire animation.
@@ -32,10 +33,50 @@ import java.util.List;
  * @version 1.0
  */
 
-public class Animation {
+public class Animation implements Comparable<Animation> {
 	List<AFrame> frames = new ArrayList<AFrame>();
 	private int lastFrameIndex = 0;
 	private String name = "Animation";
+	private int order;
+	private static int orderIndex = 0;
+
+	/**
+	 * Compare this animation to another animation.
+	 * Compares the order in the animations list.
+	 * @return 0 if equal, -1 if this one comes first, 1 if last
+	 */
+	public int compareTo(Animation compareAnimation) {
+		if (getOrder() < compareAnimation.getOrder()) {
+			return -1;
+		} else if (getOrder() == compareAnimation.getOrder()) {
+			return 0;
+		} else {
+			return 1;
+		} 
+	}
+
+	/**
+	 * Get index of animation in list of animations.
+	 * @return index
+	 */
+	public int getOrder() {
+		return order;
+	}
+
+	/**
+	 * Set index of animation in list of animations.
+	 * @param newOrder new index
+	 */
+	public void setOrder(int newOrder) {
+		order = newOrder;
+	}
+
+	/**
+	 * Inserts animation at end of animation list.
+	 */
+	public Animation() {
+		order = orderIndex++;
+	}
 
 	/**
 	 * Gets the name of this animation
@@ -130,12 +171,31 @@ public class Animation {
 		}
 	}
 
+	private void sortFrameList() {
+		Collections.sort(frames);
+	}
+
+	// return true if damaged and fixed partially
+	private boolean checkFrameList() {
+		for (int i = 0; i < frames.size(); i++) {
+			if (frames.get(i).getOrder() != i) {
+				frames.get(i).setOrder(frames.size());
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
-	 * Return size of this animation, in number of frames
+	 * Return size of this animation, in number of frames.
+	 * Also fixes the order of the frame list, if needed.
 	 * 
 	 * @return number of frames
 	 */
 	public int size() {
+		while(checkFrameList()) {
+			sortFrameList();
+		}
 		return frames.size();
 	}
 }

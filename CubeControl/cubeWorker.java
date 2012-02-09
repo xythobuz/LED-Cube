@@ -28,6 +28,7 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.Collections;
 
 /**
  * This class holds all Data of the Application. Additionally it performs the
@@ -98,12 +99,31 @@ public class cubeWorker {
 	// Misc. Methods
 	// --------------------
 
+	private void sortAnimationList() {
+		Collections.sort(animations);
+	}
+
+	// return true if damaged and fixed partially
+	private boolean checkAnimationList() {
+		for (int i = 0; i < animations.size(); i++) {
+			if (animations.get(i).getOrder() != i) {
+				animations.get(i).setOrder(animations.size());
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * Get the number of animations in this worker.
+	 * Also fixes the order of the animation list, if needed.
 	 * 
 	 * @return number of animations
 	 */
 	public int numOfAnimations() {
+		while(checkAnimationList()) {
+			sortAnimationList();
+		}
 		return animations.size();
 	}
 

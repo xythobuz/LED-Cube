@@ -32,10 +32,50 @@ import java.util.Arrays;
  * @version 1.0
  */
 
-public class AFrame {
+public class AFrame implements Comparable<AFrame> {
 	private short[] data = new short[64];
 	private short duration = 1;
 	private String name = "Frame";
+	private int order;
+	private static int orderIndex = 0;
+
+	/**
+	 * Compare this frame to another frame.
+	 * Compares the order in the frame list.
+	 * @return 0 if equal, -1 if this one comes first, 1 if last
+	 */
+	public int compareTo(AFrame compareFrame) {
+		if (getOrder() < compareFrame.getOrder()) {
+			return -1;
+		} else if (getOrder() == compareFrame.getOrder()) {
+			return 0;
+		} else {
+			return 1;
+		} 
+	}
+
+	/**
+	 * Get index of frame in list of frames.
+	 * @return index
+	 */
+	public int getOrder() {
+		return order;
+	}
+
+	/**
+	 * Set index of frame in list of frames.
+	 * @param newOrder new index
+	 */
+	public void setOrder(int newOrder) {
+		order = newOrder;
+	}
+
+	/**
+	 * Inserts frane at end of frame list.
+	 */
+	public AFrame() {
+		order = orderIndex++;
+	}
 
 	/**
 	 * Gets the Name of this Frame

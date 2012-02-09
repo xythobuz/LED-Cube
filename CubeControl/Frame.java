@@ -926,6 +926,7 @@ public class Frame extends JFrame implements ListSelectionListener {
 	public static void main(String[] args) {
 		Frame f = new Frame("Cube Control");
 		Led3D l = f.get3D();
+		String lastCommand = null;
 		java.util.Scanner sc = new java.util.Scanner(System.in);
 		System.out.println("#### Cube Control Debug Console ####");
 		System.out.println("## Enter a Command ('h' for help) ##");
@@ -934,6 +935,16 @@ public class Frame extends JFrame implements ListSelectionListener {
 		do {
 			if (sc.hasNextLine()) {
 				String s = sc.nextLine();
+
+				// Up arrow key
+				if (s.equals("\u001B[A")) {
+					if (lastCommand != null) {
+						System.out.println("Last command: " + lastCommand);
+						s = new String(lastCommand);
+					} else {
+						System.out.println("No last command!");
+					}
+				}
 
 				if (s.equals("p") || (s.equals("print")))
 					l.printTranslationData();
@@ -964,28 +975,38 @@ public class Frame extends JFrame implements ListSelectionListener {
 				}
 
 				if (s.startsWith("port ")) {
-					s = s.substring(5);
-					f.jComboBox1.addItem(s);
-					f.jComboBox1.setSelectedItem(s);
+					f.jComboBox1.addItem(s.substring(5));
+					f.jComboBox1.setSelectedItem(s.substring(5));
 				}
 
 				if (s.startsWith("send ")) {
-					s = s.substring(5);
 					HelperUtility.openPort((String) f.jComboBox1
 							.getSelectedItem());
-					short[] dat = toShortArray(s);
+					short[] dat = toShortArray(s.substring(5));
 					HelperUtility.writeData(dat, dat.length);
 					HelperUtility.closePort();
 				}
 
 				if (s.startsWith("read ")) {
-					s = s.substring(5);
-					int leng = Integer.parseInt(s);
+					int leng = Integer.parseInt(s.substring(5));
 					HelperUtility.openPort((String) f.jComboBox1
 							.getSelectedItem());
 					short[] data = HelperUtility.readData(leng);
 					System.out.println(shortToString(data));
 					HelperUtility.closePort();
+				}
+
+				if (s.startsWith("frames ")) {
+					int anim = Integer.parseInt(s.substring(7));
+					if (anim >= f.worker.numOfAnimations()) {
+						System.out.println("Animation does not exist! Max: " + (f.worker.numOfAnimations() - 1));
+					} else {
+						System.out.println("Animation: " + f.worker.getAnimationName(anim));
+						for (int i = 0; i < f.worker.numOfFrames(anim); i++) {
+							AFrame frame = f.worker.getAnimationList().get(anim).get(i);
+							System.out.println("\tFrame " + frame.getOrder() + " (" + frame.getTime() + "): " + frame.getName());
+						}
+					}
 				}
 
 				if (s.equals("s") || s.equals("scan")) {
@@ -1015,11 +1036,16 @@ public class Frame extends JFrame implements ListSelectionListener {
 					System.out
 							.println("\t'reset'  / 'r'\t:\tReset rotation of cube");
 					System.out
+							.println("\t'anims'  / 'a'\t:\tPrint animation tree");
+					System.out
+							.println("\t'frames *anim*\t:\tPrint frame tree");
+					System.out
 							.println("\t'help'   / 'h'\t:\tShow this message");
 					System.out
 							.println("\t'quit'   / 'q'\t:\tExit Cube Control");
 				}
 
+				lastCommand = new String(s);
 				System.out.print("$> ");
 			}
 		} while (true);
