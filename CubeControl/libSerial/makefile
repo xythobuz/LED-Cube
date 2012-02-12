@@ -27,12 +27,21 @@ HelperUtility.class: ../HelperUtility.java
 ifdef SystemRoot
 libSerial: Serial.dll
 else
+UNAME := $(shell uname -s)
+ifeq ($(UNAME),Darwin)
 libSerial: libSerial.jnilib
+else
+libSerial: libSerial.so
+endif
 endif
 
 libSerial.jnilib: serialHelper.c unixSerial.c serialInterface.h
 	$(CC) -x c -I$(HEADERPATH) -c serialHelper.c -o serialHelper.o
 	$(CC) -dynamiclib -o libSerial.jnilib serialHelper.o
+
+libSerial.so: serialHelper.c unixSerial.c serialInterface.h
+	$(CC) -x c -I$(HEADERPATH) -c serialHelper.c -o serialHelper.o
+	$(CC) -dynamiclib -o libSerial.so serialHelper.o
 
 Serial.dll: serialHelper.c winSerial.c serialInterface.h
 	$(CC) -x c -I$(HEADERPATH) -c serialHelper.c -o serialHelper.o -D winHelper

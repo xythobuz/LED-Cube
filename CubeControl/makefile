@@ -8,10 +8,17 @@ RM = del
 INJAR += Serial.dll
 PLATFORM = Win
 else
-HEADERPATH = /System/Library/Frameworks/JavaVM.framework/Headers
 RM = rm -f
+UNAME := $(shell uname -s)
+ifeq ($(UNAME),Darwin)
 INJAR += libSerial.jnilib
 PLATFORM = Mac
+HEADERPATH = /System/Library/Frameworks/JavaVM.framework/Headers
+else
+INJAR += libSerial.so
+PLATFORM = Linux
+HEADERPATH = /usr/java-1.6/include
+endif
 endif
 
 # All java files to be compiled
@@ -39,7 +46,11 @@ doc/index.html: $(JAVAFILES)
 ifdef SystemRoot
 libSerial: Serial.dll
 else
+ifeq ($(UNAME),Darwin)
 libSerial: libSerial.jnilib
+else
+libSerial: libSerial.so
+endif
 endif
 
 Serial.dll: libSerial/serialHelper.c libSerial/winSerial.c
@@ -49,6 +60,10 @@ Serial.dll: libSerial/serialHelper.c libSerial/winSerial.c
 libSerial.jnilib: libSerial/serialHelper.c libSerial/unixSerial.c
 	make -C libSerial
 	mv libSerial/libSerial.jnilib libSerial.jnilib
+
+libSerial.so: libSerial/serialHelper.c libSerial/unixSerial.c
+	make -C libSerial
+	mv libSerial/libSerial.so libSerial.so
 
 # Delete intermediate files
 clean:
