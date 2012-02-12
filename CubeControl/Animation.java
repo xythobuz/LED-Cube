@@ -84,7 +84,7 @@ public class Animation implements Comparable<Animation> {
 	 * @return name of this animation
 	 */
 	public String getName() {
-		return name;
+		return name + " (" + order + ")";
 	}
 
 	/**
@@ -171,10 +171,6 @@ public class Animation implements Comparable<Animation> {
 		}
 	}
 
-	private void sortFrameList() {
-		Collections.sort(frames);
-	}
-
 	// return true if damaged and fixed partially
 	private boolean checkFrameList() {
 		for (int i = 0; i < frames.size(); i++) {
@@ -194,7 +190,7 @@ public class Animation implements Comparable<Animation> {
 	 */
 	public int size() {
 		while(checkFrameList()) {
-			sortFrameList();
+			Collections.sort(frames);
 		}
 		return frames.size();
 	}

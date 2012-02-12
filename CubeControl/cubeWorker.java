@@ -99,15 +99,46 @@ public class cubeWorker {
 	// Misc. Methods
 	// --------------------
 
-	private void sortAnimationList() {
-		Collections.sort(animations);
+	// Returns a number that is below the size of the animations list and not used as order
+	// If a order is higher or equal to the size of the list, it tries to assign a hole found to this
+	// Returns -1 if there is no hole
+	private int holeInAnimationList() {
+		int s = animations.size();
+		byte[] result = new byte[s];
+		int hole = -1;
+		int fix = -1;
+		for (int i = 0; i < s; i++) {
+			result[i] = 0;
+		}
+		for (int i = 0; i < s; i++) {
+			int order = animations.get(i).getOrder();
+			if (order >= s) {
+				// Houston, we have a problem...
+				fix = i;
+			}
+			result[order] = 1;
+		}
+		for (int i = 0; i < s; i++) {
+			if (result[i] == 0) {
+				hole = i;
+				break;
+			}
+		}
+		if ((hole != -1) && (fix != 1)) {
+			animations.get(fix).setOrder(hole);
+			return holeInAnimationList();
+		}
+		return hole;
 	}
 
-	// return true if damaged and fixed partially
+	// return true if damaged and to be sorted
 	private boolean checkAnimationList() {
 		for (int i = 0; i < animations.size(); i++) {
 			if (animations.get(i).getOrder() != i) {
-				animations.get(i).setOrder(animations.size());
+				int h = holeInAnimationList();
+				if (h != -1) {
+					animations.get(i).setOrder(h);
+				}
 				return true;
 			}
 		}
@@ -122,7 +153,7 @@ public class cubeWorker {
 	 */
 	public int numOfAnimations() {
 		while(checkAnimationList()) {
-			sortAnimationList();
+			Collections.sort(animations);
 		}
 		return animations.size();
 	}
@@ -151,7 +182,7 @@ public class cubeWorker {
 	// --------------------
 
 	/**
-	 * Add an animation.
+	 * Add an animation. It has an initial empty frame
 	 * 
 	 * @return Index of new animation, or -1 if not enough space remaining.
 	 */
@@ -163,6 +194,8 @@ public class cubeWorker {
 			int s = animations.size();
 			animations.add(s, new Animation());
 			animations.get(s).setName("Animation " + animations.size());
+			animations.get(s).add(0, new AFrame());
+			animations.get(s).get(0).setName("Frame 1");
 			return s;
 		}
 	}

@@ -83,7 +83,7 @@ public class AFrame implements Comparable<AFrame> {
 	 * @return Name of the Frame
 	 */
 	public String getName() {
-		return name;
+		return name + " (" + order + ")";
 	}
 
 	/**

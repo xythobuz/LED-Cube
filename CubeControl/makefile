@@ -31,7 +31,7 @@ serialInterface.h: HelperUtility.class
 	javah -o serialInterface.h HelperUtility
 
 HelperUtility.class: $(JAVAFILES)
-	javac $(JAVAFILES)
+	javac -g $(JAVAFILES)
 
 doc/index.html: $(JAVAFILES)
 	javadoc -d doc $(JAVAFILES)

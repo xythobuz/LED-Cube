@@ -127,6 +127,8 @@ public class Frame extends JFrame implements ListSelectionListener {
 				frameListModel.clear();
 				for (int i = 0; i < worker.numOfFrames(animList
 						.getSelectedIndex()); i++) {
+				// Offending statement:
+				// worker.numOfFrames(animList.getSelectedIndex())
 					frameListModel.addElement(worker.getFrameName(
 							animList.getSelectedIndex(), i));
 				}
@@ -769,17 +771,14 @@ public class Frame extends JFrame implements ListSelectionListener {
 		if (animList.getSelectedIndex() == -1) {
 			errorMessage("Please select an animation!");
 		} else {
+			int n = worker.numOfFrames(animList.getSelectedIndex());
 			worker.addFrame(animList.getSelectedIndex());
+			// Not reaching past this comment if frame list empty
 			frameRemaining.setText(Integer.toString(worker.framesRemaining()));
-			int n = worker.numOfFrames(animList.getSelectedIndex()) - 1;
-			if (n < 0) {
-				n = 0;
-			}
 			frameListModel.add(n,
 					worker.getFrameName(animList.getSelectedIndex(), n));
 			frameList.setModel(frameListModel);
 		}
-
 	}
 
 	public void frameRemove_ActionPerformed(ActionEvent evt) {
@@ -1012,6 +1011,13 @@ public class Frame extends JFrame implements ListSelectionListener {
 							AFrame frame = f.worker.getAnimationList().get(anim).get(i);
 							System.out.println("\tFrame " + frame.getOrder() + " (" + frame.getTime() + "): " + frame.getName());
 						}
+					}
+				}
+
+				if (s.equals("a") || s.equals("anims")) {
+					for (int i = 0; i < f.worker.numOfAnimations(); i++) {
+						Animation anim = f.worker.getAnimationList().get(i);
+						System.out.println("\tAnimation " + anim.getOrder() + ": " + anim.getName());
 					}
 				}
 
