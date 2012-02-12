@@ -426,7 +426,6 @@ public class cubeWorker {
 			sh.closeSerialPort();
 			return ret;
 		} catch (Exception e) {
-			System.out.println("Serial Exception: " + e.getMessage());
 			return -1;
 		}
 	}
@@ -450,7 +449,6 @@ public class cubeWorker {
 				return 0;
 			}
 		} catch (Exception e) {
-			System.out.println("Serial Exception: " + e.getMessage());
 			return -1;
 		}
 	}
@@ -470,7 +468,14 @@ public class cubeWorker {
 	 * @param port Name of serial port
 	 */
 	public boolean probeCubeConnected(String port) {
-		return false;
+		try {
+			SerialHelper sh = new SerialHelper(port, parentFrame);
+			boolean response = sh.probeForCube();
+			sh.closeSerialPort();
+			return response;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 	/**

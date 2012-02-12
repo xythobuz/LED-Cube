@@ -896,26 +896,32 @@ public class Frame extends JFrame implements ListSelectionListener {
 		}
 	}
 
+	// We get detailed error messages from the SerialHelper...
 	public void upload_ActionPerformed(ActionEvent evt) {
 		if (jComboBox1.getSelectedItem().equals("Select serial port...")) {
-			errorMessage("No serial port selected...");
+			// errorMessage("No serial port selected...");
 		} else {
-			if (worker
-					.probeCubeConnected((String) jComboBox1.getSelectedItem())) {
+			if (worker.probeCubeConnected((String) jComboBox1.getSelectedItem())) {
 				if (worker.uploadState((String) jComboBox1.getSelectedItem()) != 0) {
-					errorMessage("Could not upload data!");
+					// errorMessage("Could not upload data!");
 				}
 			} else {
-				errorMessage("Cube does not respond...");
+				// errorMessage("Cube does not respond...");
 			}
 		}
 	}
 
 	public void download_ActionPerformed(ActionEvent evt) {
 		if (jComboBox1.getSelectedItem().equals("Select serial port...")) {
-			errorMessage("No serial port selected...");
+			// errorMessage("No serial port selected...");
 		} else {
-			worker.downloadState((String) jComboBox1.getSelectedItem());
+			if (worker.probeCubeConnected((String) jComboBox1.getSelectedItem())) {
+				if (worker.downloadState((String) jComboBox1.getSelectedItem()) != 0) {
+					// errorMessage("Could not download data!");
+				}
+			} else {
+				// errorMessage("Cube does not respond...");
+			}
 		}
 	}
 

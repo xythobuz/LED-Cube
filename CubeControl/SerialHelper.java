@@ -48,9 +48,29 @@ public class SerialHelper {
 	 */
 	public SerialHelper(String serialPort, Frame frame) throws Exception {
 		if (HelperUtility.openPort(serialPort) == false) {
+			printErrorMessage("Could not open serial port \"" + serialPort + "\"");
 			throw new Exception("Could not open serial port \"" + serialPort + "\"");
 		}
 		this.frame = frame;
+	}
+
+	/**
+	 * Poll to check if the cube is there...
+	 * @return TRUE if cube is connected.
+	 */
+	public boolean probeForCube() {
+		short[] data = new short[1];
+		data[0] = OK;
+		if (!writeData(data)) {
+			printErrorMessage("Timeout Probing for Cube");
+			return false;
+		}
+		data = readData(1);
+		if ((data == null) || (data[0] != OK)) {
+			printErrorMessage("No response from cube!");
+			return false;
+		}
+		return true;
 	}
 
 	/**
