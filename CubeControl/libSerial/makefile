@@ -3,11 +3,14 @@ CC = gcc
 ifdef SystemRoot
 HEADERPATH = C:/Program\ Files/Java/jdk1.6.0_29/include
 RM = del
-PLATFORM = Win
 else
-HEADERPATH = /System/Library/Frameworks/JavaVM.framework/Headers
 RM = rm -f
-PLATFORM = Mac
+UNAME := $(shell uname -s)
+ifeq ($(UNAME),Darwin)
+HEADERPATH = /System/Library/Frameworks/JavaVM.framework/Headers
+else 
+HEADERPATH = /usr/lib/jvm/java-6-openjdk/include
+endif
 endif
 
 # --------------------------------------
@@ -27,7 +30,6 @@ HelperUtility.class: ../HelperUtility.java
 ifdef SystemRoot
 libSerial: Serial.dll
 else
-UNAME := $(shell uname -s)
 ifeq ($(UNAME),Darwin)
 libSerial: libSerial.jnilib
 else
@@ -55,5 +57,9 @@ clean:
 ifdef SystemRoot
 	$(RM) *.dll
 else
+ifeq ($(UNAME),Darwin)
 	$(RM) *.jnilib
+else
+	$(RM) *.so
+endif
 endif

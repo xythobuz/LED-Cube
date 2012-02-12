@@ -17,7 +17,7 @@ HEADERPATH = /System/Library/Frameworks/JavaVM.framework/Headers
 else
 INJAR += libSerial.so
 PLATFORM = Linux
-HEADERPATH = /usr/java-1.6/include
+HEADERPATH = /usr/lib/jvm/java-6-openjdk/include
 endif
 endif
 
