@@ -41,6 +41,7 @@ SRC += cube.c
 SRC += twi.c
 SRC += mem.c
 SRC += audio.c
+SRC += time.c
 
 # List Assembler source files here.
 # Make them always end in a capital .S.  Files ending in a lowercase .s

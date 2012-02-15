@@ -91,8 +91,6 @@ void init(void) {
 		// Same reasoning here...
 		imgBuffer[ctr] = malloc(8 * sizeof(uint8_t));
 	}
-
-	sei(); // Enable Interrupts
 }
 
 void close(void) {
@@ -148,7 +146,7 @@ inline void isrCall(void) {
 		layer++;
 	} else {
 		layer = 0;
-		imgFlag = 1; // Finished
+		imgFlag++; // Finished
 	}
 }
 
