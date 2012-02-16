@@ -1,5 +1,5 @@
 /*
- * mem.h
+ * memLayer.h
  *
  * Copyright 2011 Thomas Buck <xythobuz@me.com>
  * Copyright 2011 Max Nuding <max.nuding@gmail.com>
@@ -21,15 +21,14 @@
  * along with LED-Cube.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define MEMTWIADDRESS 0xA0
-#define MemLength 131072
+// Free after usage!
+uint8_t *getFrame(uint16_t frameNumber);
 
-// address is a number between (inclusive) zero and 131071
-uint8_t memGetByte(uint32_t address);
+// 65 bytes framedata, data and duration...
+void setFrame(uint16_t frameNumber, uint8_t *frameData);
 
-// Free returned memory!
-uint8_t *memGetBytes(uint32_t address, uint8_t length);
+void clearMem(void);
 
-void memWriteByte(uint32_t address, uint8_t data);
+uint16_t getAnimationCount(void);
 
-void memWriteBytes(uint32_t address, uint8_t *data, uint8_t length);
+void setAnimationCount(uint16_t c);

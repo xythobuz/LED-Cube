@@ -411,7 +411,7 @@ public class cubeWorker {
 		for (int i = 0; i < animations.size(); i++) {
 			size += animations.get(i).size();
 		}
-		if (size > 2016) {
+		if (size > framesRemaining) {
 			return -1;
 		}
 		return 0;

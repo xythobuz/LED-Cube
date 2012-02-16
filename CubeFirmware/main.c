@@ -29,24 +29,34 @@
 #include "cube.h"
 #include "time.h"
 #include "audio.h"
+#include "memLayer.h"
 
 #ifndef F_CPU
 #define F_CPU 16000000L
 #endif
 
+#define OK 0x42
+#define ERROR 0x23
+
+void serialHandler(char c);
+void recieveAnimations(void);
+void transmitAnimations(void);
 uint8_t audioModeSelected(void);
 inline void setPixelBuffer(uint8_t x, uint8_t y, uint8_t z, uint8_t **buf);
 inline void clearPixelBuffer(uint8_t x, uint8_t y, uint8_t z, uint8_t **buf);
 void setRow(uint8_t x, uint8_t z, uint8_t height, uint8_t **buf);
 void visualizeAudioData(uint8_t *audioData, uint8_t **imageData);
 
+uint8_t refreshAnimationCount = 1;
+
 int main(void) {
-	char c;
+	unsigned int character;
 	uint8_t *audioData;
 	uint8_t **imageData;
-	uint8_t i, j;
+	uint8_t i;
 	uint64_t lastTimeChecked;
 	uint8_t audioMode;
+	uint16_t count;
 
 	DDRD = 0xFF; // Mosfets as Output
 	DDRB = 0xFE;
@@ -77,7 +87,20 @@ int main(void) {
 			while(!isFinished()); // Wait for it to display
 		} else {
 			// Look for commands, play from fram
-			
+			// We have 128*1024 bytes
+			// A Frame needs 65 bytes (64 data + duration)
+			// We place 2016 Frames in mem => 131040
+			// That gives us 32 bytes at the beginning, 0 -> 31
+			// The first frame starts at 32
+			character = uart_getc();
+			if (!(character & 0xFF00)) { // No error...
+				serialHandler((char)(character & 0x00FF));
+			}
+
+			if (refreshAnimationCount) {
+				count = getAnimationCount();
+				refreshAnimationCount = 0;
+			}
 		}
 
 		if ((getSystemTime() - lastTimeChecked) > 1000) {
@@ -89,6 +112,109 @@ int main(void) {
 
 	close();
 	return 0;
+}
+
+void serialHandler(char c) {
+	// Got a char on serial line...
+	// React accordingly
+	// Set refreshAnimationCount if Animation Data in Ram was changed...
+	// We do a complete transaction in one call of this routine...
+
+	switch(c) {
+		case OK:
+			// Send "Hello World"
+			uart_putc(OK);
+			break;
+
+		case 'd': case 'D':
+			clearMem();
+			uart_putc(OK);
+			break;
+
+		case 'g': case 'G':
+			transmitAnimations();
+			break;
+
+		case 's': case 'S':
+			recieveAnimations();
+			break;
+
+		default:
+			uart_putc(ERROR);
+			break;
+	}
+}
+
+void recieveAnimations() {
+	uint8_t animCount, a, frameCount, f, i;
+	uint16_t completeCount = 0, character;
+	uint8_t frame[65];
+
+	uart_putc(OK); // We are ready...
+
+	character = uart_getc();
+	while (character & 0xFF00) { // Wait for answer
+		character = uart_getc();
+	}
+
+	animCount = (uint8_t)(character & 0x00FF); // Got animation count
+	uart_putc(OK);
+
+	for (a = 0; a < animCount; a++) {
+		character = uart_getc();
+		while (character & 0xFF00) { // Wait for answer
+			character = uart_getc();
+		}
+
+		frameCount = (uint8_t)(character & 0x00FF); // Got frame count
+		uart_putc(OK);
+
+		for (f = 0; f < frameCount; f++) {
+			character = uart_getc();
+			while (character & 0xFF00) { // Wait for answer
+				character = uart_getc();
+			}
+
+			frame[64] = (uint8_t)(character & 0x00FF); // Got duration
+			uart_putc(OK);
+
+			for (i = 0; i < 64; i++) {
+				character = uart_getc();
+				while (character & 0xFF00) { // Wait for answer
+					character = uart_getc();
+				}
+
+				frame[i] = (uint8_t)(character & 0x00FF); // Got data byte
+			}
+			uart_putc(OK);
+
+			setFrame(completeCount++, frame);
+		}
+	}
+
+	character = uart_getc();
+	while (character & 0xFF00) { // Wait for answer
+		character = uart_getc();
+	}
+	character = uart_getc();
+	while (character & 0xFF00) { // Wait for answer
+		character = uart_getc();
+	}
+	character = uart_getc();
+	while (character & 0xFF00) { // Wait for answer
+		character = uart_getc();
+	}
+	character = uart_getc();
+	while (character & 0xFF00) { // Wait for answer
+		character = uart_getc();
+	}
+	uart_putc(OK);
+	setAnimationCount(completeCount);
+	refreshAnimationCount = 1;
+}
+
+void transmitAnimations() {
+	uart_putc(ERROR);
 }
 
 // Blocks 10ms or more

@@ -1,5 +1,5 @@
 /*
- * mem.h
+ * memLayer.c
  *
  * Copyright 2011 Thomas Buck <xythobuz@me.com>
  * Copyright 2011 Max Nuding <max.nuding@gmail.com>
@@ -20,16 +20,36 @@
  * You should have received a copy of the GNU General Public License
  * along with LED-Cube.  If not, see <http://www.gnu.org/licenses/>.
  */
+ #include <stdint.h>
+ #include <avr/io.h>
+ #include <stdlib.h>
+ #include "mem.h"
+ #include "memLayer.h"
 
-#define MEMTWIADDRESS 0xA0
-#define MemLength 131072
+// Free after usage!
+uint8_t *getFrame(uint16_t frameNumber) {
+	return memGetBytes(32 + (65 * frameNumber), 65);
+}
 
-// address is a number between (inclusive) zero and 131071
-uint8_t memGetByte(uint32_t address);
+// 65 bytes framedata, data and duration...
+void setFrame(uint16_t frameNumber, uint8_t *frameData) {
+	memWriteBytes(32 + (65 * frameNumber), frameData, 65);
+}
 
-// Free returned memory!
-uint8_t *memGetBytes(uint32_t address, uint8_t length);
+void clearMem() {
+	uint32_t i;
+	for (i = 0; i < MemLength; i++) {
+		memWriteByte(i, 0);
+	}
+}
 
-void memWriteByte(uint32_t address, uint8_t data);
+uint16_t getAnimationCount() {
+	uint16_t animationCount = memGetByte(0);
+	animationCount |= (memGetByte(1) << 8);
+	return animationCount;
+}
 
-void memWriteBytes(uint32_t address, uint8_t *data, uint8_t length);
+void setAnimationCount(uint16_t c) {
+	memWriteByte(0, (uint8_t)(c & 0x00FF));
+	memWriteByte(0, (uint8_t)((c & 0xFF00) >> 8));
+}

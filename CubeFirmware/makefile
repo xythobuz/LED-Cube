@@ -42,6 +42,7 @@ SRC += twi.c
 SRC += mem.c
 SRC += audio.c
 SRC += time.c
+SRC += memLayer.c
 
 # List Assembler source files here.
 # Make them always end in a capital .S.  Files ending in a lowercase .s
@@ -63,7 +64,6 @@ OPT = s
 # Native formats for AVR-GCC's -g are stabs [default], or dwarf-2.
 # AVR (extended) COFF requires stabs, plus an avr-objcopy run.
 #DEBUG = stabs
-DEBUG = dwarf-2
 
 # List any extra directories to look for include files here.
 #     Each directory must be seperated by a space.
