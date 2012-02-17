@@ -100,34 +100,45 @@ void serialClose(void) {
 	hSerial = INVALID_HANDLE_VALUE;
 }
 
-// Last element has to be NULL
-char** getSerialPorts(const char *search) {
-	LPTSTR ports;
-	DWORD num;
-	char **files;
-	int i, j = 0, start, k;
-
-#ifdef UNICODE
-	ports = (LPTSTR)malloc(100 * sizeof(WCHAR));
-#else
-	 ports = (LPTSTR)malloc(100 * sizeof(CHAR));
-#endif
-
-	num = QueryDosDevice(NULL, ports, 100);	
-	files = (char **)malloc(num * sizeof(char *));
-	
-	for (i = 0; i < num; i++) {
-		start = j;
-		j = 0;
-		while (ports[start + j] != '\0') {
-			j++;
-		}
-		j++; // \0
-		files[i] = (char *)malloc(j * sizeof(char));
-		for (k = 0; k < j; k++) {
-			files[i][k] = ports[start + k];
+int availableSerialPorts(char *ports) {
+	int i, c = 0;
+	char portName[6];
+	for (i = 0; i < 20; i++) {
+		sprintf(portName, "COM%d", i + 1);
+		if (serialOpen(portName) == 0) {
+			// success
+			ports[i] = 1;
+			c++;
+			serialClose();
+		} else {
+			ports[i] = 0;
 		}
 	}
+	return c;
+}
 
-	return files;
+// Last element has to be NULL
+char** getSerialPorts(char *search) {
+	int i, num, c = 0, s;
+	char ports[20];
+	char **portList;
+
+	num = availableSerialPorts(ports);
+	portList = (char **)malloc((num + 1) * sizeof(char *));
+	for (i = 0; i < 20; i++) {
+		// if ports[n] == 1 -> COMn+1 does exist
+		if (ports[i] != 0) {
+			if (i < 9) {
+				s = 5;
+			} else {
+				s = 6;
+			}
+			portList[c] = (char *)malloc(s * sizeof(char));
+			sprintf(portList[c], "COM%d", i + 1);
+			c++;
+		}
+	}
+	portList[c] = NULL;
+
+	return portList;
 }
