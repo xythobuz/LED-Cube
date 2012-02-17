@@ -213,8 +213,78 @@ void recieveAnimations() {
 	refreshAnimationCount = 1;
 }
 
+#define CAF(x) (x % 256)
+#define CAS(x) (x / 256)
+#define CALCANIMATIONS(x) ((CAF(x) == 0) ? (CAS(x)) : (CAS(x) + 1))
+
 void transmitAnimations() {
-	uart_putc(ERROR);
+	// We store no animation information in here
+	// So we have to place all frames in one or more
+	// animations... We need 8 animations max...
+	uint8_t animationsToGo;
+	uint16_t framesToGo = getAnimationCount();
+	uint16_t character;
+	uint8_t a;
+	uint8_t f, fMax, i;
+	uint8_t *frame;
+
+	if ((framesToGo % 255) == 0) {
+		animationsToGo = framesToGo / 255;
+	} else {
+		animationsToGo = (framesToGo / 255) + 1;
+	}
+
+	uart_putc(OK);
+	uart_putc(animationsToGo);
+	while ((character = uart_getc()) & 0xFF00); // Wait for answer
+	if ((character & 0x00FF) != OK) { // Error code recieved
+		return;
+	}
+
+	for (a = 0; a < animationsToGo; a++) {
+		if (framesToGo > 255) {
+			fMax = 255;
+		} else {
+			fMax = framesToGo;
+		}
+
+		uart_putc(fMax); // Number of Frames in current animation
+		while ((character = uart_getc()) & 0xFF00); // Wait for answer
+		if ((character & 0x00FF) != OK) { // Error code recieved
+			return;
+		}
+
+		for (f = 0; f < fMax; f++) {
+			frame = getFrame(f + (255 * a));
+
+			uart_putc(frame[64]); // frame duration
+			while ((character = uart_getc()) & 0xFF00); // Wait for answer
+			if ((character & 0x00FF) != OK) { // Error code recieved
+				free(frame);
+				return;
+			}
+
+			for (i = 0; i < 64; i++) {
+				uart_putc(frame[i]);
+			}
+			while ((character = uart_getc()) & 0xFF00); // Wait for answer
+			if ((character & 0x00FF) != OK) { // Error code recieved
+				free(frame);
+				return;
+			}
+
+			free(frame);
+		}
+		framesToGo -= fMax;
+	}
+
+	uart_putc(OK);
+	uart_putc(OK);
+	uart_putc(OK);
+	uart_putc(OK);
+
+	while ((character = uart_getc()) & 0xFF00); // Wait for answer
+	// Error code ignored...
 }
 
 // Blocks 10ms or more
