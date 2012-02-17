@@ -40,6 +40,7 @@ public class HelperUtility {
 	static {
 		// System.out.println("Loading Serial Library...");
 		loadFromJar();
+		// System.out.println("Loaded!");
 	}
 
 	/**
@@ -53,6 +54,8 @@ public class HelperUtility {
 			loadLib(path, "Serial.dll");
 		} else if (os.indexOf("mac") > -1) {
 			loadLib(path, "libSerial.jnilib");
+		} else {
+			loadLib(path, "libSerial.so");
 		}
 	}
 
@@ -73,9 +76,11 @@ public class HelperUtility {
 			inChannel.close();
 			outChannel.close();
 			System.load(fileOut.toString());
+			System.out.println("Loaded Serial Library from " + fileOut.toString());
 		} catch (Exception e) {
 			System.out.println("Failed to load Serial Library:");
 			e.printStackTrace();
+			System.exit(1);
 		}
 	}
 
@@ -107,16 +112,21 @@ public class HelperUtility {
 	 */
 	public static String getPorts() {
 		String os = System.getProperty("os.name").toLowerCase();
-		if (os.indexOf("windows") > -1) {
-			return getThePorts("COM");
-		} else if (os.indexOf("linux") > -1) {
-			return getThePorts("tty");
-		} else if (os.indexOf("mac") > -1) {
-			return getThePorts("tty.");
+		try {
+			if (os.indexOf("windows") > -1) {
+				return getThePorts("COM");
+			} else if (os.indexOf("max") > -1) {
+				return getThePorts("tty.");
+			} else {
+				return getThePorts("tty");
+			}
+		} catch (Exception e) {
+			// Unsatisfied linker error:
+			// Serial.dll was probably not found
+			System.out.println("Exception: " + e.toString());
+		} finally {
+			return null;
 		}
-
-		// Not linux, windows or mac?
-		return getThePorts("wtf?");
 	}
 
 	private static native String getThePorts(String search);

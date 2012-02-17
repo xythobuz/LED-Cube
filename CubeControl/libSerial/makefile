@@ -4,12 +4,19 @@ ifdef SystemRoot
 HEADERPATH = C:/Program\ Files/Java/jdk1.6.0_29/include
 RM = del
 else
+ifdef SYSTEMROOT
+# Looks like Cygwin or Mingw shell
+HEADERPATH = C:\Programme\Java\jdk1.6.0_31\include
+HEADERPATH += -IC:\Programme\Java\jdk1.6.0_31\include\win32
+RM = rm -rf
+else
 RM = rm -f
 UNAME := $(shell uname -s)
 ifeq ($(UNAME),Darwin)
 HEADERPATH = /System/Library/Frameworks/JavaVM.framework/Headers
 else 
 HEADERPATH = /usr/lib/jvm/java-6-openjdk/include
+endif
 endif
 endif
 
@@ -30,10 +37,14 @@ HelperUtility.class: ../HelperUtility.java
 ifdef SystemRoot
 libSerial: Serial.dll
 else
+ifdef SYSTEMROOT
+libSerial: Serial.dll
+else
 ifeq ($(UNAME),Darwin)
 libSerial: libSerial.jnilib
 else
 libSerial: libSerial.so
+endif
 endif
 endif
 
@@ -57,9 +68,13 @@ clean:
 ifdef SystemRoot
 	$(RM) *.dll
 else
+ifdef SYSTEMROOT
+	$(RM) *.dll
+else
 ifeq ($(UNAME),Darwin)
 	$(RM) *.jnilib
 else
 	$(RM) *.so
+endif
 endif
 endif

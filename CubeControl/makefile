@@ -8,6 +8,14 @@ RM = del
 INJAR += Serial.dll
 PLATFORM = Win
 else
+ifdef SYSTEMROOT
+# Looks like cygwin or mingw shell
+HEADERPATH = C:\Programme\Java\jdk1.6.0_31\include
+HEADERPATH += -IC:\Programme\Java\jdk1.6.0_31\include\win32
+RM = rm -rf
+INJAR += Serial.dll
+PLATFORM = Win
+else
 RM = rm -f
 UNAME := $(shell uname -s)
 ifeq ($(UNAME),Darwin)
@@ -18,6 +26,7 @@ else
 INJAR += libSerial.so
 PLATFORM = Linux
 HEADERPATH = /usr/lib/jvm/java-6-openjdk/include
+endif
 endif
 endif
 
@@ -46,10 +55,14 @@ doc/index.html: $(JAVAFILES)
 ifdef SystemRoot
 libSerial: Serial.dll
 else
+ifdef SYSTEMROOT
+libSerial: Serial.dll
+else
 ifeq ($(UNAME),Darwin)
 libSerial: libSerial.jnilib
 else
 libSerial: libSerial.so
+endif
 endif
 endif
 
@@ -74,5 +87,9 @@ clean:
 ifdef SystemRoot
 	$(RM) *.dll
 else
+ifdef SYSTEMROOT
+	$(RM) *.dll
+else
 	$(RM) *.jnilib
+endif
 endif

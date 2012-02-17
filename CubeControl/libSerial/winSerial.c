@@ -125,7 +125,7 @@ char** getSerialPorts(const char *search) {
 		j++; // \0
 		files[i] = (char *)malloc(j * sizeof(char));
 		for (k = 0; k < j; k++) {
-			files[i] = ports[start + k];
+			files[i][k] = ports[start + k];
 		}
 	}
 
