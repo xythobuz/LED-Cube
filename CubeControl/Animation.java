@@ -33,49 +33,104 @@ import java.util.Collections;
  * @version 1.0
  */
 
-public class Animation implements Comparable<Animation> {
-	List<AFrame> frames = new ArrayList<AFrame>();
-	private int lastFrameIndex = 0;
+public class Animation {
+	AFrame frames[] = new AFrame[1];
 	private String name = "Animation";
-	private int order;
-	private static int orderIndex = 0;
 
 	/**
-	 * Compare this animation to another animation.
-	 * Compares the order in the animations list.
-	 * @return 0 if equal, -1 if this one comes first, 1 if last
-	 */
-	public int compareTo(Animation compareAnimation) {
-		if (getOrder() < compareAnimation.getOrder()) {
-			return -1;
-		} else if (getOrder() == compareAnimation.getOrder()) {
-			return 0;
-		} else {
-			return 1;
-		} 
-	}
-
-	/**
-	 * Get index of animation in list of animations.
-	 * @return index
-	 */
-	public int getOrder() {
-		return order;
-	}
-
-	/**
-	 * Set index of animation in list of animations.
-	 * @param newOrder new index
-	 */
-	public void setOrder(int newOrder) {
-		order = newOrder;
-	}
-
-	/**
-	 * Inserts animation at end of animation list.
+	 * Create an empty frame in this new animation.
 	 */
 	public Animation() {
-		order = orderIndex++;
+		frames[0] = new AFrame();
+	}
+
+	/**
+	 * Gets the specified frame in this animation
+	 * 
+	 * @param i Index of frame you want
+	 * @return The selected frame
+	 */
+	public AFrame getFrame(int i) {
+		if (i >= frames.length) {
+			return null;
+		} else {
+			return frames[i];
+		}
+	}
+
+	/**
+	 * Move an frame up.
+	 * @param i the animation you want to move
+	 */
+	public void moveFrameUp(int i) {
+		if (i > 0) {
+			AFrame tmp = frames[i];
+			frames[i] = frames[i - 1];
+			frames[i - 1] = tmp;
+		}
+	}
+
+	/**
+	 * Move an frame down.
+	 * @param i the animation you want to move
+	 */
+	public void moveFrameDown(int i) {
+		if (i < (frames.length - 1)) {
+			AFrame tmp = frames[i];
+			frames[i] = frames[i + 1];
+			frames[i + 1] = tmp;
+		}
+	}
+
+	/**
+	 * Sets the selected Frame
+	 * 
+	 * @param f the frame you want to place in this animation
+	 * @param i Index of the frame you want to override
+	 */
+	public void setFrame(AFrame f, int i) {
+		if (i < frames.length) {
+			frames[i] = f;
+		} else {
+			addFrame(f);
+		}
+	}
+
+	/**
+	 * Add a new (empty) frame at the end
+	 */
+	public void addFrame() {
+		extendArray();
+		frames[frames.length - 1] = new AFrame();
+	}
+
+	/**
+	 * Add a specified frame at the end
+	 *
+	 * @param f data for new frame
+	 */
+	public void addFrame(AFrame f) {
+		addFrame();
+		frames[frames.length - 1] = f;
+	}
+
+	/**
+	 * Return size of this animation, in number of frames.
+	 * 
+	 * @return number of frames
+	 */
+	public int size() {
+		return frames.length;
+	}
+
+	/**
+	 * Removes a frame. Subsequent frames shift to the left.
+	 * 
+	 * @param i Index of frame you want to remove
+	 */
+	public void removeFrame(int i) {
+		shiftOver(i);
+		shrinkArray();
 	}
 
 	/**
@@ -84,7 +139,7 @@ public class Animation implements Comparable<Animation> {
 	 * @return name of this animation
 	 */
 	public String getName() {
-		return name + " (" + order + ")";
+		return name;
 	}
 
 	/**
@@ -97,101 +152,36 @@ public class Animation implements Comparable<Animation> {
 		name = s;
 	}
 
-	/**
-	 * Gets the specified frame in this animation
-	 * 
-	 * @param i Index of frame you want
-	 * @return The selected frame
-	 */
-	public AFrame get(int i) {
-		try {
-			return frames.get(i);
-		} catch (IndexOutOfBoundsException e) {
-			System.out.println(e.toString());
-			return null;
+	private void extendArray() {
+		AFrame newArray[] = new AFrame[frames.length + 1];
+		for (int i = 0; i < frames.length; i++) {
+			newArray[i] = frames[i];
 		}
+		frames = newArray;
 	}
 
-	/**
-	 * Sets the selected Frame
-	 * 
-	 * @param f the frame you want to place in this animation
-	 * @param i Index of the frame you want to override
-	 */
-	public void set(AFrame f, int i) {
-		if (lastFrameIndex <= i) {
-			try {
-				frames.set(i, f);
-			} catch (IndexOutOfBoundsException e) {
-				System.out.println(e.toString());
-			}
+	private void shrinkArray() {
+		AFrame newArray[] = new AFrame[frames.length - 1];
+		for (int i = 0; i < newArray.length; i++) {
+			newArray[i] = frames[i];
 		}
+		frames = newArray;
 	}
 
-	/**
-	 * Removes a frame. Subsequent frames shift to the left.
-	 * 
-	 * @param i Index of frame you want to remove
-	 */
-	public void remove(int i) {
-		try {
-			frames.remove(i);
-		} catch (IndexOutOfBoundsException e) {
-			System.out.println(e.toString());
+	/* private void shiftSpace(int newFree) {
+		AFrame temp = null;
+		for (int i = newFree; i < (frames.length - 1); i++) {
+			// Max i: vorletztes element
+			AFrame tmp = frames[i];
+			frames[i] = temp;
+			temp = frames[i + 1];
+			frames[i + 1] = tmp;
 		}
-	}
+	} */
 
-	/**
-	 * Add a new (empty) frame at the specified position
-	 * 
-	 * @param i Index you want to place the new frame in
-	 * @see Animation#size size()
-	 */
-	public void add(int i) {
-		try {
-			frames.add(i, new AFrame());
-			lastFrameIndex++;
-		} catch (IndexOutOfBoundsException e) {
-			System.out.println(e.toString());
+	private void shiftOver(int toForget) {
+		for (int i = (toForget + 1); i < frames.length; i++) {
+			frames[i - 1] = frames[i];
 		}
-	}
-
-	/**
-	 * Add a specified frame at the specified position
-	 * 
-	 * @param i Index for new frame
-	 * @param f data for new frame
-	 */
-	public void add(int i, AFrame f) {
-		try {
-			frames.add(i, f);
-			lastFrameIndex++;
-		} catch (IndexOutOfBoundsException e) {
-			System.out.println(e.toString());
-		}
-	}
-
-	// return true if damaged and fixed partially
-	private boolean checkFrameList() {
-		for (int i = 0; i < frames.size(); i++) {
-			if (frames.get(i).getOrder() != i) {
-				frames.get(i).setOrder(frames.size());
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Return size of this animation, in number of frames.
-	 * Also fixes the order of the frame list, if needed.
-	 * 
-	 * @return number of frames
-	 */
-	public int size() {
-		while(checkFrameList()) {
-			Collections.sort(frames);
-		}
-		return frames.size();
 	}
 }

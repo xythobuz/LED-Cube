@@ -46,9 +46,9 @@ public class AnimationUtility {
 	 * @return Populated ArrayList
 	 * @throws Excpetion When something goes wrong with the Scanner...
 	 */
-	public static List<Animation> readFile(String path) throws Exception {
+	public static Animation[] readFile(String path) throws Exception {
 		Scanner sc = new Scanner(new File(path));
-		List<Animation> animations = new ArrayList<Animation>();
+		Animation[] animations = new Animation[0];
 		do {
 			Animation tmp = readAnimation(sc);
 			if (tmp == null) {
@@ -57,20 +57,29 @@ public class AnimationUtility {
 			if (sc.hasNextLine()) {
 				sc.nextLine();
 			}
-			animations.add(tmp);
+			extendArray(animations);
+			animations[animations.length - 1] = tmp;
 		} while (sc.hasNextLine());
 
 		return animations;
+	}
+
+	private static void extendArray(Animation[] animations) {
+		Animation newArray[] = new Animation[animations.length + 1];
+		for (int i = 0; i < animations.length; i++) {
+			newArray[i] = animations[i];
+		}
+		animations = newArray;
 	}
 
 	/**
 	 * Write a file with all Animations of an ArrayList
 	 * 
 	 * @param path Path to write to
-	 * @param animations ArrayList with all animations to be saved
+	 * @param animations Array with all animations to be saved
 	 * @see AnimationUtility#getLastError() getLastError()
 	 */
-	public static void writeFile(String path, List<Animation> animations) {
+	public static void writeFile(String path, Animation[] animations) {
 		File f = new File(path);
 		if (f.exists()) {
 			try {
@@ -83,9 +92,8 @@ public class AnimationUtility {
 		FileWriter output = null;
 		try {
 			output = new FileWriter(f);
-			for (int i = 0; i < animations.size(); i++) {
-				writeAnimation(animations.get(i), output,
-						(i == (animations.size() - 1)));
+			for (int i = 0; i < animations.length; i++) {
+				writeAnimation(animations[i], output, (i == (animations.length - 1)));
 			}
 		} catch (Exception e) {
 			lastError = e.toString();
@@ -106,7 +114,6 @@ public class AnimationUtility {
 	 * Get the last error that occured while writing
 	 * 
 	 * @return Text of the exception that occured
-	 * @see AnimationUtility#writeFile(String, List) writeFile()
 	 */
 	public static String getLastError() {
 		String tmp = lastError;
@@ -127,7 +134,7 @@ public class AnimationUtility {
 		anim.setName(sc.nextLine());
 		while (size > 0) {
 			f = readFrame(sc, index);
-			anim.add(index, f);
+			anim.setFrame(f, index);
 			index++;
 			size--;
 		}
@@ -187,7 +194,7 @@ public class AnimationUtility {
 		f.write(anim.size() + "\n");
 		f.write(anim.getName() + "\n");
 		for (int i = 0; i < anim.size(); i++) {
-			writeFrame(anim.get(i), f);
+			writeFrame(anim.getFrame(i), f);
 		}
 		if (!last) {
 			f.write("\n");

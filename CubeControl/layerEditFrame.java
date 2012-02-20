@@ -71,7 +71,7 @@ public class layerEditFrame extends JFrame {
 		animI = animIndex;
 		frameI = frameIndex;
 		// frame = byteToShortArray(worker.getFrame(animIndex, frameIndex));
-		frame = worker.getFrame(animIndex, frameIndex);
+		frame = worker.getAnimation(animIndex).getFrame(frameIndex).getData();
 		li = layerIndex;
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		int frameWidth = 180;
@@ -215,7 +215,7 @@ public class layerEditFrame extends JFrame {
 			reihe = 0;
 		}
 		frame = tmpFrame;
-		worker.setFrame(frame, animI, frameI);
+		worker.getAnimation(animI).getFrame(frameI).setData(frame);
 		ListSelectionEvent layerChanged = new ListSelectionEvent(
 				LedFrame.frameList, LedFrame.frameList.getSelectedIndex(),
 				LedFrame.frameList.getSelectedIndex(), false);

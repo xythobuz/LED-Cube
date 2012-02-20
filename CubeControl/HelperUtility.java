@@ -31,6 +31,7 @@
 import java.io.*;
 import java.nio.channels.*;
 import java.nio.*;
+import java.util.StringTokenizer;
 
 public class HelperUtility {
 
@@ -106,11 +107,32 @@ public class HelperUtility {
 	}
 
 	/**
+	 * Get the names of all available serial ports.
+	 * 
+	 * @return Array of port names. First entry is "No serial ports!" if no
+	 *         others
+	 */
+	public static String[] getPorts() {
+		String[] ports = { "No serial ports!" };
+		String portLines = getPortsOS();
+		if (portLines == null) {
+			return ports;
+		}
+		StringTokenizer sT = new StringTokenizer(portLines, "\n");
+		int size = sT.countTokens();
+		ports = new String[size];
+		for (int i = 0; i < size; i++) {
+			ports[i] = sT.nextToken();
+		}
+		return ports;
+	}
+
+	/**
 	 * Get all the existing serial port names
 	 * 
 	 * @return List of port names. \n between entries
 	 */
-	public static String getPorts() {
+	private static String getPortsOS() {
 		String os = System.getProperty("os.name").toLowerCase();
 		try {
 			if (os.indexOf("windows") > -1) {

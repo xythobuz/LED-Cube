@@ -78,7 +78,7 @@ public class SerialHelper {
 	 * @return A cubeWorker populated with the new data or null.
 	 */
 	public cubeWorker getAnimationsFromCube() {
-		List<Animation> animations = new ArrayList<Animation>();
+		Animation[] animations;
 		int animationCount, frameCount;
 		short[] data, tmp = new short[1];
 
@@ -107,6 +107,8 @@ public class SerialHelper {
 			printErrorMessage("Timout Response");
 			return null;
 		}
+
+		animations = new Animation[animationCount];
 
 		// Get animations
 		for (int a = 0; a < animationCount; a++) {
@@ -159,11 +161,11 @@ public class SerialHelper {
 				}
 
 				// Add frame to animation
-				currentAnim.add(f, currentFrame);
+				currentAnim.setFrame(currentFrame, f);
 			}
 
 			// Add animation to animations list
-			animations.add(a, currentAnim);
+			animations[a] = currentAnim;
 		}
 
 		return new cubeWorker(animations, frame);
@@ -190,7 +192,7 @@ public class SerialHelper {
 		}
 
 		// Send animation count
-		tmp[0] = (short)worker.numOfAnimations();
+		tmp[0] = (short)worker.size();
 		if (!writeData(tmp)) {
 			printErrorMessage("Timeout numOfAnimations");
 			return -1;
@@ -202,9 +204,9 @@ public class SerialHelper {
 		}
 
 		// Send animations
-		for (int a = 0; a < worker.numOfAnimations(); a++) {
+		for (int a = 0; a < worker.size(); a++) {
 			// Send frame count
-			tmp[0] = (short)worker.numOfFrames(a);
+			tmp[0] = (short)worker.getAnimation(a).size();
 			if (!writeData(tmp)) {
 				printErrorMessage("Timeout numOfFrames");
 				return -1;
@@ -216,9 +218,9 @@ public class SerialHelper {
 			}
 
 			// Send frames
-			for (int f = 0; f < worker.numOfFrames(a); f++) {
+			for (int f = 0; f < worker.getAnimation(a).size(); f++) {
 				// Frame duration
-				tmp[0] = worker.getFrameTime(a, f);
+				tmp[0] = worker.getAnimation(a).getFrame(f).getTime();
 				if (!writeData(tmp)) {
 					printErrorMessage("Timeout Frame duration");
 					return -1;
@@ -230,7 +232,7 @@ public class SerialHelper {
 				}
 
 				// Frame data
-				if (!writeData(worker.getFrame(a, f))) {
+				if (!writeData(worker.getAnimation(a).getFrame(f).getData())) {
 					printErrorMessage("Timeout Frame");
 					return -1;
 				}

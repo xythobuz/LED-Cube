@@ -83,6 +83,7 @@ public class Frame extends JFrame implements ListSelectionListener {
 
 	public cubeWorker worker = new cubeWorker(this);
 	private boolean fileSelected = false;
+	private Frame thisFrame;
 
 	// Ende Variablen
 
@@ -125,25 +126,22 @@ public class Frame extends JFrame implements ListSelectionListener {
 					&& (animList.getSelectedIndex() != -1)) {
 				// animList selection changed, update frameList
 				frameListModel.clear();
-				for (int i = 0; i < worker.numOfFrames(animList
-						.getSelectedIndex()); i++) {
-				// Offending statement:
-				// worker.numOfFrames(animList.getSelectedIndex())
-					frameListModel.addElement(worker.getFrameName(
-							animList.getSelectedIndex(), i));
+
+				// System.out.println("Selected Animation: " + animList.getSelectedIndex());
+				int max = worker.getAnimation(animList.getSelectedIndex()).size();
+
+				for (int i = 0; i < max; i++) {
+					frameListModel.addElement(worker.getAnimation(
+							animList.getSelectedIndex()).getFrame(i).getName());
 				}
 				frameList.setModel(frameListModel);
 			}
 
 			// If both selections are valid, update Frame duration and set 3D
 			// data
-			if ((animList.getSelectedIndex() != -1)
-					&& (frameList.getSelectedIndex() != -1)) {
-				ledView.setData(worker.getFrame(animList.getSelectedIndex(),
-						frameList.getSelectedIndex()));
-				frameLengthText.setText(Integer.toString(worker.getFrameTime(
-						animList.getSelectedIndex(),
-						frameList.getSelectedIndex())));
+			if ((animList.getSelectedIndex() != -1)	&& (frameList.getSelectedIndex() != -1)) {
+				ledView.setData(worker.getAnimation(animList.getSelectedIndex()).getFrame(frameList.getSelectedIndex()).getData());
+				frameLengthText.setText(Integer.toString(worker.getAnimation(animList.getSelectedIndex()).getFrame(frameList.getSelectedIndex()).getTime()));
 			} else {
 				// clear Frame duration
 				frameLengthText.setText("");
@@ -169,15 +167,16 @@ public class Frame extends JFrame implements ListSelectionListener {
 	public Frame(String title) {
 		// Frame-Initialisierung
 		super(title);
+		thisFrame = this;
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		String[] sPorts = worker.getSerialPorts();
+		String[] sPorts = HelperUtility.getPorts();
 		for (int i = 0; i < sPorts.length; i++) {
 			jComboBox1.addItem(sPorts[i]);
 		}
 
-		for (int i = 0; i < worker.numOfAnimations(); i++) {
-			animModel.addElement(worker.getAnimationName(i));
+		for (int i = 0; i < worker.size(); i++) {
+			animModel.addElement(worker.getAnimation(i).getName());
 		}
 
 		addWindowListener(new WindowAdapter() {
@@ -216,7 +215,13 @@ public class Frame extends JFrame implements ListSelectionListener {
 		cp.add(editA);
 		editA.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				editA_ActionPerformed(evt);
+				if (animList.getSelectedIndex() == -1) {
+					errorMessage("Please select an animation.");
+				} else if (frameList.getSelectedIndex() == -1) {
+					errorMessage("Please select a Frame.");
+				} else {
+					layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 0, worker, thisFrame);
+				}
 			}
 		});
 
@@ -226,7 +231,13 @@ public class Frame extends JFrame implements ListSelectionListener {
 		cp.add(editB);
 		editB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				editB_ActionPerformed(evt);
+				if (animList.getSelectedIndex() == -1) {
+					errorMessage("Please select an animation.");
+				} else if (frameList.getSelectedIndex() == -1) {
+					errorMessage("Please select a Frame.");
+				} else {
+					layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 1, worker, thisFrame);
+				}
 			}
 		});
 
@@ -236,7 +247,13 @@ public class Frame extends JFrame implements ListSelectionListener {
 		cp.add(editC);
 		editC.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				editC_ActionPerformed(evt);
+				if (animList.getSelectedIndex() == -1) {
+					errorMessage("Please select an animation.");
+				} else if (frameList.getSelectedIndex() == -1) {
+					errorMessage("Please select a Frame.");
+				} else {
+					layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 2, worker, thisFrame);
+				}
 			}
 		});
 
@@ -246,7 +263,13 @@ public class Frame extends JFrame implements ListSelectionListener {
 		cp.add(editD);
 		editD.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				editD_ActionPerformed(evt);
+				if (animList.getSelectedIndex() == -1) {
+					errorMessage("Please select an animation.");
+				} else if (frameList.getSelectedIndex() == -1) {
+					errorMessage("Please select a Frame.");
+				} else {
+					layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 3, worker, thisFrame);
+				}
 			}
 		});
 
@@ -256,7 +279,13 @@ public class Frame extends JFrame implements ListSelectionListener {
 		cp.add(editE);
 		editE.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				editE_ActionPerformed(evt);
+				if (animList.getSelectedIndex() == -1) {
+					errorMessage("Please select an animation.");
+				} else if (frameList.getSelectedIndex() == -1) {
+					errorMessage("Please select a Frame.");
+				} else {
+					layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 4, worker, thisFrame);
+				}
 			}
 		});
 
@@ -266,7 +295,13 @@ public class Frame extends JFrame implements ListSelectionListener {
 		cp.add(editF);
 		editF.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				editF_ActionPerformed(evt);
+				if (animList.getSelectedIndex() == -1) {
+					errorMessage("Please select an animation.");
+				} else if (frameList.getSelectedIndex() == -1) {
+					errorMessage("Please select a Frame.");
+				} else {
+					layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 5, worker, thisFrame);
+				}
 			}
 		});
 
@@ -276,7 +311,13 @@ public class Frame extends JFrame implements ListSelectionListener {
 		cp.add(editG);
 		editG.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				editG_ActionPerformed(evt);
+				if (animList.getSelectedIndex() == -1) {
+					errorMessage("Please select an animation.");
+				} else if (frameList.getSelectedIndex() == -1) {
+					errorMessage("Please select a Frame.");
+				} else {
+					layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 6, worker, thisFrame);
+				}
 			}
 		});
 
@@ -286,7 +327,13 @@ public class Frame extends JFrame implements ListSelectionListener {
 		cp.add(editH);
 		editH.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				editH_ActionPerformed(evt);
+				if (animList.getSelectedIndex() == -1) {
+					errorMessage("Please select an animation.");
+				} else if (frameList.getSelectedIndex() == -1) {
+					errorMessage("Please select a Frame.");
+				} else {
+					layerEditFrame layerFrame1 = new layerEditFrame(animList.getSelectedIndex(), frameList.getSelectedIndex(), 7, worker, thisFrame);
+				}
 			}
 		});
 
@@ -300,7 +347,14 @@ public class Frame extends JFrame implements ListSelectionListener {
 		cp.add(frameUp);
 		frameUp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				frameUp_ActionPerformed(evt);
+				int i = frameList.getSelectedIndex();
+				if ((i > 0) && (frameListModel.getSize() >= 2)) {
+					Object tmp = frameListModel.get(i);
+					frameListModel.set(i, frameListModel.get(i - 1));
+					frameListModel.set(i - 1, tmp);
+					frameList.setSelectedIndex(i - 1);
+					worker.getAnimation(animList.getSelectedIndex()).moveFrameUp(frameList.getSelectedIndex());
+				}
 			}
 		});
 
@@ -310,7 +364,16 @@ public class Frame extends JFrame implements ListSelectionListener {
 		cp.add(frameAdd);
 		frameAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				frameAdd_ActionPerformed(evt);
+				if (animList.getSelectedIndex() == -1) {
+					errorMessage("Please select an animation!");
+				} else {
+					int n = worker.getAnimation(animList.getSelectedIndex()).size();
+					worker.getAnimation(animList.getSelectedIndex()).addFrame();
+			// Not reaching past this comment if frame list empty
+					frameRemaining.setText(Integer.toString(worker.memoryRemaining()));
+					frameListModel.add(n, worker.getAnimation(animList.getSelectedIndex()).getFrame(n).getName());
+					frameList.setModel(frameListModel);
+				}
 			}
 		});
 
@@ -320,7 +383,16 @@ public class Frame extends JFrame implements ListSelectionListener {
 		cp.add(frameRemove);
 		frameRemove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				frameRemove_ActionPerformed(evt);
+				if (animList.getSelectedIndex() == -1) {
+					errorMessage("Select an animation.");
+				} else if (frameList.getSelectedIndex() == -1) {
+					errorMessage("Select a Frame.");
+				} else {
+					worker.getAnimation(animList.getSelectedIndex()).removeFrame(frameList.getSelectedIndex());
+					frameRemaining.setText(Integer.toString(worker.memoryRemaining()));
+					frameListModel.removeElementAt(frameList.getSelectedIndex());
+					frameList.setModel(frameListModel);
+				}
 			}
 		});
 
@@ -340,11 +412,8 @@ public class Frame extends JFrame implements ListSelectionListener {
 					errorMessage("Select a Frame!");
 					return;
 				}
-				worker.setFrameName(
-						askString("Rename",
-								"Rename " + frameList.getSelectedValue() + "?"),
-						a, f);
-				frameListModel.set(f, worker.getFrameName(a, f));
+				worker.getAnimation(a).getFrame(f).setName(askString("Rename", "Rename " + frameList.getSelectedValue() + "?"));
+				frameListModel.set(f, worker.getAnimation(a).getFrame(f).getName());
 				frameList.setModel(frameListModel);
 			}
 		});
@@ -355,7 +424,14 @@ public class Frame extends JFrame implements ListSelectionListener {
 		cp.add(frameDown);
 		frameDown.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				frameDown_ActionPerformed(evt);
+				int i = frameList.getSelectedIndex();
+				if ((i >= 0) && (frameListModel.getSize() >= 2) && (i < (frameListModel.getSize() - 1))) {
+					Object tmp = frameListModel.get(i);
+					frameListModel.set(i, frameListModel.get(i + 1));
+					frameListModel.set(i + 1, tmp);
+					frameList.setSelectedIndex(i + 1);
+					worker.getAnimation(animList.getSelectedIndex()).moveFrameDown(frameList.getSelectedIndex());
+				}
 			}
 		});
 
@@ -375,7 +451,14 @@ public class Frame extends JFrame implements ListSelectionListener {
 		cp.add(fullScreenButton);
 		fullScreenButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				enterFullscreen(evt);
+				ledView.enterFullscreen();
+				setLocation(0,0);
+				setSize(700, 700);
+				int w = Toolkit.getDefaultToolkit().getScreenSize().width;
+				int h = Toolkit.getDefaultToolkit().getScreenSize().height;
+				setSize(w - 5, h - 30);
+				playAnimationFullscreen.setVisible(true);
+				cubeCanvas.setBounds(0, 0, w - 5, h - 80);
 			}
 		});
 
@@ -384,10 +467,17 @@ public class Frame extends JFrame implements ListSelectionListener {
 		cp.add(exitButton);
 		exitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				exitFullscreen();
+				playAnimationFullscreen.setVisible(false);
+				setLocation(0,0);
+				setSize(661, 440);
+				ledView.leaveFullscreen();
+				cubeCanvas.setBounds(8,8, 250,250);
+				Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+				int x = (d.width - getSize().width) / 2;
+				int y = (d.height - getSize().height) / 2;
+				setLocation(x, y);
 			}
 		});
-
 
 		playAnimation.setText("Play");
 		playAnimation.setBounds(344, 390, 147, 25);
@@ -395,7 +485,22 @@ public class Frame extends JFrame implements ListSelectionListener {
 		cp.add(playAnimation);
 		playAnimation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt){
-				playAnimation(evt);		
+				if (animList.getSelectedIndex() == -1) {
+					errorMessage("Please select an animation.");
+				} else if (frameList.getSelectedIndex() == -1) {
+					errorMessage("Please select a Frame.");
+				} else {
+					for(int i = 0; i < frameList.getModel().getSize(); i++){
+						frameList.setSelectedIndex(i);
+						short time1 = worker.getAnimation(animList.getSelectedIndex()).getFrame(frameList.getSelectedIndex()).getTime();
+						long time = (long) (((time1+1) * 1/24) * 1000);
+						try {
+							Thread.sleep(time);
+						} catch(Exception e) {
+							System.out.println(e);
+						}
+					}	
+				}
 			}
 		});
 
@@ -406,10 +511,24 @@ public class Frame extends JFrame implements ListSelectionListener {
 		cp.add(playAnimationFullscreen);
 		playAnimationFullscreen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt){
-				playAnimation(evt);		
+				if (animList.getSelectedIndex() == -1) {
+					errorMessage("Please select an animation.");
+				} else if (frameList.getSelectedIndex() == -1) {
+					errorMessage("Please select a Frame.");
+				} else {
+					for(int i = 0; i < frameList.getModel().getSize(); i++){
+						frameList.setSelectedIndex(i);
+						short time1 = worker.getAnimation(animList.getSelectedIndex()).getFrame(frameList.getSelectedIndex()).getTime();
+						long time = (long) (((time1+1) * 1/24) * 1000);
+						try {
+							Thread.sleep(time);
+						} catch(Exception e) {
+							System.out.println(e);
+						}
+					}	
+				}
 			}
 		});
-
 
 		frameDuration.setBounds(590, 184, 60, 24);
 		frameDuration.setText("OK");
@@ -433,10 +552,7 @@ public class Frame extends JFrame implements ListSelectionListener {
 						errorMessage("Please select a Frame!");
 						return;
 					}
-					worker.setFrameTime(
-							(byte) (Integer.parseInt(frameLengthText.getText()) - 1),
-							animList.getSelectedIndex(),
-							frameList.getSelectedIndex());
+					worker.getAnimation(animList.getSelectedIndex()).getFrame(frameList.getSelectedIndex()).setTime((byte)(Integer.parseInt(frameLengthText.getText()) - 1));
 				}
 			}
 		});
@@ -452,7 +568,14 @@ public class Frame extends JFrame implements ListSelectionListener {
 		cp.add(animUp);
 		animUp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				animUp_ActionPerformed(evt);
+				int i = animList.getSelectedIndex();
+				if ((i > 0) && (animModel.getSize() >= 2)) {
+					Object tmp = animModel.get(i);
+					animModel.set(i, animModel.get(i - 1));
+					animModel.set(i - 1, tmp);
+					animList.setSelectedIndex(i - 1);
+					worker.moveAnimationUp(animList.getSelectedIndex());
+				}
 			}
 		});
 
@@ -462,7 +585,14 @@ public class Frame extends JFrame implements ListSelectionListener {
 		cp.add(animDown);
 		animDown.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				animDown_ActionPerformed(evt);
+				int i = animList.getSelectedIndex();
+				if ((i >= 0) && (animModel.getSize() >= 2) && (i < (animModel.getSize() - 1))) {
+					Object tmp = animModel.get(i);
+					animModel.set(i, animModel.get(i + 1));
+					animModel.set(i + 1, tmp);
+					animList.setSelectedIndex(i + 1);
+					worker.moveAnimationDown(animList.getSelectedIndex());
+				}
 			}
 		});
 
@@ -477,11 +607,8 @@ public class Frame extends JFrame implements ListSelectionListener {
 					errorMessage("Select an animation!");
 					return;
 				}
-				worker.setAnimationName(
-						askString("Rename",
-								"Rename " + animList.getSelectedValue() + "?"),
-						a);
-				animModel.set(a, worker.getAnimationName(a));
+				worker.getAnimation(a).setName(askString("Rename", "Rename " + animList.getSelectedValue() + "?"));
+				animModel.set(a, worker.getAnimation(a).getName());
 				animList.setModel(animModel);
 			}
 		});
@@ -492,7 +619,15 @@ public class Frame extends JFrame implements ListSelectionListener {
 		cp.add(animAdd);
 		animAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				animAdd_ActionPerformed(evt);
+				if (worker.addAnimation() == -1) {
+					errorMessage("Could not add animation!");
+				} else {
+					animModel.clear();
+					for (int i = 0; i < worker.size(); i++) {
+						animModel.add(i, worker.getAnimation(i).getName());
+					}
+					animList.setModel(animModel);
+				}
 			}
 		});
 
@@ -502,7 +637,13 @@ public class Frame extends JFrame implements ListSelectionListener {
 		cp.add(animRemove);
 		animRemove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				animRemove_ActionPerformed(evt);
+				if (animList.getSelectedIndex() == -1) {
+					errorMessage("Select an animation.");
+				} else {
+					worker.removeAnimation(animList.getSelectedIndex());
+					animModel.removeElementAt(animList.getSelectedIndex());
+					animList.setModel(animModel);
+				}
 			}
 		});
 
@@ -517,7 +658,24 @@ public class Frame extends JFrame implements ListSelectionListener {
 		cp.add(load);
 		load.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				load_ActionPerformed(evt);
+				JFileChooser fc = new JFileChooser();
+				int ret = fc.showOpenDialog(thisFrame);
+				if (ret == JFileChooser.APPROVE_OPTION) {
+					File file = fc.getSelectedFile();
+					if (fileSelected == false) {
+						fileSelected = true;
+					}
+					animPath.setText(file.getPath());
+					worker.loadState(animPath.getText());
+					animModel.clear();
+					for (int i = 0; i < worker.size(); i++) {
+						animModel.addElement(worker.getAnimation(i).getName());
+					}
+					animList.setModel(animModel);
+
+					frameListModel.clear();
+					frameList.setModel(frameListModel);
+				}
 			}
 		});
 
@@ -527,7 +685,18 @@ public class Frame extends JFrame implements ListSelectionListener {
 		cp.add(save);
 		save.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				save_ActionPerformed(evt);
+				if (fileSelected == false) {
+					JFileChooser fc = new JFileChooser();
+					int ret = fc.showSaveDialog(thisFrame);
+					if (ret == JFileChooser.APPROVE_OPTION) {
+						File file = fc.getSelectedFile();
+						fileSelected = true;
+						animPath.setText(file.getPath());
+						worker.saveState(animPath.getText());
+					}
+				} else {
+					worker.saveState(animPath.getText());
+				}
 			}
 		});
 
@@ -537,7 +706,21 @@ public class Frame extends JFrame implements ListSelectionListener {
 		cp.add(saveAs);
 		saveAs.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				saveAs_ActionPerformed(evt);
+				JFileChooser fc;
+				if (fileSelected == true) {
+					fc = new JFileChooser(new File(animPath.getText()).getParentFile());
+				} else {
+					fc = new JFileChooser();
+				}
+				int ret = fc.showSaveDialog(thisFrame);
+				if (ret == JFileChooser.APPROVE_OPTION) {
+					File file = fc.getSelectedFile();
+					if (fileSelected == false) {
+						fileSelected = true;
+					}
+					animPath.setText(file.getPath());
+					worker.saveState(animPath.getText());
+				}
 			}
 		});
 
@@ -550,7 +733,17 @@ public class Frame extends JFrame implements ListSelectionListener {
 		cp.add(upload);
 		upload.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				upload_ActionPerformed(evt);
+				if (jComboBox1.getSelectedItem().equals("Select serial port...")) {
+					// errorMessage("No serial port selected...");
+				} else {
+					if (worker.cubeProbeConnected((String) jComboBox1.getSelectedItem())) {
+						if (worker.cubeSendState((String) jComboBox1.getSelectedItem()) != 0) {
+							// errorMessage("Could not upload data!");
+						}
+					} else {
+						// errorMessage("Cube does not respond...");
+					}
+				}
 			}
 		});
 
@@ -560,7 +753,17 @@ public class Frame extends JFrame implements ListSelectionListener {
 		cp.add(download);
 		download.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				download_ActionPerformed(evt);
+				if (jComboBox1.getSelectedItem().equals("Select serial port...")) {
+					// errorMessage("No serial port selected...");
+				} else {
+					if (worker.cubeProbeConnected((String) jComboBox1.getSelectedItem())) {
+						if (worker.cubeGetState((String) jComboBox1.getSelectedItem()) != 0) {
+							// errorMessage("Could not download data!");
+						}
+					} else {
+						// errorMessage("Cube does not respond...");
+					}
+				}
 			}
 		});
 
@@ -570,7 +773,7 @@ public class Frame extends JFrame implements ListSelectionListener {
 		cp.add(jLabel4);
 		frameRemaining.setBounds(536, 232, 113, 24);
 		frameRemaining.setEditable(false);
-		frameRemaining.setText(String.valueOf(worker.framesRemaining()));
+		frameRemaining.setText(String.valueOf(worker.memoryRemaining()));
 		frameRemaining.setFont(new Font("Dialog", Font.PLAIN, 13));
 		cp.add(frameRemaining);
 		animList.setFont(new Font("Dialog", Font.PLAIN, 13));
@@ -580,348 +783,6 @@ public class Frame extends JFrame implements ListSelectionListener {
 		frameList.addListSelectionListener(this);
 		setResizable(false);
 		setVisible(true);
-	}
-
-	// Anfang Methoden
-
-	// Anfang Ereignisprozeduren
-	
-	public void playAnimation(ActionEvent evt){
-			if (animList.getSelectedIndex() == -1) {
-			errorMessage("Please select an animation.");
-		} else if (frameList.getSelectedIndex() == -1) {
-			errorMessage("Please select a Frame.");
-		} else {
-			for(int i = 0; i < frameList.getModel().getSize(); i++){
-				frameList.setSelectedIndex(i);
-				short time1 = worker.getFrameTime(animList.getSelectedIndex(), frameList.getSelectedIndex());
-				long time = (long) (((time1+1) * 1/24) * 1000);
-				try{
-					Thread.sleep(time);
-				}catch(Exception e){
-					System.out.println(e);
-				}
-			}	
-		}
-	
-	}
-	
-	public void enterFullscreen(ActionEvent evt) {
-		ledView.enterFullscreen();
-		//FullscreenWindow fw = new FullscreenWindow(worker, cubeCanvas, ledView, this);
-		setLocation(0,0);
-		setSize(700, 700);
-		int w = Toolkit.getDefaultToolkit().getScreenSize().width;
-		int h = Toolkit.getDefaultToolkit().getScreenSize().height;
-		System.out.println(w);
-		System.out.println(h);
-		setSize(w-5, h-30);
-
-		playAnimationFullscreen.setVisible(true);
-		//setSize(Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height);
-		//Y U NO WORK????
-		cubeCanvas.setBounds(0,0,Toolkit.getDefaultToolkit().getScreenSize().width-5, Toolkit.getDefaultToolkit().getScreenSize().height-80);
-	
-	}
-	public void exitFullscreen(){
-	//661, 440
-		playAnimationFullscreen.setVisible(false);
-		setLocation(0,0);
-		setSize(661, 440);
-		ledView.leaveFullscreen();
-		cubeCanvas.setBounds(8,8, 250,250);
-		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (d.width - getSize().width) / 2;
-		int y = (d.height - getSize().height) / 2;
-		setLocation(x, y);
-	}
-	
-	public void editA_ActionPerformed(ActionEvent evt) {
-
-		if (animList.getSelectedIndex() == -1) {
-			errorMessage("Please select an animation.");
-		} else if (frameList.getSelectedIndex() == -1) {
-			errorMessage("Please select a Frame.");
-		} else {
-			@SuppressWarnings("unused")
-			layerEditFrame layerFrame1 = new layerEditFrame(
-					animList.getSelectedIndex(), frameList.getSelectedIndex(),
-					0, worker, this);
-
-		}
-	}
-
-	public void editB_ActionPerformed(ActionEvent evt) {
-		if (animList.getSelectedIndex() == -1) {
-			errorMessage("Please select an animation.");
-		} else if (frameList.getSelectedIndex() == -1) {
-			errorMessage("Please select a Frame.");
-		} else {
-			@SuppressWarnings("unused")
-			layerEditFrame layerFrame1 = new layerEditFrame(
-					animList.getSelectedIndex(), frameList.getSelectedIndex(),
-					1, worker, this);
-		}
-	}
-
-	public void editC_ActionPerformed(ActionEvent evt) {
-		if (animList.getSelectedIndex() == -1) {
-			errorMessage("Please select an animation.");
-		} else if (frameList.getSelectedIndex() == -1) {
-			errorMessage("Please select a Frame.");
-		} else {
-			@SuppressWarnings("unused")
-			layerEditFrame layerFrame1 = new layerEditFrame(
-					animList.getSelectedIndex(), frameList.getSelectedIndex(),
-					2, worker, this);
-		}
-	}
-
-	public void editD_ActionPerformed(ActionEvent evt) {
-		if (animList.getSelectedIndex() == -1) {
-			errorMessage("Please select an animation.");
-		} else if (frameList.getSelectedIndex() == -1) {
-			errorMessage("Please select a Frame.");
-		} else {
-			@SuppressWarnings("unused")
-			layerEditFrame layerFrame1 = new layerEditFrame(
-					animList.getSelectedIndex(), frameList.getSelectedIndex(),
-					3, worker, this);
-		}
-	}
-
-	public void editE_ActionPerformed(ActionEvent evt) {
-		if (animList.getSelectedIndex() == -1) {
-			errorMessage("Please select an animation.");
-		} else if (frameList.getSelectedIndex() == -1) {
-			errorMessage("Please select a Frame.");
-		} else {
-			@SuppressWarnings("unused")
-			layerEditFrame layerFrame1 = new layerEditFrame(
-					animList.getSelectedIndex(), frameList.getSelectedIndex(),
-					4, worker, this);
-		}
-	}
-
-	public void editF_ActionPerformed(ActionEvent evt) {
-		if (animList.getSelectedIndex() == -1) {
-			errorMessage("Please select an animation.");
-		} else if (frameList.getSelectedIndex() == -1) {
-			errorMessage("Please select a Frame.");
-		} else {
-			@SuppressWarnings("unused")
-			layerEditFrame layerFrame1 = new layerEditFrame(
-					animList.getSelectedIndex(), frameList.getSelectedIndex(),
-					5, worker, this);
-		}
-	}
-
-	public void editG_ActionPerformed(ActionEvent evt) {
-		if (animList.getSelectedIndex() == -1) {
-			errorMessage("Please select an animation.");
-		} else if (frameList.getSelectedIndex() == -1) {
-			errorMessage("Please select a Frame.");
-		} else {
-			@SuppressWarnings("unused")
-			layerEditFrame layerFrame1 = new layerEditFrame(
-					animList.getSelectedIndex(), frameList.getSelectedIndex(),
-					6, worker, this);
-		}
-	}
-
-	public void editH_ActionPerformed(ActionEvent evt) {
-		if (animList.getSelectedIndex() == -1) {
-			errorMessage("Please select an animation.");
-		} else if (frameList.getSelectedIndex() == -1) {
-			errorMessage("Please select a Frame.");
-		} else {
-			@SuppressWarnings("unused")
-			layerEditFrame layerFrame1 = new layerEditFrame(
-					animList.getSelectedIndex(), frameList.getSelectedIndex(),
-					7, worker, this);
-		}
-	}
-
-	public void frameUp_ActionPerformed(ActionEvent evt) {
-		int i = frameList.getSelectedIndex();
-		if ((i > 0) && (frameListModel.getSize() >= 2)) {
-			Object tmp = frameListModel.get(i);
-			frameListModel.set(i, frameListModel.get(i - 1));
-			frameListModel.set(i - 1, tmp);
-			frameList.setSelectedIndex(i - 1);
-			worker.moveFrame(worker.UP, animList.getSelectedIndex(),
-					frameList.getSelectedIndex());
-		}
-	}
-
-	public void frameDown_ActionPerformed(ActionEvent evt) {
-		int i = frameList.getSelectedIndex();
-		if ((i >= 0) && (frameListModel.getSize() >= 2)
-				&& (i < (frameListModel.getSize() - 1))) {
-			Object tmp = frameListModel.get(i);
-			frameListModel.set(i, frameListModel.get(i + 1));
-			frameListModel.set(i + 1, tmp);
-			frameList.setSelectedIndex(i + 1);
-			worker.moveFrame(worker.DOWN, animList.getSelectedIndex(),
-					frameList.getSelectedIndex());
-		}
-	}
-
-	public void frameAdd_ActionPerformed(ActionEvent evt) {
-		if (animList.getSelectedIndex() == -1) {
-			errorMessage("Please select an animation!");
-		} else {
-			int n = worker.numOfFrames(animList.getSelectedIndex());
-			worker.addFrame(animList.getSelectedIndex());
-			// Not reaching past this comment if frame list empty
-			frameRemaining.setText(Integer.toString(worker.framesRemaining()));
-			frameListModel.add(n,
-					worker.getFrameName(animList.getSelectedIndex(), n));
-			frameList.setModel(frameListModel);
-		}
-	}
-
-	public void frameRemove_ActionPerformed(ActionEvent evt) {
-		if (animList.getSelectedIndex() == -1) {
-			errorMessage("Select an animation.");
-		} else if (frameList.getSelectedIndex() == -1) {
-			errorMessage("Select a Frame.");
-		} else {
-			worker.removeFrame(animList.getSelectedIndex(),
-					frameList.getSelectedIndex());
-			frameRemaining.setText(Integer.toString(worker.framesRemaining()));
-			frameListModel.removeElementAt(frameList.getSelectedIndex());
-			frameList.setModel(frameListModel);
-		}
-	}
-
-	public void animUp_ActionPerformed(ActionEvent evt) {
-		int i = animList.getSelectedIndex();
-		if ((i > 0) && (animModel.getSize() >= 2)) {
-			Object tmp = animModel.get(i);
-			animModel.set(i, animModel.get(i - 1));
-			animModel.set(i - 1, tmp);
-			animList.setSelectedIndex(i - 1);
-			worker.moveAnimation(worker.UP, animList.getSelectedIndex());
-		}
-	}
-
-	public void animDown_ActionPerformed(ActionEvent evt) {
-		int i = animList.getSelectedIndex();
-		if ((i >= 0) && (animModel.getSize() >= 2)
-				&& (i < (animModel.getSize() - 1))) {
-			Object tmp = animModel.get(i);
-			animModel.set(i, animModel.get(i + 1));
-			animModel.set(i + 1, tmp);
-			animList.setSelectedIndex(i + 1);
-			worker.moveAnimation(worker.DOWN, animList.getSelectedIndex());
-		}
-	}
-
-	public void animAdd_ActionPerformed(ActionEvent evt) {
-		if (worker.addAnimation() == -1) {
-			errorMessage("Could not add animation!");
-		} else {
-			animModel.clear();
-			for (int i = 0; i < worker.numOfAnimations(); i++) {
-				animModel.add(i, worker.getAnimationName(i));
-			}
-			animList.setModel(animModel);
-		}
-
-	}
-
-	public void animRemove_ActionPerformed(ActionEvent evt) {
-		if (animList.getSelectedIndex() == -1) {
-			errorMessage("Select an animation.");
-		} else {
-			worker.removeAnimation(animList.getSelectedIndex());
-			animModel.removeElementAt(animList.getSelectedIndex());
-			animList.setModel(animModel);
-		}
-	}
-
-	public void load_ActionPerformed(ActionEvent evt) {
-		JFileChooser fc = new JFileChooser();
-		int ret = fc.showOpenDialog(this);
-		if (ret == JFileChooser.APPROVE_OPTION) {
-			File file = fc.getSelectedFile();
-			if (fileSelected == false) {
-				fileSelected = true;
-			}
-			animPath.setText(file.getPath());
-			worker.loadState(animPath.getText());
-			animModel.clear();
-			for (int i = 0; i < worker.numOfAnimations(); i++) {
-				animModel.addElement(worker.getAnimationName(i));
-			}
-			animList.setModel(animModel);
-
-			frameListModel.clear();
-			frameList.setModel(frameListModel);
-		}
-	}
-
-	public void save_ActionPerformed(ActionEvent evt) {
-		if (fileSelected == false) {
-			JFileChooser fc = new JFileChooser();
-			int ret = fc.showSaveDialog(this);
-			if (ret == JFileChooser.APPROVE_OPTION) {
-				File file = fc.getSelectedFile();
-				fileSelected = true;
-				animPath.setText(file.getPath());
-				worker.saveState(animPath.getText());
-			}
-		} else {
-			worker.saveState(animPath.getText());
-		}
-	}
-
-	public void saveAs_ActionPerformed(ActionEvent evt) {
-		JFileChooser fc;
-		if (fileSelected == true) {
-			fc = new JFileChooser(new File(animPath.getText()).getParentFile());
-		} else {
-			fc = new JFileChooser();
-		}
-		int ret = fc.showSaveDialog(this);
-		if (ret == JFileChooser.APPROVE_OPTION) {
-			File file = fc.getSelectedFile();
-			if (fileSelected == false) {
-				fileSelected = true;
-			}
-			animPath.setText(file.getPath());
-			worker.saveState(animPath.getText());
-		}
-	}
-
-	// We get detailed error messages from the SerialHelper...
-	public void upload_ActionPerformed(ActionEvent evt) {
-		if (jComboBox1.getSelectedItem().equals("Select serial port...")) {
-			// errorMessage("No serial port selected...");
-		} else {
-			if (worker.probeCubeConnected((String) jComboBox1.getSelectedItem())) {
-				if (worker.uploadState((String) jComboBox1.getSelectedItem()) != 0) {
-					// errorMessage("Could not upload data!");
-				}
-			} else {
-				// errorMessage("Cube does not respond...");
-			}
-		}
-	}
-
-	public void download_ActionPerformed(ActionEvent evt) {
-		if (jComboBox1.getSelectedItem().equals("Select serial port...")) {
-			// errorMessage("No serial port selected...");
-		} else {
-			if (worker.probeCubeConnected((String) jComboBox1.getSelectedItem())) {
-				if (worker.downloadState((String) jComboBox1.getSelectedItem()) != 0) {
-					// errorMessage("Could not download data!");
-				}
-			} else {
-				// errorMessage("Cube does not respond...");
-			}
-		}
 	}
 
 	public Led3D get3D() {
@@ -1003,26 +864,26 @@ public class Frame extends JFrame implements ListSelectionListener {
 
 				if (s.startsWith("frames ")) {
 					int anim = Integer.parseInt(s.substring(7));
-					if (anim >= f.worker.numOfAnimations()) {
-						System.out.println("Animation does not exist! Max: " + (f.worker.numOfAnimations() - 1));
+					if (anim >= f.worker.size()) {
+						System.out.println("Animation does not exist! Max: " + (f.worker.size() - 1));
 					} else {
-						System.out.println("Animation: " + f.worker.getAnimationName(anim));
-						for (int i = 0; i < f.worker.numOfFrames(anim); i++) {
-							AFrame frame = f.worker.getAnimationList().get(anim).get(i);
-							System.out.println("\tFrame " + frame.getOrder() + " (" + frame.getTime() + "): " + frame.getName());
+						System.out.println("Animation: " + f.worker.getAnimation(anim).getName());
+						for (int i = 0; i < f.worker.getAnimation(anim).size(); i++) {
+							AFrame frame = f.worker.getAnimation(anim).getFrame(i);
+							System.out.println("\tFrame (" + frame.getTime() + "): " + frame.getName());
 						}
 					}
 				}
 
 				if (s.equals("a") || s.equals("anims")) {
-					for (int i = 0; i < f.worker.numOfAnimations(); i++) {
-						Animation anim = f.worker.getAnimationList().get(i);
-						System.out.println("\tAnimation " + anim.getOrder() + ": " + anim.getName());
+					for (int i = 0; i < f.worker.size(); i++) {
+						Animation anim = f.worker.getAnimation(i);
+						System.out.println("\tAnimation: " + anim.getName());
 					}
 				}
 
 				if (s.equals("s") || s.equals("scan")) {
-					String[] sPorts = f.worker.getSerialPorts();
+					String[] sPorts = HelperUtility.getPorts();
 					f.jComboBox1.removeAllItems();
 					for (int i = 0; i < sPorts.length; i++) {
 						f.jComboBox1.addItem(sPorts[i]);

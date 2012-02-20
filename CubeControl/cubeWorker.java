@@ -43,41 +43,21 @@ import java.util.Collections;
 
 public class cubeWorker {
 
-	// --------------------
-	// Definitions
-	// --------------------
-
-	final int UP = 0;
-	final int DOWN = 1;
-
-	// --------------------
-	// Fields
-	// --------------------
-
-	private List<Animation> animations = new ArrayList<Animation>();
 	private final int framesRemaining = 2016; // (128 * 1024) / 65 = 2016,...
 	private boolean changedState = false;
 	private Frame parentFrame;
-
-	// --------------------
+	private Animation[] animations = new Animation[1];
 
 	/**
 	 * Creates a worker with one animation, containing an empty frame.
 	 */
 	public cubeWorker(Frame parent) {
-		animations.add(new Animation());
-		animations.get(0).setName("Animation 1");
-		animations.get(0).add(0);
-		animations.get(0).get(0).setName("Frame 1");
+		animations[0] = new Animation();
+		animations[0].setName("Animation 1");
 		parentFrame = parent;
 	}
 
-	/**
-	 * Creates a worker from the given animation list
-	 * 
-	 * @param anims List of animations
-	 */
-	public cubeWorker(List<Animation> anims, Frame parent) {
+	public cubeWorker(Animation[] anims, Frame parent) {
 		animations = anims;
 		parentFrame = parent;
 	}
@@ -88,84 +68,24 @@ public class cubeWorker {
 	 * @return number of frames.
 	 */
 	public int completeNumOfFrames() {
-		int count = 0;
-		for (int i = 0; i < numOfAnimations(); i++) {
-			count += numOfFrames(i);
+		int c = 0;
+		for (int i = 0; i < size(); i++) {
+			c += getAnimation(i).size();
 		}
-		return count;
+		return c;
 	}
 
 	// --------------------
 	// Misc. Methods
 	// --------------------
 
-	// Returns a number that is below the size of the animations list and not used as order
-	// If a order is higher or equal to the size of the list, it tries to assign a hole found to this
-	// Returns -1 if there is no hole
-	private int holeInAnimationList() {
-		int s = animations.size();
-		byte[] result = new byte[s];
-		int hole = -1;
-		int fix = -1;
-		for (int i = 0; i < s; i++) {
-			result[i] = 0;
-		}
-		for (int i = 0; i < s; i++) {
-			int order = animations.get(i).getOrder();
-			if (order >= s) {
-				// Houston, we have a problem...
-				fix = i;
-			}
-			result[order] = 1;
-		}
-		for (int i = 0; i < s; i++) {
-			if (result[i] == 0) {
-				hole = i;
-				break;
-			}
-		}
-		if ((hole != -1) && (fix != 1)) {
-			animations.get(fix).setOrder(hole);
-			return holeInAnimationList();
-		}
-		return hole;
-	}
-
-	// return true if damaged and to be sorted
-	private boolean checkAnimationList() {
-		for (int i = 0; i < animations.size(); i++) {
-			if (animations.get(i).getOrder() != i) {
-				int h = holeInAnimationList();
-				if (h != -1) {
-					animations.get(i).setOrder(h);
-				}
-				return true;
-			}
-		}
-		return false;
-	}
-
 	/**
 	 * Get the number of animations in this worker.
-	 * Also fixes the order of the animation list, if needed.
 	 * 
 	 * @return number of animations
 	 */
-	public int numOfAnimations() {
-		while(checkAnimationList()) {
-			Collections.sort(animations);
-		}
-		return animations.size();
-	}
-
-	/**
-	 * Get the number of frames in an animation.
-	 * 
-	 * @param selectedAnimation the animation you want to check
-	 * @return number of frames in this animation
-	 */
-	public int numOfFrames(int selectedAnimation) {
-		return animations.get(selectedAnimation).size();
+	public int size() {
+		return animations.length;
 	}
 
 	/**
@@ -173,13 +93,9 @@ public class cubeWorker {
 	 * 
 	 * @return number of frames remaining
 	 */
-	public int framesRemaining() {
+	public int memoryRemaining() {
 		return framesRemaining - completeNumOfFrames();
 	}
-
-	// --------------------
-	// Animation Specific
-	// --------------------
 
 	/**
 	 * Add an animation. It has an initial empty frame
@@ -188,209 +104,64 @@ public class cubeWorker {
 	 */
 	public int addAnimation() {
 		changedState = true;
-		if (framesRemaining() <= 0) {
+		if (memoryRemaining() <= 0) {
 			return -1;
 		} else {
-			int s = animations.size();
-			animations.add(s, new Animation());
-			animations.get(s).setName("Animation " + animations.size());
-			animations.get(s).add(0, new AFrame());
-			animations.get(s).get(0).setName("Frame 1");
-			return s;
+			extendArray();
+			animations[animations.length - 1] = new Animation();
+			return animations.length - 1;
 		}
 	}
 
 	/**
 	 * Remove an animation.
 	 * 
-	 * @param selectedAnimation the animation you want to delete
+	 * @param i the animation you want to delete
 	 */
-	public void removeAnimation(int selectedAnimation) {
+	public void removeAnimation(int i) {
 		changedState = true;
-		animations.remove(selectedAnimation);
+		shiftOver(i);
+		shrinkArray();
 	}
 
 	/**
-	 * Get the name of an animation
-	 * 
-	 * @return The name
-	 * @param selectedAnimation The animation you want to get the name from
+	 * Move an animation up.
+	 * @param i the animation you want to move
 	 */
-	public String getAnimationName(int selectedAnimation) {
-		return animations.get(selectedAnimation).getName();
-	}
-
-	/**
-	 * Set the name of an animation  @param s New name
-	 * 
-	 * @param selectedAnimation Index of the animation you want to change
-	 */
-	public void setAnimationName(String s, int selectedAnimation) {
-		changedState = true;
-		animations.get(selectedAnimation).setName(s);
-	}
-
-	/**
-	 * Move an animation UP or DOWN.
-	 * 
-	 * @param dir Direction. Use UP and DOWN defined in cubeWorker
-	 * @param selectedAnimation Animation you want to move
-	 */
-	public void moveAnimation(int dir, int selectedAnimation) {
-		changedState = true;
-		if (dir == UP) {
-			// animation moved up
-			if (selectedAnimation > 0) {
-				Animation tmp = animations.get(selectedAnimation);
-				animations.set(selectedAnimation,
-						animations.get(selectedAnimation - 1));
-				animations.set(selectedAnimation - 1, tmp);
-			}
-		} else if (dir == DOWN) {
-			// animation moved down
-			if (selectedAnimation < (animations.size() - 1)) {
-				Animation tmp = animations.get(selectedAnimation);
-				animations.set(selectedAnimation,
-						animations.get(selectedAnimation + 1));
-				animations.set(selectedAnimation + 1, tmp);
-			}
+	public void moveAnimationUp(int i) {
+		if (i > 0) {
+			Animation tmp = animations[i];
+			animations[i] = animations[i - 1];
+			animations[i - 1] = tmp;
 		}
 	}
 
-	// --------------------
-	// Frame Specific
-	// --------------------
-
 	/**
-	 * Get the name of a frame.
-	 * 
-	 * @param anim Animation the frame is in
-	 * @param frame Index of the frame
+	 * Move an animation down.
+	 * @param i the animation you want to move
 	 */
-	public String getFrameName(int anim, int frame) {
-		return animations.get(anim).get(frame).getName();
-	}
-
-	/**
-	 * Set the name of a frame.
-	 * 
-	 * @param s New name
-	 * @param anim Animation Index
-	 * @param frame Frame Index
-	 */
-	public void setFrameName(String s, int anim, int frame) {
-		changedState = true;
-		animations.get(anim).get(frame).setName(s);
-	}
-
-	/**
-	 * Add a Frame to an animation.
-	 * 
-	 * @return Index of new Frame or -1 if not enough space
-	 * @param anim Animation Index
-	 */
-	public int addFrame(int anim) {
-		changedState = true;
-		if (framesRemaining() <= 0) {
-			return -1;
-		}
-		int s = animations.get(anim).size();
-		animations.get(anim).add(s);
-		animations.get(anim).get(s)
-				.setName("Frame " + animations.get(anim).size());
-		return s;
-	}
-
-	/**
-	 * Remove a frame.
-	 * 
-	 * @param anim Animation Index
-	 * @param frame Frame you want to remove
-	 */
-	public void removeFrame(int anim, int frame) {
-		changedState = true;
-		animations.get(anim).remove(frame);
-	}
-
-	/**
-	 * Get the data of a frame.
-	 * 
-	 * @param anim Animation Index  @param frame Frame Index
-	 * @return 64 byte array with data (8 bits per byte => 512 bits)
-	 */
-	public short[] getFrame(int anim, int frame) {
-		return animations.get(anim).get(frame).getData();
-	}
-
-	/**
-	 * Set the data of a frame
-	 * 
-	 * @param data 64 byte array with data
-	 * @param anim Animation Index
-	 * @param frame Frame Index
-	 * @see cubeWorker#getFrame(int, int) getFrame()
-	 */
-	public void setFrame(short[] data, int anim, int frame) {
-		changedState = true;
-		animations.get(anim).get(frame).setData(data);
-	}
-
-	/**
-	 * Get frame duration.
-	 * 
-	 * @param anim Animation Index
-	 * @param frame Frame Index
-	 * @return Duration. 0 means 1/24th of a second.
-	 */
-	public short getFrameTime(int anim, int frame) {
-		return animations.get(anim).get(frame).getTime();
-	}
-
-	/**
-	 * Set the frames duration.
-	 * 
-	 * @param time New duration
-	 * @param anim Animation Index
-	 * @param frame Frame Index
-	 * @see cubeWorker#getFrameTime(int, int) getFrameTime()
-	 */
-	public void setFrameTime(short time, int anim, int frame) {
-		changedState = true;
-		animations.get(anim).get(frame).setTime(time);
-	}
-
-	/**
-	 * Move a frame.
-	 * 
-	 * @param dir Direction to move. Use UP and DOWN from cubeWorker
-	 * @param anim Animation Index
-	 * @param frame Frame Index
-	 * @see cubeWorker#moveAnimation(int, int) moveAnimation()
-	 */
-	public void moveFrame(int dir, int anim, int frame) {
-		changedState = true;
-		if (dir == UP) {
-			// frame moved up
-			if (frame > 0) {
-				AFrame tmp = animations.get(anim).frames.get(frame);
-				animations.get(anim).frames.set(frame,
-						animations.get(anim).frames.get(frame - 1));
-				animations.get(anim).frames.set(frame - 1, tmp);
-			}
-		} else if (dir == DOWN) {
-			// frame moved down
-			if (frame < (animations.get(anim).size() - 1)) {
-				AFrame tmp = animations.get(anim).frames.get(frame);
-				animations.get(anim).frames.set(frame,
-						animations.get(anim).frames.get(frame + 1));
-				animations.get(anim).frames.set(frame + 1, tmp);
-			}
+	public void moveAnimationDown(int i) {
+		if (i < (animations.length - 1)) {
+			Animation tmp = animations[i];
+			animations[i] = animations[i + 1];
+			animations[i + 1] = tmp;
 		}
 	}
 
-	// --------------------
-	// File Specific
-	// --------------------
+	public Animation getAnimation(int i) {
+		if (i < animations.length) {
+			return animations[i];
+		} else {
+			return null;
+		}
+	}
+
+	public void setAnimation(Animation a, int i) {
+		changedState = true;
+		if (i < animations.length) {
+			animations[i] = a;
+		}
+	}
 
 	/**
 	 * Loads an animation file into this worker.
@@ -408,8 +179,8 @@ public class cubeWorker {
 			return -1;
 		}
 		int size = 0;
-		for (int i = 0; i < animations.size(); i++) {
-			size += animations.get(i).size();
+		for (int i = 0; i < animations.length; i++) {
+			size += animations[i].size();
 		}
 		if (size > framesRemaining) {
 			return -1;
@@ -442,17 +213,13 @@ public class cubeWorker {
 		return changedState;
 	}
 
-	// --------------------
-	// Serial Port Specific
-	// --------------------
-
 	/**
 	 * Send all animations to the cube.
 	 * 
 	 * @param port Name of serial port to use
 	 * @return 0 on success, -1 on error
 	 */
-	public int uploadState(String port) {
+	public int cubeSendState(String port) {
 		try {
 			SerialHelper sh = new SerialHelper(port, parentFrame);
 			int ret = sh.sendAnimationsToCube(this);
@@ -464,12 +231,20 @@ public class cubeWorker {
 	}
 
 	/**
+	 * Get the array of animations in this worker.
+	 * @return animation array
+	 */
+	public Animation[] getAnimationArray() {
+		return animations;
+	}
+
+	/**
 	 * Get all animations from the cube, place it in this object
 	 * 
 	 * @param port Name of serial port to use
 	 * @return 0 on success, -1 on error
 	 */
-	public int downloadState(String port) {
+	public int cubeGetState(String port) {
 		try {
 			SerialHelper sh = new SerialHelper(port, parentFrame);
 			cubeWorker ret = sh.getAnimationsFromCube();
@@ -478,7 +253,7 @@ public class cubeWorker {
 				return -1;
 			} else {
 				changedState = true;
-				animations = ret.getAnimationList();
+				animations = ret.getAnimationArray();
 				return 0;
 			}
 		} catch (Exception e) {
@@ -487,20 +262,12 @@ public class cubeWorker {
 	}
 
 	/**
-	 * Get the list used internally to store all the animations.
-	 * @return The list.
-	 */
-	public List<Animation> getAnimationList() {
-		return animations;
-	}
-
-	/**
 	 * Try to speak with the cube.
 	 * 
 	 * @return TRUE if cube responds
 	 * @param port Name of serial port
 	 */
-	public boolean probeCubeConnected(String port) {
+	public boolean cubeProbeConnected(String port) {
 		try {
 			SerialHelper sh = new SerialHelper(port, parentFrame);
 			boolean response = sh.probeForCube();
@@ -511,27 +278,25 @@ public class cubeWorker {
 		}
 	}
 
-	/**
-	 * Get the names of all available serial ports.
-	 * 
-	 * @return Array of port names. First entry is "Select serial port..." if no
-	 *         others
-	 */
-	public String[] getSerialPorts() {
-		String[] ports = { "Select serial port..." };
-		String portLines = HelperUtility.getPorts();
-		if (portLines == null) {
-			return ports;
+	private void extendArray() {
+		Animation newArray[] = new Animation[animations.length + 1];
+		for (int i = 0; i < animations.length; i++) {
+			newArray[i] = animations[i];
 		}
-		StringTokenizer sT = new StringTokenizer(portLines, "\n");
-		int size = sT.countTokens();
-		ports = new String[size];
-		for (int i = 0; i < size; i++) {
-			ports[i] = sT.nextToken();
-		}
-		return ports;
+		animations = newArray;
 	}
 
-	// --------------------
+	private void shrinkArray() {
+		Animation newArray[] = new Animation[animations.length - 1];
+		for (int i = 0; i < newArray.length; i++) {
+			newArray[i] = animations[i];
+		}
+		animations = newArray;
+	}
 
+	private void shiftOver(int toForget) {
+		for (int i = (toForget + 1); i < animations.length; i++) {
+			animations[i - 1] = animations[i];
+		}
+	}
 }
