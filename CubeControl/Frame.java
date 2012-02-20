@@ -430,7 +430,7 @@ public class Frame extends JFrame implements ListSelectionListener {
 					frameListModel.set(i, frameListModel.get(i + 1));
 					frameListModel.set(i + 1, tmp);
 					frameList.setSelectedIndex(i + 1);
-					worker.getAnimation(animList.getSelectedIndex()).moveFrameDown(frameList.getSelectedIndex());
+					worker.getAnimation(animList.getSelectedIndex()).moveFrameDown(i);
 				}
 			}
 		});
@@ -886,6 +886,7 @@ public class Frame extends JFrame implements ListSelectionListener {
 					String[] sPorts = HelperUtility.getPorts();
 					f.jComboBox1.removeAllItems();
 					for (int i = 0; i < sPorts.length; i++) {
+						System.out.println("Port " + i + ": " + sPorts[i]);
 						f.jComboBox1.addItem(sPorts[i]);
 					}
 				}

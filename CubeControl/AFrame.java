@@ -36,6 +36,14 @@ public class AFrame {
 	private short[] data = new short[64];
 	private short duration = 1;
 	private String name = "Frame";
+	private static int lastIndex = 1;
+
+	/**
+	 * Give it a nice name.
+	 */
+	public AFrame() {
+		name = "Frame " + lastIndex++;
+	}
 
 	/**
 	 * Gets the Name of this Frame

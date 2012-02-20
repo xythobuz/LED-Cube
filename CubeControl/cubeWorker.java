@@ -53,7 +53,6 @@ public class cubeWorker {
 	 */
 	public cubeWorker(Frame parent) {
 		animations[0] = new Animation();
-		animations[0].setName("Animation 1");
 		parentFrame = parent;
 	}
 

@@ -77,7 +77,7 @@ public class HelperUtility {
 			inChannel.close();
 			outChannel.close();
 			System.load(fileOut.toString());
-			System.out.println("Loaded Serial Library from " + fileOut.toString());
+			System.out.println("Loaded Serial Library!");
 		} catch (Exception e) {
 			System.out.println("Failed to load Serial Library:");
 			e.printStackTrace();
@@ -113,18 +113,19 @@ public class HelperUtility {
 	 *         others
 	 */
 	public static String[] getPorts() {
-		String[] ports = { "No serial ports!" };
 		String portLines = getPortsOS();
 		if (portLines == null) {
+			String[] ports = { "Select serial port..." };
+			return ports;
+		} else {
+			StringTokenizer sT = new StringTokenizer(portLines, "\n");
+			int size = sT.countTokens();
+			String[] ports = new String[size];
+			for (int i = 0; i < size; i++) {
+				ports[i] = sT.nextToken();
+			}
 			return ports;
 		}
-		StringTokenizer sT = new StringTokenizer(portLines, "\n");
-		int size = sT.countTokens();
-		ports = new String[size];
-		for (int i = 0; i < size; i++) {
-			ports[i] = sT.nextToken();
-		}
-		return ports;
 	}
 
 	/**
@@ -137,7 +138,7 @@ public class HelperUtility {
 		try {
 			if (os.indexOf("windows") > -1) {
 				return getThePorts("COM");
-			} else if (os.indexOf("max") > -1) {
+			} else if (os.indexOf("mac") > -1) {
 				return getThePorts("tty.");
 			} else {
 				return getThePorts("tty");
@@ -146,7 +147,6 @@ public class HelperUtility {
 			// Unsatisfied linker error:
 			// Serial.dll was probably not found
 			System.out.println("Exception: " + e.toString());
-		} finally {
 			return null;
 		}
 	}

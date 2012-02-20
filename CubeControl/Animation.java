@@ -36,12 +36,14 @@ import java.util.Collections;
 public class Animation {
 	AFrame frames[] = new AFrame[1];
 	private String name = "Animation";
+	private static int lastIndex = 1;
 
 	/**
 	 * Create an empty frame in this new animation.
 	 */
 	public Animation() {
 		frames[0] = new AFrame();
+		name = "Animation " + lastIndex++;
 	}
 
 	/**

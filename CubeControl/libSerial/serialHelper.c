@@ -57,7 +57,7 @@ JNIEXPORT jstring JNICALL Java_HelperUtility_getThePorts(JNIEnv *env, jclass cla
 
 	string = (char *)malloc((length + 1) * sizeof(char));
 	if (string == NULL) {
-		// printf("JNI: Not enough memory!\n");
+		printf("JNI: Not enough memory!\n");
 		return (*env)->NewStringUTF(env, NULL);
 	}
 
@@ -72,6 +72,8 @@ JNIEXPORT jstring JNICALL Java_HelperUtility_getThePorts(JNIEnv *env, jclass cla
 		length++;
 	}
 	string[lengthabs] = '\0';
+
+	// printf("JNI: %s\n", string);
 
 	jstring ret = (*env)->NewStringUTF(env, string);
 	return ret;
