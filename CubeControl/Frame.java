@@ -353,7 +353,24 @@ public class Frame extends JFrame implements ListSelectionListener {
 					frameListModel.set(i, frameListModel.get(i - 1));
 					frameListModel.set(i - 1, tmp);
 					frameList.setSelectedIndex(i - 1);
-					worker.getAnimation(animList.getSelectedIndex()).moveFrameUp(frameList.getSelectedIndex());
+					worker.getAnimation(animList.getSelectedIndex()).moveFrameUp(i);
+				}
+			}
+		});
+
+		frameDown.setBounds(544, 132, 107, 28);
+		frameDown.setText("Move down");
+		frameDown.setFont(new Font("Dialog", Font.PLAIN, 13));
+		cp.add(frameDown);
+		frameDown.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				int i = frameList.getSelectedIndex();
+				if ((i >= 0) && (frameListModel.getSize() >= 2) && (i < (frameListModel.getSize() - 1))) {
+					Object tmp = frameListModel.get(i);
+					frameListModel.set(i, frameListModel.get(i + 1));
+					frameListModel.set(i + 1, tmp);
+					frameList.setSelectedIndex(i + 1);
+					worker.getAnimation(animList.getSelectedIndex()).moveFrameDown(i);
 				}
 			}
 		});
@@ -415,23 +432,6 @@ public class Frame extends JFrame implements ListSelectionListener {
 				worker.getAnimation(a).getFrame(f).setName(askString("Rename", "Rename " + frameList.getSelectedValue() + "?"));
 				frameListModel.set(f, worker.getAnimation(a).getFrame(f).getName());
 				frameList.setModel(frameListModel);
-			}
-		});
-
-		frameDown.setBounds(544, 132, 107, 28);
-		frameDown.setText("Move down");
-		frameDown.setFont(new Font("Dialog", Font.PLAIN, 13));
-		cp.add(frameDown);
-		frameDown.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				int i = frameList.getSelectedIndex();
-				if ((i >= 0) && (frameListModel.getSize() >= 2) && (i < (frameListModel.getSize() - 1))) {
-					Object tmp = frameListModel.get(i);
-					frameListModel.set(i, frameListModel.get(i + 1));
-					frameListModel.set(i + 1, tmp);
-					frameList.setSelectedIndex(i + 1);
-					worker.getAnimation(animList.getSelectedIndex()).moveFrameDown(i);
-				}
 			}
 		});
 
@@ -574,7 +574,7 @@ public class Frame extends JFrame implements ListSelectionListener {
 					animModel.set(i, animModel.get(i - 1));
 					animModel.set(i - 1, tmp);
 					animList.setSelectedIndex(i - 1);
-					worker.moveAnimationUp(animList.getSelectedIndex());
+					worker.moveAnimationUp(i);
 				}
 			}
 		});
@@ -591,7 +591,7 @@ public class Frame extends JFrame implements ListSelectionListener {
 					animModel.set(i, animModel.get(i + 1));
 					animModel.set(i + 1, tmp);
 					animList.setSelectedIndex(i + 1);
-					worker.moveAnimationDown(animList.getSelectedIndex());
+					worker.moveAnimationDown(i);
 				}
 			}
 		});
