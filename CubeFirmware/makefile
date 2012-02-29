@@ -261,7 +261,7 @@ ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 
 
 # Default target.
-all: begin gccversion sizebefore build sizeafter finished end
+all: begin gccversion sizebefore build sizeafter finished end clean_list
 
 build: elf hex eep lss sym
 
@@ -389,12 +389,14 @@ extcoff: $(TARGET).elf
 
 
 # Target: clean project.
-clean: begin clean_list finished end
+clean: begin clean_list2 finished end
 
-clean_list :
+clean_list2: clean_list
+	$(REMOVE) $(TARGET).hex
+
+clean_list:
 	@echo
 	@echo $(MSG_CLEANING)
-	$(REMOVE) $(TARGET).hex
 	$(REMOVE) $(TARGET).eep
 	$(REMOVE) $(TARGET).obj
 	$(REMOVE) $(TARGET).cof
