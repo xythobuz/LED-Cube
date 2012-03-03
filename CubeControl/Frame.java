@@ -28,6 +28,8 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import java.io.File;
+import javax.vecmath.Point2d;
+import javax.vecmath.Point3d;
 
 public class Frame extends JFrame implements ListSelectionListener {
 
@@ -205,6 +207,16 @@ public class Frame extends JFrame implements ListSelectionListener {
 		// ----- 3D-----
 		// -------------
 		cubeCanvas.setBounds(8, 8, 250, 250);
+		cubeCanvas.addMouseListener(new MouseListener() {
+			public void mouseClicked(MouseEvent e){
+				Point2d mousePos = convertMousePositionToWorld(e.getX(), e.getY());	
+			}
+			public void mouseExited(MouseEvent e){}
+			public void mouseEntered(MouseEvent e){}
+			public void mouseReleased(MouseEvent e){}
+			public void mousePressed(MouseEvent e){}
+
+		});
 		cp.add(cubeCanvas);
 
 		// -------------
@@ -941,5 +953,28 @@ public class Frame extends JFrame implements ListSelectionListener {
 			s += String.valueOf((char) d[i]);
 		}
 		return s;
+	}
+	
+	private Point2d convertMousePositionToWorld (int iX, int iY)
+	{
+    Point3d eye_pos = new Point3d();
+    Point3d mousePosn = new Point3d();
+
+    //get the eye point and mouse click point
+    this.cubeCanvas.getCenterEyeInImagePlate(eye_pos);
+    this.cubeCanvas.getPixelLocationInImagePlate(iX, iY, mousePosn);
+
+    //Transform from ImagePlate coordinates to Vworld coordinates
+    Transform3D motion = new Transform3D();
+    this.cubeCanvas.getImagePlateToVworld(motion);
+
+    motion.transform(eye_pos);
+    motion.transform(mousePosn);
+
+    //calculate the intersection point on Z=0
+    double dblX = (-eye_pos.z / (mousePosn.z - eye_pos.z)) * (mousePosn.x - eye_pos.x) + eye_pos.x;
+    double dblY = (-eye_pos.z / (mousePosn.z - eye_pos.z)) * (mousePosn.y - eye_pos.y) + eye_pos.y;
+    
+    return new Point2d (dblX, dblY);
 	}
 }
