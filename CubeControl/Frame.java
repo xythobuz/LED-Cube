@@ -786,7 +786,7 @@ public class Frame extends JFrame implements ListSelectionListener {
       }
     });
 
-    jLabel4.setBounds536, 208, 112, 20);
+    jLabel4.setBounds(536, 208, 112, 20);
     jLabel4.setText("Remaining:");
     jLabel4.setFont(new Font("Dialog", Font.PLAIN, 13));
     cp.add(jLabel4);
