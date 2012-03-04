@@ -1,5 +1,3 @@
-# Name of your C-Compiler
-CC = gcc
 INJAR = *.class LEDoff.png LEDon.png splash.png bg.png
 # Path to jni.h
 ifdef SystemRoot
@@ -86,10 +84,18 @@ clean:
 	$(RM) *.o
 ifdef SystemRoot
 	$(RM) *.dll
+	$(RM) CubeControlWin.jar
 else
 ifdef SYSTEMROOT
 	$(RM) *.dll
+	$(RM) CubeControlWin.jar
 else
+ifeq ($(UNAME),Darwin)
 	$(RM) *.jnilib
+	$(RM) CubeControlMac.jar
+else
+	$(RM) *.so
+	$(RM) CubeControlLinux.jar
+endif
 endif
 endif

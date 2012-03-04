@@ -1,4 +1,5 @@
 CC = gcc
+STANDARD = gnu99
 # Path to jni.h
 ifdef SystemRoot
 HEADERPATH = C:/Program\ Files/Java/jdk1.6.0_29/include
@@ -49,15 +50,15 @@ endif
 endif
 
 libSerial.jnilib: serialHelper.c unixSerial.c serialInterface.h
-	$(CC) -x c -I$(HEADERPATH) -c serialHelper.c -o serialHelper.o
+	$(CC) -x c -std=$(STANDARD) -I$(HEADERPATH) -c serialHelper.c -o serialHelper.o
 	$(CC) -dynamiclib -o libSerial.jnilib serialHelper.o
 
 libSerial.so: serialHelper.c unixSerial.c serialInterface.h
-	$(CC) -x c -I$(HEADERPATH) -c serialHelper.c -o serialHelper.o
+	$(CC) -x c -std=$(STANDARD) -I$(HEADERPATH) -c serialHelper.c -o serialHelper.o
 	$(CC) -dynamiclib -o libSerial.so serialHelper.o
 
 Serial.dll: serialHelper.c winSerial.c serialInterface.h
-	$(CC) -x c -I$(HEADERPATH) -c serialHelper.c -o serialHelper.o -D winHelper
+	$(CC) -x c -std=$(STANDARD) -I$(HEADERPATH) -c serialHelper.c -o serialHelper.o -D winHelper
 	$(CC) -shared -o Serial.dll serialHelper.o
 
 # Delete intermediate files

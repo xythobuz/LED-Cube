@@ -59,7 +59,6 @@ public class Led3D {
 			new Color3f(1.0f, 0.0f, 0.0f), new Color3f(1.0f, 0.0f, 0.0f),
 			new Color3f(1.0f, 0.0f, 0.0f), new Color3f(1.0f, 0.0f, 0.0f), 64.0f);
 	private Background background;
-	private Background fullscreenBackground;
 
 	/**
 	 * @param canv The Canvas3D we render our cube in
@@ -114,10 +113,7 @@ public class Led3D {
 		group.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
 		group.setCapability(BranchGroup.ALLOW_DETACH);
 		background = createBackground();
-		fullscreenBackground = createFullscreenBackground();
 		group.addChild(background);
-		
-		
 
 		// Add all our led sphares to the universe
 		for (int x = 0; x < 8; x++) {
@@ -255,42 +251,39 @@ public class Led3D {
 
 	// create nice background
 	private Background createBackground() {
-		ImageComponent2D image = new TextureLoader(getClass().getResource(
-				"bg.png"), null).getImage();
-		Background bg = new Background(image);
-		bg.setApplicationBounds(new BoundingSphere(new Point3d(0.0, 0.0, 0.0),
-				100.0));
-		return bg;
-	}
-	
-	//create fullscreen background
-	private Background createFullscreenBackground() {
 		Background bg = new Background(0.0f, 0.0f, 1.0f);
-		int radius = Toolkit.getDefaultToolkit().getScreenSize().width;
+		int radius = canvas.getWidth();
 		bg.setApplicationBounds(new BoundingSphere(new Point3d(0.0, 0.0, 0.0), radius));
 		return bg;
-
 	}
-	
-	public void enterFullscreen() {
+
+	/**
+	 * Create new background to reflect changed Canvas size.
+	 */
+	private void toggleFullscreen() {
 		group.detach();
 		if(group.indexOfChild(background) != -1){
 			group.removeChild(background);
 		}
-		group.addChild(fullscreenBackground);
+		background = createBackground();
+		group.addChild(background);
 		universe.addBranchGraph(group);
+	}
+	
+	/**
+	 * Create new background and adjust view.
+	 */
+	public void enterFullscreen() {
+		toggleFullscreen();
 		trans3D.set(fullScreenMat);
 		transGroup.setTransform(trans3D);
 	}
 	
+	/**
+	 * Create new background and adjust view.
+	 */
 	public void leaveFullscreen() {
-		group.detach();
-		if(group.indexOfChild(fullscreenBackground) != -1) {
-			group.removeChild(fullscreenBackground);
-		}
-		background = createBackground();
-		group.addChild(background);
-		universe.addBranchGraph(group);
+		toggleFullscreen();
 		trans3D.set(mat);
 		transGroup.setTransform(trans3D);
 	}
