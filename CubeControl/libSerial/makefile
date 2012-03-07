@@ -7,8 +7,8 @@ RM = del
 else
 ifdef SYSTEMROOT
 # Looks like Cygwin or Mingw shell
-HEADERPATH = C:\Programme\Java\jdk1.6.0_31\include
-HEADERPATH += -IC:\Programme\Java\jdk1.6.0_31\include\win32
+HEADERPATH = C:\Programme\Java\jdk1.6.0_07\include
+HEADERPATH += -IC:\Programme\Java\jdk1.6.0_07\include\win32
 RM = rm -rf
 else
 RM = rm -f

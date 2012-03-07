@@ -94,6 +94,7 @@ public class Frame extends JFrame implements ListSelectionListener {
 	public cubeWorker worker = new cubeWorker(this);
 	private boolean fileSelected = false;
 	private Frame thisFrame;
+	private static Frame recentFrame;
 
 	// Ende Variablen
 
@@ -140,6 +141,23 @@ public class Frame extends JFrame implements ListSelectionListener {
 		String[] Optionen = { "OK" };
 		JOptionPane.showOptionDialog(this, msg, title, JOptionPane.YES_OPTION,
 			JOptionPane.ERROR_MESSAGE, null, Optionen, Optionen[0]);
+	}
+
+	/**
+	 * Show an error message to the user via the most recent Frame.
+	 * @param s Error Message
+	 */
+	public static void errorMessageStat(String s) {
+		recentFrame.errorMessage(s);
+	}
+
+	/**
+	 *	Show an error message to the user via the most recent Frame.
+	 * @param title Title of message box
+	 * @param msg Error message.
+	 */
+	public static void errorMessageStat(String title, String msg) {
+		recentFrame.errorMessage(title, msg);
 	}
 	
 	/**
@@ -209,6 +227,7 @@ public class Frame extends JFrame implements ListSelectionListener {
 	public Frame(String title) {
 		super(title);
 		thisFrame = this;
+		recentFrame = this;
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// Build serial port selection
@@ -241,9 +260,10 @@ public class Frame extends JFrame implements ListSelectionListener {
 		int frameHeight = 646;
 		setSize(frameWidth, frameHeight);
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (d.width - getSize().width) / 2;
-		int y = (d.height - getSize().height) / 2;
-		setLocation(x, y);
+		// int x = (d.width - getSize().width) / 2;
+		// int y = (d.height - getSize().height) / 2;
+		// setLocation(x, y);
+		setLocation(10, 10);
 		Container cp = getContentPane();
 		cp.setLayout(null);
 		Font font = new Font("Dialog", Font.PLAIN, 13);

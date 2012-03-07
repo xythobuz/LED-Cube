@@ -62,32 +62,42 @@ public class HelperUtility {
 
 	/**
 	 * Puts library to temp dir and loads to memory
+	 * @param path Put in front of file name
+	 * @param Complete name of file to load (w/ lib & .dll)
 	 */
 	private static void loadLib(String path, String name) {
 		try {
 			// have to use a stream
 			InputStream in = HelperUtility.class.getResourceAsStream(name);
-			// System.out.println("Input Stream: " + in);
-			File fileOut = new File(System.getProperty("java.io.tmpdir") + "/"
-					+ path + name);
+			File fileOut = new File(System.getProperty("java.io.tmpdir") + "/" + path + name);
 			OutputStream out = new FileOutputStream(fileOut);
 			ReadableByteChannel inChannel = Channels.newChannel(in);
 			WritableByteChannel outChannel = Channels.newChannel(out);
 			fastChannelCopy(inChannel, outChannel);
 			inChannel.close();
 			outChannel.close();
-			System.load(fileOut.toString());
-			System.out.println("Loaded Serial Library!");
+			path = fileOut.getPath();
+			try {
+				System.load(path);
+			} catch (UnsatisfiedLinkError e) {
+				System.out.println("ERROR: Library does not exist!");
+				return;
+			} catch (SecurityException e) {
+				System.out.println("ERROR: Not allowed to load Library!");
+				return;
+			} catch (NullPointerException e) {
+				System.out.println("ERROR: Library name is null!");
+				return;
+			}
+			System.out.println("Loaded Serial Library at \"" + path + "\"");
 		} catch (Exception e) {
-			System.out.println("Failed to load Serial Library:");
+			System.out.println("ERROR: Failed to load Serial Library:");
 			e.printStackTrace();
-			System.exit(1);
 		}
 	}
 
 	// http://thomaswabner.wordpress.com/2007/10/09/fast-stream-copy-using-javanio-channels/
-	private static void fastChannelCopy(ReadableByteChannel src,
-			WritableByteChannel dest) throws IOException {
+	private static void fastChannelCopy(ReadableByteChannel src, WritableByteChannel dest) throws IOException {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(16 * 1024);
 		while (src.read(buffer) != -1) {
 			// prepare the buffer to be drained
@@ -142,11 +152,15 @@ public class HelperUtility {
 				return getThePorts("tty.");
 			} else {
 				return getThePorts("tty");
-			}
+			} 
 		} catch (Exception e) {
-			// Unsatisfied linker error:
-			// Serial.dll was probably not found
 			System.out.println("Exception: " + e.toString());
+			return null;
+		} catch (UnsatisfiedLinkError e) {
+			System.out.println("ERROR: Library not loaded! (getPorts)");
+			// System.out.println(e.toString());
+			// Show error message because this is called in the initializer.
+			Frame.errorMessageStat("Could not load Serial Library!\nNo Serial functionality available!");
 			return null;
 		}
 	}
@@ -160,12 +174,31 @@ public class HelperUtility {
 	 * @param name
 	 *            Port to open
 	 */
-	public static native boolean openPort(String name);
+	public static boolean openPort(String name) {
+		try {
+			return openPortNative(name);
+		} catch (UnsatisfiedLinkError e) {
+			System.out.println("ERROR: Library not loaded! (openPort)");
+			// System.out.println(e.toString());
+			return false;
+		}
+	}
+
+	private static native boolean openPortNative(String name);
 
 	/**
 	 * Close Connection to port
 	 */
-	public static native void closePort();
+	public static void closePort() {
+		try {
+			closePortNative();
+		} catch (UnsatisfiedLinkError e) {
+			System.out.println("ERROR: Library not loaded! (closePort)");
+			// System.out.println(e.toString());
+		}
+	}
+
+	private static native void closePortNative();
 
 	/**
 	 * Read data from Cube
@@ -174,7 +207,17 @@ public class HelperUtility {
 	 *            Amount of data to read
 	 * @return Data read
 	 */
-	public static native short[] readData(int length);
+	public static short[] readData(int length) {
+		try {
+			return readDataNative(length);
+		} catch (UnsatisfiedLinkError e) {
+			System.out.println("ERROR: Library not loaded! (readData)");
+			// System.out.println(e.toString());
+			return null;
+		}
+	}
+
+	private static native short[] readDataNative(int length);
 
 	/**
 	 * Write data to Cube
@@ -184,5 +227,14 @@ public class HelperUtility {
 	 * @param length
 	 *            Length of data
 	 */
-	public static native void writeData(short[] data, int length);
+	public static void writeData(short[] data, int length) {
+		try {
+			writeDataNative(data, length);
+		} catch (UnsatisfiedLinkError e) {
+			System.out.println("ERROR: Library not loaded! (writeData)");
+			// System.out.println(e.toString());
+		}
+	}
+
+	private static native void writeDataNative(short[] data, int length);
 }

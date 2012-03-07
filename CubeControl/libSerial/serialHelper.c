@@ -79,7 +79,7 @@ JNIEXPORT jstring JNICALL Java_HelperUtility_getThePorts(JNIEnv *env, jclass cla
 	return ret;
 }
 
-JNIEXPORT jshortArray JNICALL Java_HelperUtility_readData(JNIEnv *env, jclass class, jint length) {
+JNIEXPORT jshortArray JNICALL Java_HelperUtility_readDataNative(JNIEnv *env, jclass class, jint length) {
 	jshortArray arr = (*env)->NewShortArray(env, length);
 	int toBeRead = 0, read, i;
 	char *data = (char *)malloc(length * sizeof(char));
@@ -98,7 +98,7 @@ JNIEXPORT jshortArray JNICALL Java_HelperUtility_readData(JNIEnv *env, jclass cl
 	return arr;
 }
 
-JNIEXPORT void JNICALL Java_HelperUtility_writeData(JNIEnv *env, jclass class, jshortArray data, jint length) {
+JNIEXPORT void JNICALL Java_HelperUtility_writeDataNative(JNIEnv *env, jclass class, jshortArray data, jint length) {
 	int toWrite = length, written = 0, now, i;
 	char *dat = (char *)malloc(length * sizeof(char));
 	jshort *dat2 = (jshort *)malloc(length * sizeof(jshort));
@@ -114,11 +114,11 @@ JNIEXPORT void JNICALL Java_HelperUtility_writeData(JNIEnv *env, jclass class, j
 	}
 }
 
-JNIEXPORT void JNICALL Java_HelperUtility_closePort(JNIEnv * env, jclass class) {
+JNIEXPORT void JNICALL Java_HelperUtility_closePortNative(JNIEnv * env, jclass class) {
 	serialClose();
 }
 
-JNIEXPORT jboolean JNICALL Java_HelperUtility_openPort(JNIEnv *env, jclass class, jstring name) {
+JNIEXPORT jboolean JNICALL Java_HelperUtility_openPortNative(JNIEnv *env, jclass class, jstring name) {
 	jboolean isCopy;
 	const char *path = (*env)->GetStringUTFChars(env, name, &isCopy);
 	int ret = serialOpen((char *)path);
