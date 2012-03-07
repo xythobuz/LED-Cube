@@ -270,7 +270,7 @@ public class Frame extends JFrame implements ListSelectionListener {
 
 		// ----- 3D Stuff -----
 		// --------------------
-		/* gConfig = SimpleUniverse.getPreferredConfiguration();
+		gConfig = SimpleUniverse.getPreferredConfiguration();
 		cubeCanvas = new Canvas3D(gConfig);
 		ledView = new Led3D(cubeCanvas);
 		cubeCanvas.setBounds(18, 31, 275, 275); // 3d view
@@ -291,7 +291,7 @@ public class Frame extends JFrame implements ListSelectionListener {
 
 			}
 		});
-		cp.add(cubeCanvas); */
+		cp.add(cubeCanvas);
 		// --------------------
 
 		// Add Layer edit buttons
