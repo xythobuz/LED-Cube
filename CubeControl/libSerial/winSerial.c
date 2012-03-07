@@ -118,7 +118,7 @@ int availableSerialPorts(char *ports) {
 }
 
 // Last element has to be NULL
-char** getSerialPorts(char *search) {
+char** getSerialPorts(const char *search) {
 	int i, num, c = 0, s;
 	char ports[20];
 	char **portList;

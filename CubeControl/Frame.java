@@ -270,32 +270,28 @@ public class Frame extends JFrame implements ListSelectionListener {
 
 		// ----- 3D Stuff -----
 		// --------------------
-		gConfig = SimpleUniverse.getPreferredConfiguration();
-		try {
-			cubeCanvas = new Canvas3D(gConfig);
-			ledView = new Led3D(cubeCanvas);
-			cubeCanvas.setBounds(18, 31, 275, 275); // 3d view
-			cubeCanvas.addMouseListener(new MouseListener() { // React to clicks in 3d view
-				public void mouseClicked(MouseEvent e) {
-					Point2d mousePos = convertMousePositionToWorld(e.getX(), e.getY()); 
-				}
-				public void mouseExited(MouseEvent e) {
-	
-				}
-				public void mouseEntered(MouseEvent e) {
-	
-				}
-				public void mouseReleased(MouseEvent e) {
-	
-				}
-				public void mousePressed(MouseEvent e) {
-	
-				}
-			});
-			cp.add(cubeCanvas);
-		} catch (Exception e) {
-			System.out.println("ERROR: No 3D available!");
-		}
+		/* gConfig = SimpleUniverse.getPreferredConfiguration();
+		cubeCanvas = new Canvas3D(gConfig);
+		ledView = new Led3D(cubeCanvas);
+		cubeCanvas.setBounds(18, 31, 275, 275); // 3d view
+		cubeCanvas.addMouseListener(new MouseListener() { // React to clicks in 3d view
+			public void mouseClicked(MouseEvent e) {
+				Point2d mousePos = convertMousePositionToWorld(e.getX(), e.getY()); 
+			}
+			public void mouseExited(MouseEvent e) {
+
+			}
+			public void mouseEntered(MouseEvent e) {
+
+			}
+			public void mouseReleased(MouseEvent e) {
+
+			}
+			public void mousePressed(MouseEvent e) {
+
+			}
+		});
+		cp.add(cubeCanvas); */
 		// --------------------
 
 		// Add Layer edit buttons
@@ -779,7 +775,7 @@ public class Frame extends JFrame implements ListSelectionListener {
 		cp.add(serialPanel);
 	
 		settingsPanel.setBounds(409, 100, 243, 65);
-		settingsPanel.setBorder(BorderFactory.createTitledBorder("Serial communication"));
+		settingsPanel.setBorder(BorderFactory.createTitledBorder("Frame duration"));
 		cp.add(settingsPanel);
 	
 		// Ende Komponenten

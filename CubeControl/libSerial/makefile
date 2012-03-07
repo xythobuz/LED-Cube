@@ -2,13 +2,13 @@ CC = gcc
 STANDARD = gnu99
 # Path to jni.h
 ifdef SystemRoot
-HEADERPATH = C:/Program\ Files/Java/jdk1.6.0_29/include
+HEADERPATH = C:/Program\ Files/Java/jdk1.6.0_31/include
 RM = del
 else
 ifdef SYSTEMROOT
 # Looks like Cygwin or Mingw shell
-HEADERPATH = C:\Programme\Java\jdk1.6.0_07\include
-HEADERPATH += -IC:\Programme\Java\jdk1.6.0_07\include\win32
+HEADERPATH = C:\Programme\Java\jdk1.6.0_31\include
+HEADERPATH += -IC:\Programme\Java\jdk1.6.0_31\include\win32
 RM = rm -rf
 else
 RM = rm -f
@@ -24,15 +24,6 @@ endif
 # --------------------------------------
 
 all: libSerial
-
-doc: doc/index.html
-
-serialInterface.h: HelperUtility.class
-	javah -o serialInterface.h HelperUtility
-
-HelperUtility.class: ../HelperUtility.java
-	javac -sourcepath ../ ../HelperUtility.java
-	cp ../HelperUtility.class HelperUtility.class
 
 # SystemRoot is only defined in Windows
 ifdef SystemRoot
@@ -58,13 +49,11 @@ libSerial.so: serialHelper.c unixSerial.c serialInterface.h
 	$(CC) -dynamiclib -o libSerial.so serialHelper.o
 
 Serial.dll: serialHelper.c winSerial.c serialInterface.h
-	$(CC) -x c -std=$(STANDARD) -I$(HEADERPATH) -c serialHelper.c -o serialHelper.o -D winHelper
+	$(CC) -x c -std=$(STANDARD) -DBUILDINGDLL -I$(HEADERPATH) -c serialHelper.c -o serialHelper.o -D winHelper
 	$(CC) -shared -o Serial.dll serialHelper.o
 
 # Delete intermediate files
 clean:
-	$(RM) *.class
-	$(RM) *.h
 	$(RM) *.o
 ifdef SystemRoot
 	$(RM) *.dll

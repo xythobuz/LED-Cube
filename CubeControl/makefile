@@ -1,15 +1,12 @@
 INJAR = *.class LEDoff.png LEDon.png splash.png bg.png
 # Path to jni.h
 ifdef SystemRoot
-HEADERPATH = C:/Program\ Files/Java/jdk1.6.0_29/include
 RM = del
 INJAR += Serial.dll
 PLATFORM = Win
 else
 ifdef SYSTEMROOT
 # Looks like cygwin or mingw shell
-HEADERPATH = C:\Programme\Java\jdk1.6.0_31\include
-HEADERPATH += -IC:\Programme\Java\jdk1.6.0_31\include\win32
 RM = rm -rf
 INJAR += Serial.dll
 PLATFORM = Win
@@ -19,11 +16,9 @@ UNAME := $(shell uname -s)
 ifeq ($(UNAME),Darwin)
 INJAR += libSerial.jnilib
 PLATFORM = Mac
-HEADERPATH = /System/Library/Frameworks/JavaVM.framework/Headers
 else
 INJAR += libSerial.so
 PLATFORM = Linux
-HEADERPATH = /usr/lib/jvm/java-6-openjdk/include
 endif
 endif
 endif
@@ -80,7 +75,6 @@ libSerial.so: libSerial/serialHelper.c libSerial/unixSerial.c
 clean:
 	make -C libSerial clean
 	$(RM) *.class
-	$(RM) *.
 	$(RM) *.o
 ifdef SystemRoot
 	$(RM) *.dll

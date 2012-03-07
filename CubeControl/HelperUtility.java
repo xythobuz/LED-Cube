@@ -88,31 +88,16 @@ public class HelperUtility {
 			} catch (NullPointerException e) {
 				System.out.println("ERROR: Library name is null!");
 				return;
+			} catch (Exception e) {
+				System.out.println("ERROR: " + e.toString());
+				return;
 			}
 			System.out.println("Loaded Serial Library at \"" + path + "\"");
+			return;
 		} catch (Exception e) {
 			System.out.println("ERROR: Failed to load Serial Library:");
 			e.printStackTrace();
-		}
-	}
-
-	// http://thomaswabner.wordpress.com/2007/10/09/fast-stream-copy-using-javanio-channels/
-	private static void fastChannelCopy(ReadableByteChannel src, WritableByteChannel dest) throws IOException {
-		ByteBuffer buffer = ByteBuffer.allocateDirect(16 * 1024);
-		while (src.read(buffer) != -1) {
-			// prepare the buffer to be drained
-			buffer.flip();
-			// write to the channel, may block
-			dest.write(buffer);
-			// If partial transfer, shift remainder down
-			// If buffer is empty, same as doing clear()
-			buffer.compact();
-		}
-		// EOF will leave buffer in fill state
-		buffer.flip();
-		// make sure the buffer is fully drained.
-		while (buffer.hasRemaining()) {
-			dest.write(buffer);
+			return;
 		}
 	}
 
@@ -122,10 +107,11 @@ public class HelperUtility {
 	 * @return Array of port names. First entry is "No serial ports!" if no
 	 *         others
 	 */
+	// Get ports as single String from getPortsOS() and put them in an array
 	public static String[] getPorts() {
 		String portLines = getPortsOS();
 		if (portLines == null) {
-			String[] ports = { "Select serial port..." };
+			String[] ports = { "No serial ports!" };
 			return ports;
 		} else {
 			StringTokenizer sT = new StringTokenizer(portLines, "\n");
@@ -153,15 +139,9 @@ public class HelperUtility {
 			} else {
 				return getThePorts("tty");
 			} 
-		} catch (Exception e) {
-			System.out.println("Exception: " + e.toString());
-			return null;
 		} catch (UnsatisfiedLinkError e) {
 			System.out.println("ERROR: Library not loaded! (getPorts)");
-			// System.out.println(e.toString());
-			// Show error message because this is called in the initializer.
-			Frame.errorMessageStat("Could not load Serial Library!\nNo Serial functionality available!");
-			return null;
+			return "Serial Library Error!\n";
 		}
 	}
 
@@ -179,7 +159,6 @@ public class HelperUtility {
 			return openPortNative(name);
 		} catch (UnsatisfiedLinkError e) {
 			System.out.println("ERROR: Library not loaded! (openPort)");
-			// System.out.println(e.toString());
 			return false;
 		}
 	}
@@ -194,7 +173,6 @@ public class HelperUtility {
 			closePortNative();
 		} catch (UnsatisfiedLinkError e) {
 			System.out.println("ERROR: Library not loaded! (closePort)");
-			// System.out.println(e.toString());
 		}
 	}
 
@@ -212,7 +190,6 @@ public class HelperUtility {
 			return readDataNative(length);
 		} catch (UnsatisfiedLinkError e) {
 			System.out.println("ERROR: Library not loaded! (readData)");
-			// System.out.println(e.toString());
 			return null;
 		}
 	}
@@ -232,9 +209,28 @@ public class HelperUtility {
 			writeDataNative(data, length);
 		} catch (UnsatisfiedLinkError e) {
 			System.out.println("ERROR: Library not loaded! (writeData)");
-			// System.out.println(e.toString());
 		}
 	}
 
 	private static native void writeDataNative(short[] data, int length);
+
+	// http://thomaswabner.wordpress.com/2007/10/09/fast-stream-copy-using-javanio-channels/
+	private static void fastChannelCopy(ReadableByteChannel src, WritableByteChannel dest) throws IOException {
+		ByteBuffer buffer = ByteBuffer.allocateDirect(16 * 1024);
+		while (src.read(buffer) != -1) {
+			// prepare the buffer to be drained
+			buffer.flip();
+			// write to the channel, may block
+			dest.write(buffer);
+			// If partial transfer, shift remainder down
+			// If buffer is empty, same as doing clear()
+			buffer.compact();
+		}
+		// EOF will leave buffer in fill state
+		buffer.flip();
+		// make sure the buffer is fully drained.
+		while (buffer.hasRemaining()) {
+			dest.write(buffer);
+		}
+	}
 }
