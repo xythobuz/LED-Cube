@@ -263,7 +263,7 @@ public class Frame extends JFrame implements ListSelectionListener {
 		// int x = (d.width - getSize().width) / 2;
 		// int y = (d.height - getSize().height) / 2;
 		// setLocation(x, y);
-		setLocation(10, 10);
+		setLocation(50, 50);
 		Container cp = getContentPane();
 		cp.setLayout(null);
 		Font font = new Font("Dialog", Font.PLAIN, 13);

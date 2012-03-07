@@ -31,7 +31,7 @@ serialInterface.h: HelperUtility.class
 	javah -o serialInterface.h HelperUtility
 
 HelperUtility.class: ../HelperUtility.java
-	javac ../HelperUtility.java
+	javac -sourcepath ../ ../HelperUtility.java
 	cp ../HelperUtility.class HelperUtility.class
 
 # SystemRoot is only defined in Windows
