@@ -50,7 +50,7 @@ libSerial.so: serialHelper.c unixSerial.c serialInterface.h
 
 Serial.dll: serialHelper.c winSerial.c serialInterface.h
 	$(CC) -x c -std=$(STANDARD) -DBUILDINGDLL -I$(HEADERPATH) -c serialHelper.c -o serialHelper.o -D winHelper
-	$(CC) -shared -o Serial.dll serialHelper.o
+	$(CC) -shared -Wl,--kill-at -o Serial.dll serialHelper.o
 
 # Delete intermediate files
 clean:
