@@ -33,10 +33,26 @@ import java.util.Arrays;
  */
 
 public class AFrame {
-	private short[] data = new short[64];
+	private short[] data = new short[64]; // data[y + (8 * z)] & (1 << x)
 	private short duration = 1;
 	private String name = "Frame";
 	private static int lastIndex = 1;
+
+	/**
+	 * Toggle a LED in this frame
+	 * @param x X Coordinate (0 - 7)
+	 * @param y Y Coord. (0 - 7)
+	 * @param z Z Coord. (0 - 7)
+	 */
+	public void toggleLED(int x, int y, int z) {
+		if (x < 8) {
+			if (y < 8) {
+				if (z < 8) {
+					data[y + (8 * z)] ^= (1 << x);
+				}
+			}
+		}
+	}
 
 	/**
 	 * Give it a nice name.

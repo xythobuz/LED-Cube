@@ -159,6 +159,19 @@ public class Frame extends JFrame implements ListSelectionListener {
 	public static void errorMessageStat(String title, String msg) {
 		recentFrame.errorMessage(title, msg);
 	}
+
+	/**
+	 * Toggle a LED in the current selected anim & frame
+	 * @param x X Coordinate
+	 * @param y Y Coord.
+	 * @param z Z Coord.
+	 */
+	public void toggleLED(int x, int y, int z) {
+		if ((animList.getSelectedIndex() != -1) && (frameList.getSelectedIndex() != -1)) {
+			worker.getAnimation(animList.getSelectedIndex()).getFrame(frameList.getSelectedIndex()).toggleLED(x, y, z);
+			ledView.setData(worker.getAnimation(animList.getSelectedIndex()).getFrame(frameList.getSelectedIndex()).getData());
+		}
+	}
 	
 	/**
 	 * ListSelectionListener that updates Anim & Frame List
@@ -272,25 +285,8 @@ public class Frame extends JFrame implements ListSelectionListener {
 		// --------------------
 		gConfig = SimpleUniverse.getPreferredConfiguration();
 		cubeCanvas = new Canvas3D(gConfig);
-		ledView = new Led3D(cubeCanvas);
 		cubeCanvas.setBounds(18, 31, 275, 275); // 3d view
-		cubeCanvas.addMouseListener(new MouseListener() { // React to clicks in 3d view
-			public void mouseClicked(MouseEvent e) {
-				Point2d mousePos = convertMousePositionToWorld(e.getX(), e.getY()); 
-			}
-			public void mouseExited(MouseEvent e) {
-
-			}
-			public void mouseEntered(MouseEvent e) {
-
-			}
-			public void mouseReleased(MouseEvent e) {
-
-			}
-			public void mousePressed(MouseEvent e) {
-
-			}
-		});
+		ledView = new Led3D(cubeCanvas, this);
 		cp.add(cubeCanvas);
 		// --------------------
 
@@ -927,28 +923,5 @@ public class Frame extends JFrame implements ListSelectionListener {
 			s += String.valueOf((char) d[i]);
 		}
 		return s;
-	}
-	
-	private Point2d convertMousePositionToWorld (int iX, int iY)
-	{
-		Point3d eye_pos = new Point3d();
-		Point3d mousePosn = new Point3d();
-	
-		//get the eye point and mouse click point
-		this.cubeCanvas.getCenterEyeInImagePlate(eye_pos);
-		this.cubeCanvas.getPixelLocationInImagePlate(iX, iY, mousePosn);
-	
-		//Transform from ImagePlate coordinates to Vworld coordinates
-		Transform3D motion = new Transform3D();
-		this.cubeCanvas.getImagePlateToVworld(motion);
-	
-		motion.transform(eye_pos);
-		motion.transform(mousePosn);
-	
-		//calculate the intersection point on Z=0
-		double dblX = (-eye_pos.z / (mousePosn.z - eye_pos.z)) * (mousePosn.x - eye_pos.x) + eye_pos.x;
-		double dblY = (-eye_pos.z / (mousePosn.z - eye_pos.z)) * (mousePosn.y - eye_pos.y) + eye_pos.y;
-		
-		return new Point2d (dblX, dblY);
 	}
 }
