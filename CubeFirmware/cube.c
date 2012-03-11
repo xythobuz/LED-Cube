@@ -76,7 +76,7 @@ uint8_t isFinished(void) {
 	return imgFlag;
 }
 
-void init(void) {
+void initCube(void) {
 	uint8_t ctr = 0;
 
 	TCCR1A |= (1 << WGM12); // CTC Mode

@@ -33,11 +33,14 @@ uint8_t *getAudioData(void) {
 	uint8_t i;
 	uint8_t *ret = (uint8_t *)malloc(7);
 
-	i2c_start(TWIADDRESSAUDIO | I2C_READ);
-	for (i = 0; i < 6; i++) {
-		ret[i] = i2c_readAck();
+	if (i2c_start(TWIADDRESSAUDIO | I2C_READ) == 0) {
+		for (i = 0; i < 6; i++) {
+			ret[i] = i2c_readAck();
+		}
+		ret[6] = i2c_readNak();
+		i2c_stop();
+		return ret;
+	} else {
+		return NULL;
 	}
-	ret[6] = i2c_readNak();
-	i2c_stop();
-	return ret;
 }

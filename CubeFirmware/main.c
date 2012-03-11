@@ -44,8 +44,10 @@
 #include "time.h"
 #include "audio.h"
 #include "memLayer.h"
+#include "twi.h"
 
 void serialHandler(char c);
+void sendAudioData(void);
 void recieveAnimations(void);
 void transmitAnimations(void);
 uint8_t audioModeSelected(void);
@@ -61,10 +63,15 @@ char buffer[11];
 int main(void) {
 	uint8_t *audioData;
 	uint8_t **imageData;
-	uint8_t i;
-	uint64_t lastTimeChecked;
-	uint8_t audioMode;
+	uint8_t i, lastMode;
 	uint16_t count;
+	uint64_t lastChecked;
+
+	initCube();
+	serialInit(51, 8, NONE, 1);
+	i2c_init();
+	initSystemTimer();
+	sei(); // Enable Interrupts
 
 	DDRD = 0xFC; // Mosfets as Output
 	DDRB = 0xFE;
@@ -76,17 +83,7 @@ int main(void) {
 		imageData[i] = (uint8_t *)malloc(8 * sizeof(uint8_t));
 	}
 
-	init(); // Initialize Cube Low-Level Code
-	serialInit(51, 8, NONE, 1);
-	initSystemTimer();
-
-	sei(); // Enable Interrupts
-
-	lastTimeChecked = getSystemTime();
-	audioMode = audioModeSelected();
-
 #ifdef DEBUG
-#warning NOT TALKING TO FRAM YET!
 	refreshAnimationCount = 0; // Don't talk to FRAM yet...
 
 	serialWriteString("Initialized: ");
@@ -96,14 +93,19 @@ int main(void) {
 	serialWriteString(" ms!\n");
 #endif
 
+	lastMode = audioModeSelected();
+	lastChecked = getSystemTime();
+
 	while (1) {
-		if(audioMode) {
+		if(lastMode) {
 			// Get Audio Data and visualize it
-			audioData = getAudioData();
-			visualizeAudioData(audioData, imageData);
-			setImage(imageData);
-			free(audioData);
-			while(!isFinished()); // Wait for it to display
+			/* audioData = getAudioData();
+			if (audioData != NULL) {
+				visualizeAudioData(audioData, imageData);
+				setImage(imageData);
+				free(audioData);
+			}
+			while(!isFinished()); // Wait for it to display */
 		} else {
 			// Look for commands, play from fram
 			// We have 128*1024 bytes
@@ -115,18 +117,17 @@ int main(void) {
 				serialHandler((char)(serialGet()));
 			}
 
-			if (refreshAnimationCount) {
+			/* if (refreshAnimationCount) {
 				// Get animation count stored in FRAM via TWI, if needed
 				count = getAnimationCount();
 				refreshAnimationCount = 0;
-			}
+			} */
 		}
 
-		if ((getSystemTime() - lastTimeChecked) > 1000) {
-			// 1 second since we checked button position last time
-			audioMode = audioModeSelected();
-			lastTimeChecked = getSystemTime();
-		}
+		if ((getSystemTime() - lastChecked) > 100) {
+			lastMode = audioModeSelected();
+			lastChecked = getSystemTime();
+		} 
 	}
 
 	close();
@@ -134,44 +135,90 @@ int main(void) {
 }
 
 void serialHandler(char c) {
-	// Got a char on serial line...
-	// React accordingly
-	// Set refreshAnimationCount if Animation Data in Ram was changed...
-	// We do a complete transaction in one call of this routine...
-
+	// Used letters:
+	// a, c, d, g, s, t, v
 	switch(c) {
-		case OK:
-			// Send "Hello World"
-			serialWrite(OK);
-			break;
+	case OK:
+		serialWrite(OK);
+		break;
 
-		case 'd': case 'D':
-			clearMem();
-			serialWrite(OK);
-			break;
+	case 'd': case 'D':
+		clearMem();
+		serialWrite(OK);
+		break;
 
-		case 'g': case 'G':
-			transmitAnimations();
-			break;
+	case 'g': case 'G':
+		transmitAnimations();
+		break;
 
-		case 's': case 'S':
-			recieveAnimations();
-			break;
+	case 's': case 'S':
+		recieveAnimations();
+		break;
 
-		case 'v': case 'V':
-			serialWriteString(VERSION);
-			break;
+	case 'v': case 'V':
+		serialWriteString(VERSION);
+		break;
 
-		case 't': case 'T':
-			serialWriteString("System Time: ");
-			serialWriteString(itoa(getSystemTime(), buffer, 10));
+	case 't': case 'T':
+		serialWriteString("System Time: ");
+		serialWriteString(ltoa(getSystemTime(), buffer, 10));
+		serialWriteString("ms");
+		if (getSystemTime() > 1000) {
+			serialWriteString(" (");
+			serialWriteString(itoa(getSystemTime() / 1000, buffer, 10));
+			itoa(getSystemTime() % 1000, buffer, 10);
+			if (buffer[0] != '\0')
+				serialWrite('.');
+			if (buffer[2] == '\0') 
+				serialWrite('0');
+			if (buffer[1] == '\0')
+				serialWrite('0');
+			if (buffer[0] != '\0')
+				serialWriteString(buffer);
+			serialWriteString("s)\n");
+		} else {
 			serialWrite('\n');
-			break;
+		}
+		break;
 
-		default:
-			serialWrite(ERROR);
-			break;
+	case 'a': case 'A':
+		sendAudioData();
+		break;
+
+	case 'c': case 'C':
+		serialWriteString(itoa(getAnimationCount(), buffer, 10));
+		serialWriteString(" Frames stored\n");
+		break;
+
+	case '\n':
+		serialWriteString(VERSION);
+		serialWriteString("See xythobuz.org for more Infos!\n");
+		break;
+
+	default:
+		serialWrite(ERROR);
+		break;
 	}
+}
+
+void sendAudioData(void) {
+	uint8_t i;
+	uint8_t *audioData = getAudioData();
+	if (audioData == NULL) {
+		serialWriteString("Could not access device!\n");
+		return;
+	}
+
+	serialWriteString("Audio Data:\n");
+	for (i = 0; i < 7; i++) {
+		serialWrite(i + '0');
+		serialWriteString(": ");
+		itoa(audioData[i], buffer, 10);
+		serialWriteString(buffer);
+		serialWrite('\n');
+	}
+
+	free(audioData);
 }
 
 void recieveAnimations() {
@@ -241,10 +288,6 @@ void recieveAnimations() {
 	setAnimationCount(completeCount);
 	refreshAnimationCount = 1;
 }
-
-#define CAF(x) (x % 256)
-#define CAS(x) (x / 256)
-#define CALCANIMATIONS(x) ((CAF(x) == 0) ? (CAS(x)) : (CAS(x) + 1))
 
 void transmitAnimations() {
 	// We store no animation information in here
@@ -316,42 +359,25 @@ void transmitAnimations() {
 	// Error code ignored...
 }
 
-// Blocks 10ms or more
 uint8_t audioModeSelected(void) {
 	// Pushbutton: PB0, Low active
-	uint8_t startState = PINB & (1 << PB0);
 
-	_delay_ms(10);
-
-	if ((PINB & (1 << PB0)) != startState) {
-		// State changed
-		// We can assume we have to toggle the state
-#ifdef DEBUG
-		serialWriteString("New State!");
-#endif
+	if (!(PINB & (1 << PB0))) {
+		// Button pushed
 		if (lastButtonState == 0) {
 			lastButtonState = 1;
 		} else {
 			lastButtonState = 0;
 		}
-		return lastButtonState;
-	} else {
-		if (!startState) {
-			// Stayed the same, is pushed!
+
 #ifdef DEBUG
-			serialWriteString("New State!");
+		serialWriteString("New State (");
+		serialWriteString(itoa(lastButtonState, buffer, 10));
+		serialWriteString(")\n");
 #endif
-			if (lastButtonState == 0) {
-				lastButtonState = 1;
-			} else {
-				lastButtonState = 0;
-			}
-			return lastButtonState;
-		} else {
-			// Stayed but is not pushed...
-			return lastButtonState;
-		}
+
 	}
+	return lastButtonState;
 }
 
 inline void setPixelBuffer(uint8_t x, uint8_t y, uint8_t z, uint8_t **buf) {

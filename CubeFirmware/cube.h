@@ -26,7 +26,7 @@
  * After the last part is applied to the latches, isFinished() will change
  * to 1. Now you can place a new picture here.
  */
-extern void init(void);
+extern void initCube(void);
 
 // Copies the data in img into its own buffer, so free img afterwards...
 extern void setImage(uint8_t **img); // img[8][8]

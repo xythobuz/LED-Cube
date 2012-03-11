@@ -36,13 +36,16 @@ uint8_t memGetByte(uint32_t address) {
 	addA = memAddress & 0xFF00;
 	addB = memAddress & 0xFF;
 
-	i2c_start(memAddress | I2C_WRITE); // Send start, write address to read
-	i2c_write(addA);
-	i2c_write(addB); // Give address to memory
-	i2c_rep_start(memAddress | I2C_READ); // Start again, this time reading
-	ret = i2c_readNak(); // Read one byte from memory
-	i2c_stop();
-	return ret;
+	if (i2c_start(memAddress | I2C_WRITE) == 0) { // Send start, write address to read
+		i2c_write(addA);
+		i2c_write(addB); // Give address to memory
+		i2c_rep_start(memAddress | I2C_READ); // Start again, this time reading
+		ret = i2c_readNak(); // Read one byte from memory
+		i2c_stop();
+		return ret;
+	} else {
+		return 0;
+	}
 }
 
 // Free returned memory!
@@ -58,16 +61,19 @@ uint8_t *memGetBytes(uint32_t address, uint8_t length) {
 	addB = memAddress & 0xFF;
 	ret = (uint8_t *)malloc(length); // Allocate memory for values read
 
-	i2c_start(memAddress | I2C_WRITE);
-	i2c_write(addA);
-	i2c_write(addB);
-	i2c_rep_start(memAddress | I2C_READ);
-	for (i = 0; i < (length - 1); i++) {
-		ret[i] = i2c_readAck();
+	if (i2c_start(memAddress | I2C_WRITE) == 0) {
+		i2c_write(addA);
+		i2c_write(addB);
+		i2c_rep_start(memAddress | I2C_READ);
+		for (i = 0; i < (length - 1); i++) {
+			ret[i] = i2c_readAck();
+		}
+		ret[length - 1] = i2c_readNak();
+		i2c_stop();
+		return ret;
+	} else {
+		return NULL;
 	}
-	ret[length - 1] = i2c_readNak();
-	i2c_stop();
-	return ret;
 }
 
 void memWriteByte(uint32_t address, uint8_t data) {
@@ -78,10 +84,12 @@ void memWriteByte(uint32_t address, uint8_t data) {
 	}
 	addA = memAddress & 0xFF00;
 	addB = memAddress & 0xFF;
-	i2c_write(addA);
-	i2c_write(addB); // Give address to memory
-	i2c_write(data);
-	i2c_stop();
+	if (i2c_start(memAddress | I2C_WRITE) == 0) {
+		i2c_write(addA);
+		i2c_write(addB); // Give address to memory
+		i2c_write(data);
+		i2c_stop();
+	}
 }
 
 void memWriteBytes(uint32_t address, uint8_t *data, uint8_t length) {
@@ -92,10 +100,12 @@ void memWriteBytes(uint32_t address, uint8_t *data, uint8_t length) {
 	}
 	addA = memAddress & 0xFF00;
 	addB = memAddress & 0xFF;
-	i2c_write(addA);
-	i2c_write(addB); // Give address to memory
-	for (i = 0; i < length; i++) {
-		i2c_write(data[i]);
+	if (i2c_start(memAddress | I2C_WRITE) == 0) {
+		i2c_write(addA);
+		i2c_write(addB); // Give address to memory
+		for (i = 0; i < length; i++) {
+			i2c_write(data[i]);
+		}
+		i2c_stop();
 	}
-	i2c_stop();
 }
