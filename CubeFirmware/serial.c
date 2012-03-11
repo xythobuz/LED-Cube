@@ -33,7 +33,7 @@ uint16_t volatile txRead = 0;
 uint16_t volatile txWrite = 0;
 uint8_t volatile shouldStartTransmission = 1;
 
-ISR(USART_RX_vect) { // Receive complete
+ISR(USART_RXC_vect) { // Receive complete
     rxBuffer[rxWrite] = UDR;
 	if (rxWrite < (RX_BUFFER_SIZE - 1)) {
 		rxWrite++;

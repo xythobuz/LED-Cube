@@ -28,6 +28,10 @@
 #define OK 0x42
 #define ERROR 0x23
 
+#define VERSION "8^3 LED-Cube v1\n"
+
+#define DEBUG
+
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
@@ -51,7 +55,8 @@ void setRow(uint8_t x, uint8_t z, uint8_t height, uint8_t **buf);
 void visualizeAudioData(uint8_t *audioData, uint8_t **imageData);
 
 uint8_t refreshAnimationCount = 1;
-uint8_t lastButtonState = 1;
+uint8_t lastButtonState = 0;
+char buffer[11];
 
 int main(void) {
 	uint8_t *audioData;
@@ -61,7 +66,7 @@ int main(void) {
 	uint8_t audioMode;
 	uint16_t count;
 
-	DDRD = 0xFF; // Mosfets as Output
+	DDRD = 0xFC; // Mosfets as Output
 	DDRB = 0xFE;
 	DDRC = 0xFF; // Latch Enable
 	DDRA = 0xFF; // Latch Data
@@ -77,13 +82,19 @@ int main(void) {
 
 	sei(); // Enable Interrupts
 
-	for (i = 25; i < 55; i++) {
-		serialWrite(0x58); // 'X'
-		_delay_ms(1); // Sends garbage if no delay... :(
-	}
-
-	audioMode = audioModeSelected();
 	lastTimeChecked = getSystemTime();
+	audioMode = audioModeSelected();
+
+#ifdef DEBUG
+#warning NOT TALKING TO FRAM YET!
+	refreshAnimationCount = 0; // Don't talk to FRAM yet...
+
+	serialWriteString("Initialized: ");
+	serialWriteString(VERSION);
+	serialWriteString("Took ");
+	serialWriteString(itoa(getSystemTime(), buffer, 10));
+	serialWriteString(" ms!\n");
+#endif
 
 	while (1) {
 		if(audioMode) {
@@ -105,6 +116,7 @@ int main(void) {
 			}
 
 			if (refreshAnimationCount) {
+				// Get animation count stored in FRAM via TWI, if needed
 				count = getAnimationCount();
 				refreshAnimationCount = 0;
 			}
@@ -146,8 +158,14 @@ void serialHandler(char c) {
 			recieveAnimations();
 			break;
 
-		case 'v':
-			serialWriteString("v1");
+		case 'v': case 'V':
+			serialWriteString(VERSION);
+			break;
+
+		case 't': case 'T':
+			serialWriteString("System Time: ");
+			serialWriteString(itoa(getSystemTime(), buffer, 10));
+			serialWrite('\n');
 			break;
 
 		default:
@@ -301,14 +319,16 @@ void transmitAnimations() {
 // Blocks 10ms or more
 uint8_t audioModeSelected(void) {
 	// Pushbutton: PB0, Low active
-	uint64_t startTime = getSystemTime();
 	uint8_t startState = PINB & (1 << PB0);
 
-	while((getSystemTime() - startTime) < 10); // Wait 10ms
+	_delay_ms(10);
 
 	if ((PINB & (1 << PB0)) != startState) {
 		// State changed
 		// We can assume we have to toggle the state
+#ifdef DEBUG
+		serialWriteString("New State!");
+#endif
 		if (lastButtonState == 0) {
 			lastButtonState = 1;
 		} else {
@@ -316,8 +336,11 @@ uint8_t audioModeSelected(void) {
 		}
 		return lastButtonState;
 	} else {
-		if (startState) {
+		if (!startState) {
 			// Stayed the same, is pushed!
+#ifdef DEBUG
+			serialWriteString("New State!");
+#endif
 			if (lastButtonState == 0) {
 				lastButtonState = 1;
 			} else {

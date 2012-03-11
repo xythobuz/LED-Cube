@@ -20,6 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with LED-Cube.  If not, see <http://www.gnu.org/licenses/>.
  */
+// Uses Timer 1!
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdlib.h>
