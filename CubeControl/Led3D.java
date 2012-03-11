@@ -92,8 +92,6 @@ public class Led3D extends MouseAdapter {
 		transGroup = new TransformGroup(trans3D);
 		transGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
 		transGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-		transGroup.setCapability(Node.ALLOW_BOUNDS_READ);
-		transGroup.setCapability(Node.ALLOW_AUTO_COMPUTE_BOUNDS_READ);
 		ViewingPlatform viewingPlatform = new ViewingPlatform();
 		Viewer viewer = new Viewer(canvas);
 		universe = new SimpleUniverse(viewingPlatform, viewer);
@@ -119,8 +117,6 @@ public class Led3D extends MouseAdapter {
 		group.setCapability(BranchGroup.ALLOW_CHILDREN_READ);
 		group.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
 		group.setCapability(BranchGroup.ALLOW_DETACH);
-		group.setCapability(Node.ALLOW_BOUNDS_READ);
-		group.setCapability(Node.ALLOW_AUTO_COMPUTE_BOUNDS_READ);
 		background = createBackground();
 		group.addChild(background);
 
@@ -140,8 +136,6 @@ public class Led3D extends MouseAdapter {
 					Vector3f vector = new Vector3f(x, y, z);
 					transform.setTranslation(vector);
 					tg.setTransform(transform);
-					tg.setCapability(Node.ALLOW_BOUNDS_READ);
-					tg.setCapability(Node.ALLOW_AUTO_COMPUTE_BOUNDS_READ);
 					tg.addChild(leds[x][y][z]);
 					transGroup.addChild(tg);
 
@@ -183,27 +177,21 @@ public class Led3D extends MouseAdapter {
 		if (result != null) {
 			// User clicked near something
 			Primitive p = (Primitive)result.getNode(PickResult.PRIMITIVE);
-			Shape3D s = (Shape3D)result.getNode(PickResult.SHAPE3D);
-			Cylinder c = null;
 			if (p != null) {
+				// p is now a Primitive that the user clicked
 				if (p.getClass().getName().equals("com.sun.j3d.utils.geometry.Cylinder")) {
-					c = (Cylinder)p;
-				}
-			} else if (s != null) {
-				if (s.getClass().getName().equals("com.sun.j3d.utils.geometry.Cylinder")) {
-					c = (Cylinder)p;
-				}
-			}
-			if (c != null) {
-/* ---> */		Bounds b = c.getBounds();
-				// CapabilityNotSetException: no capability to read user bounds
-				
-				for (int x = 0; x < 8; x++) {
-					for (int y = 0; y < 8; y++) {
-						for (int z = 0; z < 8; z++) {
-							if (b.equals(leds[x][y][z].getBounds())) {
-								// Clicked led found!
-								parentFrame.toggleLED(x, y, z);
+					// p is a Cylinder. Our LEDs are Spheres, so p.equals(led[x][y][z]) does not find anything...
+					for (int x = 0; x < 8; x++) {
+						for (int y = 0; y < 8; y++) {
+							for (int z = 0; z < 8; z++) {
+								if (p.equals(leds[x][y][z])) {
+									// Clicked led found!
+									System.out.println("Clicked LED found: " + x + " " + y + " " + z);
+									parentFrame.toggleLED(x, y, z);
+									break;
+								} else if ((x == 7) && (y == 7) && (z == 7)) {
+									System.out.println("Clicked, but LED not found!");
+								}
 							}
 						}
 					}
