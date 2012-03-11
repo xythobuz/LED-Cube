@@ -34,18 +34,18 @@
 #endif
 
 void blinkStatus(void) {
-	uint8_t i, mem[7] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+	// uint8_t i, mem[7] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
 
 	PORTB |= (1 << PB2);
 	PORTB &= ~(1 << PB1);
-	eqLed(mem);
+	// eqLed(mem);
 	_delay_ms(250);
 	PORTB &= ~(1 << PB2);
 	PORTB |= (1 << PB1);
-	for (i = 0; i < 7; i++) {
-		mem[i] = 0x00;
-	}
-	eqLed(mem);
+	// for (i = 0; i < 7; i++) {
+	// 	mem[i] = 0x00;
+	// }
+	// eqLed(mem);
 	_delay_ms(250);
 }
 
@@ -70,6 +70,7 @@ int main(void) {
 	while (1) {
 		music = equalizerGet();
 		if (twiDataWasSent()) {
+			PORTB ^= (1 << PB2); // Toggle for every transaction
 			twiSetDataToSend(music);
 		}
 		eqLed(music);

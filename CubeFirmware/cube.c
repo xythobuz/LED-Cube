@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <util/atomic.h>
 
-#include "uart.h"
+ #include "serial.h"
 #include "cube.h"
 
 #ifndef F_CPU

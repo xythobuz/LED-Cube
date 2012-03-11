@@ -36,7 +36,7 @@ TARGET = main
 
 # List C source files here. (C dependencies are automatically generated.)
 SRC = $(TARGET).c
-SRC += uart.c # Additional Source-File
+SRC += serial.c # Additional Source-File
 SRC += cube.c
 SRC += twi.c
 SRC += mem.c

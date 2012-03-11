@@ -20,23 +20,26 @@
  * You should have received a copy of the GNU General Public License
  * along with LED-Cube.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <stdlib.h>
-#include <stdint.h>
-#include <avr/io.h>
-#include <util/delay.h>
-#include <avr/interrupt.h>
-#include "uart.h"
-#include "cube.h"
-#include "time.h"
-#include "audio.h"
-#include "memLayer.h"
 
 #ifndef F_CPU
 #define F_CPU 16000000L
 #endif
-
+ 
 #define OK 0x42
 #define ERROR 0x23
+
+#include <avr/io.h>
+#include <util/delay.h>
+#include <avr/interrupt.h>
+#include <avr/pgmspace.h>
+#include <stdint.h>
+#include <stdlib.h>
+
+#include "serial.h"
+#include "cube.h"
+#include "time.h"
+#include "audio.h"
+#include "memLayer.h"
 
 void serialHandler(char c);
 void recieveAnimations(void);
@@ -48,9 +51,9 @@ void setRow(uint8_t x, uint8_t z, uint8_t height, uint8_t **buf);
 void visualizeAudioData(uint8_t *audioData, uint8_t **imageData);
 
 uint8_t refreshAnimationCount = 1;
+uint8_t lastButtonState = 1;
 
 int main(void) {
-	unsigned int character;
 	uint8_t *audioData;
 	uint8_t **imageData;
 	uint8_t i;
@@ -69,10 +72,15 @@ int main(void) {
 	}
 
 	init(); // Initialize Cube Low-Level Code
-	uart_init(UART_BAUD_SELECT(19200, 16000000L)); // Initialize Serial
+	serialInit(51, 8, NONE, 1);
 	initSystemTimer();
 
 	sei(); // Enable Interrupts
+
+	for (i = 25; i < 55; i++) {
+		serialWrite(0x58); // 'X'
+		_delay_ms(1); // Sends garbage if no delay... :(
+	}
 
 	audioMode = audioModeSelected();
 	lastTimeChecked = getSystemTime();
@@ -92,9 +100,8 @@ int main(void) {
 			// We place 2016 Frames in mem => 131040
 			// That gives us 32 bytes at the beginning, 0 -> 31
 			// The first frame starts at 32
-			character = uart_getc();
-			if (!(character & 0xFF00)) { // No error...
-				serialHandler((char)(character & 0x00FF));
+			if (serialHasChar()) {
+				serialHandler((char)(serialGet()));
 			}
 
 			if (refreshAnimationCount) {
@@ -123,12 +130,12 @@ void serialHandler(char c) {
 	switch(c) {
 		case OK:
 			// Send "Hello World"
-			uart_putc(OK);
+			serialWrite(OK);
 			break;
 
 		case 'd': case 'D':
 			clearMem();
-			uart_putc(OK);
+			serialWrite(OK);
 			break;
 
 		case 'g': case 'G':
@@ -139,8 +146,12 @@ void serialHandler(char c) {
 			recieveAnimations();
 			break;
 
+		case 'v':
+			serialWriteString("v1");
+			break;
+
 		default:
-			uart_putc(ERROR);
+			serialWrite(ERROR);
 			break;
 	}
 }
@@ -150,65 +161,65 @@ void recieveAnimations() {
 	uint16_t completeCount = 0, character;
 	uint8_t frame[65];
 
-	uart_putc(OK); // We are ready...
+	serialWrite(OK); // We are ready...
 
-	character = uart_getc();
+	character = serialGet();
 	while (character & 0xFF00) { // Wait for answer
-		character = uart_getc();
+		character = serialGet();
 	}
 
 	animCount = (uint8_t)(character & 0x00FF); // Got animation count
-	uart_putc(OK);
+	serialWrite(OK);
 
 	for (a = 0; a < animCount; a++) {
-		character = uart_getc();
+		character = serialGet();
 		while (character & 0xFF00) { // Wait for answer
-			character = uart_getc();
+			character = serialGet();
 		}
 
 		frameCount = (uint8_t)(character & 0x00FF); // Got frame count
-		uart_putc(OK);
+		serialWrite(OK);
 
 		for (f = 0; f < frameCount; f++) {
-			character = uart_getc();
+			character = serialGet();
 			while (character & 0xFF00) { // Wait for answer
-				character = uart_getc();
+				character = serialGet();
 			}
 
 			frame[64] = (uint8_t)(character & 0x00FF); // Got duration
-			uart_putc(OK);
+			serialWrite(OK);
 
 			for (i = 0; i < 64; i++) {
-				character = uart_getc();
+				character = serialGet();
 				while (character & 0xFF00) { // Wait for answer
-					character = uart_getc();
+					character = serialGet();
 				}
 
 				frame[i] = (uint8_t)(character & 0x00FF); // Got data byte
 			}
-			uart_putc(OK);
+			serialWrite(OK);
 
 			setFrame(completeCount++, frame);
 		}
 	}
 
-	character = uart_getc();
+	character = serialGet();
 	while (character & 0xFF00) { // Wait for answer
-		character = uart_getc();
+		character = serialGet();
 	}
-	character = uart_getc();
+	character = serialGet();
 	while (character & 0xFF00) { // Wait for answer
-		character = uart_getc();
+		character = serialGet();
 	}
-	character = uart_getc();
+	character = serialGet();
 	while (character & 0xFF00) { // Wait for answer
-		character = uart_getc();
+		character = serialGet();
 	}
-	character = uart_getc();
+	character = serialGet();
 	while (character & 0xFF00) { // Wait for answer
-		character = uart_getc();
+		character = serialGet();
 	}
-	uart_putc(OK);
+	serialWrite(OK);
 	setAnimationCount(completeCount);
 	refreshAnimationCount = 1;
 }
@@ -234,9 +245,9 @@ void transmitAnimations() {
 		animationsToGo = (framesToGo / 255) + 1;
 	}
 
-	uart_putc(OK);
-	uart_putc(animationsToGo);
-	while ((character = uart_getc()) & 0xFF00); // Wait for answer
+	serialWrite(OK);
+	serialWrite(animationsToGo);
+	while ((character = serialGet()) & 0xFF00); // Wait for answer
 	if ((character & 0x00FF) != OK) { // Error code recieved
 		return;
 	}
@@ -248,8 +259,8 @@ void transmitAnimations() {
 			fMax = framesToGo;
 		}
 
-		uart_putc(fMax); // Number of Frames in current animation
-		while ((character = uart_getc()) & 0xFF00); // Wait for answer
+		serialWrite(fMax); // Number of Frames in current animation
+		while ((character = serialGet()) & 0xFF00); // Wait for answer
 		if ((character & 0x00FF) != OK) { // Error code recieved
 			return;
 		}
@@ -257,17 +268,17 @@ void transmitAnimations() {
 		for (f = 0; f < fMax; f++) {
 			frame = getFrame(f + (255 * a));
 
-			uart_putc(frame[64]); // frame duration
-			while ((character = uart_getc()) & 0xFF00); // Wait for answer
+			serialWrite(frame[64]); // frame duration
+			while ((character = serialGet()) & 0xFF00); // Wait for answer
 			if ((character & 0x00FF) != OK) { // Error code recieved
 				free(frame);
 				return;
 			}
 
 			for (i = 0; i < 64; i++) {
-				uart_putc(frame[i]);
+				serialWrite(frame[i]);
 			}
-			while ((character = uart_getc()) & 0xFF00); // Wait for answer
+			while ((character = serialGet()) & 0xFF00); // Wait for answer
 			if ((character & 0x00FF) != OK) { // Error code recieved
 				free(frame);
 				return;
@@ -278,27 +289,45 @@ void transmitAnimations() {
 		framesToGo -= fMax;
 	}
 
-	uart_putc(OK);
-	uart_putc(OK);
-	uart_putc(OK);
-	uart_putc(OK);
+	serialWrite(OK);
+	serialWrite(OK);
+	serialWrite(OK);
+	serialWrite(OK);
 
-	while ((character = uart_getc()) & 0xFF00); // Wait for answer
+	while ((character = serialGet()) & 0xFF00); // Wait for answer
 	// Error code ignored...
 }
 
 // Blocks 10ms or more
 uint8_t audioModeSelected(void) {
-	// Switch: PB0, Low active
+	// Pushbutton: PB0, Low active
 	uint64_t startTime = getSystemTime();
 	uint8_t startState = PINB & (1 << PB0);
 
 	while((getSystemTime() - startTime) < 10); // Wait 10ms
 
 	if ((PINB & (1 << PB0)) != startState) {
-		return audioModeSelected();
+		// State changed
+		// We can assume we have to toggle the state
+		if (lastButtonState == 0) {
+			lastButtonState = 1;
+		} else {
+			lastButtonState = 0;
+		}
+		return lastButtonState;
 	} else {
-		return startState;
+		if (startState) {
+			// Stayed the same, is pushed!
+			if (lastButtonState == 0) {
+				lastButtonState = 1;
+			} else {
+				lastButtonState = 0;
+			}
+			return lastButtonState;
+		} else {
+			// Stayed but is not pushed...
+			return lastButtonState;
+		}
 	}
 }
 

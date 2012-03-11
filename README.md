@@ -8,8 +8,8 @@ You can find the schematic as png and Eagle file in this directory.
 
 ## Firmware
 
-The firmware of the Controller is yet to be developed...
-It will use [Peter Fleury's UART and TWI Library](http://homepage.hispeed.ch/peterfleury/avr-software.html).
+The firmware of the Controller is yet to be tested...
+It uses [Peter Fleury's TWI Library](http://homepage.hispeed.ch/peterfleury/avr-software.html).
 
 ## Cube Control
 
