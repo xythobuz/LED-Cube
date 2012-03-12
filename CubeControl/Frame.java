@@ -563,8 +563,9 @@ public class Frame extends JFrame implements ListSelectionListener {
 				} else {
 					for (int i = 0; i < frameList.getModel().getSize(); i++){
 						frameList.setSelectedIndex(i);
-						short time1 = worker.getAnimation(animList.getSelectedIndex()).getFrame(frameList.getSelectedIndex()).getTime();
-						long time = (long) (((time1+1) * 1/24) * 1000);
+						long time1 = (long) worker.getAnimation(animList.getSelectedIndex()).getFrame(frameList.getSelectedIndex()).getTime();
+						long time = (long) (((time1+1) * 1000) / 24);
+						System.out.println("Wert: " + time1 + " Zeit: " + time);
 						try {
 							Thread.sleep(time);
 						} catch (Exception e) {
@@ -623,7 +624,7 @@ public class Frame extends JFrame implements ListSelectionListener {
 						errorMessage("Please select a Frame!");
 						return;
 					}
-					worker.getAnimation(animList.getSelectedIndex()).getFrame(frameList.getSelectedIndex()).setTime((byte)(Integer.parseInt(frameLengthText.getText()) - 1));
+					worker.getAnimation(animList.getSelectedIndex()).getFrame(frameList.getSelectedIndex()).setTime((byte)(Integer.parseInt(frameLengthText.getText())));
 				}
 			}
 		});

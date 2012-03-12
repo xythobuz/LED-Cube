@@ -78,7 +78,7 @@ EXTRAINCDIRS =
 CSTANDARD = -std=gnu99
 
 # Place -D or -U options here
-CDEFS =
+CDEFS = -D DEBUG
 
 # Place -I options here
 CINCS =

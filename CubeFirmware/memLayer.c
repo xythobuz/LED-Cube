@@ -25,6 +25,7 @@
  #include <stdlib.h>
  #include "mem.h"
  #include "memLayer.h"
+ #include "serial.h"
 
 // Free after usage!
 uint8_t *getFrame(uint16_t frameNumber) {

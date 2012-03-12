@@ -30,8 +30,6 @@
 
 #define VERSION "8^3 LED-Cube v1\n"
 
-#define DEBUG
-
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
@@ -97,7 +95,7 @@ int main(void) {
 	lastChecked = getSystemTime();
 
 	while (1) {
-		if(lastMode) {
+		//if(lastMode) {
 			// Get Audio Data and visualize it
 			/* audioData = getAudioData();
 			if (audioData != NULL) {
@@ -106,7 +104,7 @@ int main(void) {
 				free(audioData);
 			}
 			while(!isFinished()); // Wait for it to display */
-		} else {
+		//} else {
 			// Look for commands, play from fram
 			// We have 128*1024 bytes
 			// A Frame needs 65 bytes (64 data + duration)
@@ -122,7 +120,7 @@ int main(void) {
 				count = getAnimationCount();
 				refreshAnimationCount = 0;
 			} */
-		}
+		//}
 
 		if ((getSystemTime() - lastChecked) > 100) {
 			lastMode = audioModeSelected();
@@ -136,7 +134,7 @@ int main(void) {
 
 void serialHandler(char c) {
 	// Used letters:
-	// a, c, d, g, s, t, v
+	// a, c, d, g, s, t, v, x
 	switch(c) {
 	case OK:
 		serialWrite(OK);
@@ -188,6 +186,14 @@ void serialHandler(char c) {
 	case 'c': case 'C':
 		serialWriteString(itoa(getAnimationCount(), buffer, 10));
 		serialWriteString(" Frames stored\n");
+		break;
+
+	case 'x': case 'X':
+		// Get byte, store as animation count
+		serialWriteString("Send a byte...");
+		while (!serialHasChar());
+		setAnimationCount(serialGet());
+		serialWriteString(" Byte written!\n");
 		break;
 
 	case '\n':
