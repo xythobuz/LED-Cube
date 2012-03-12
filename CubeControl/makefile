@@ -1,4 +1,4 @@
-INJAR = *.class LEDoff.png LEDon.png splash.png bg.png
+INJAR = *.class *.png
 # Path to jni.h
 ifdef SystemRoot
 RM = del
