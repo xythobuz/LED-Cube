@@ -644,7 +644,7 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 						return;
 					}
 					durationSlider.setValue(Integer.parseInt(frameLengthText.getText()));
-					worker.getAnimation(animList.getSelectedIndex()).getFrame(frameList.getSelectedIndex()).setTime((byte)(Integer.parseInt(frameLengthText.getText())));
+					worker.getAnimation(animList.getSelectedIndex()).getFrame(frameList.getSelectedIndex()).setTime((short)(Integer.parseInt(frameLengthText.getText())));
 				}
 			}
 		});
