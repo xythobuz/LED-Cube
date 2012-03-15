@@ -32,7 +32,7 @@ import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
 import java.util.Arrays;
 
-public class Frame extends JFrame implements ListSelectionListener {
+public class Frame extends JFrame implements ListSelectionListener, ChangeListener{
 
 	private static final long serialVersionUID = 23421337L;
 	// Anfang Variablen
@@ -88,6 +88,8 @@ public class Frame extends JFrame implements ListSelectionListener {
 	private JPanel filePanel = new JPanel();
 	private JPanel serialPanel = new JPanel();
 	private JPanel settingsPanel = new JPanel();
+	private JSlider durationSlider = new JSlider(1, 256 ,1); //min, max, value
+
 
 	// Ende Attribute
 	
@@ -209,6 +211,11 @@ public class Frame extends JFrame implements ListSelectionListener {
 				frameLengthText.setText("");
 			}
 		}
+	}
+
+	public void stateChanged(ChangeEvent e){
+			frameLengthText.setText(durationSlider.getValue() + "");
+		
 	}
 	
 	private void save() {
@@ -507,15 +514,7 @@ public class Frame extends JFrame implements ListSelectionListener {
 			}
 		});
 
-		frameLengthLabel.setBounds(429, 118, 90, 13);
-		frameLengthLabel.setText("Time (1/24 sec)");
-		frameLengthLabel.setFont(font);
-		cp.add(frameLengthLabel);
-	
-		frameLengthText.setBounds(429, 134, 31, 20);
-		frameLengthText.setFont(font);
-		cp.add(frameLengthText);
-		
+			
 		fullScreenButton.setText("Fullscreen");
 		fullScreenButton.setBounds(18, 312, 134, 35);
 		fullScreenButton.setFont(font);
@@ -602,7 +601,7 @@ public class Frame extends JFrame implements ListSelectionListener {
 			}
 		});
 	
-		frameDuration.setBounds(462, 134, 55, 20);
+		frameDuration.setBounds(462, 129, 55, 20);
 		frameDuration.setText("OK");
 		frameDuration.setFont(font);
 		cp.add(frameDuration);
@@ -624,6 +623,7 @@ public class Frame extends JFrame implements ListSelectionListener {
 						errorMessage("Please select a Frame!");
 						return;
 					}
+					durationSlider.setValue(Integer.parseInt(frameLengthText.getText()));
 					worker.getAnimation(animList.getSelectedIndex()).getFrame(frameList.getSelectedIndex()).setTime((byte)(Integer.parseInt(frameLengthText.getText())));
 				}
 			}
@@ -708,7 +708,7 @@ public class Frame extends JFrame implements ListSelectionListener {
 			}
 		});
 
-		serialPortSelector.setBounds(417, 186, 228, 21);
+		serialPortSelector.setBounds(417, 182, 228, 25);
 		serialPortSelector.setFont(font);
 		cp.add(serialPortSelector);
 
@@ -738,12 +738,26 @@ public class Frame extends JFrame implements ListSelectionListener {
 			}
 		});
 	
-		remainingLabel.setBounds(530, 118, 90, 13);
+		frameLengthLabel.setBounds(420, 97, 130, 13);
+		frameLengthLabel.setText("Time (1/24 sec)");
+		frameLengthLabel.setFont(font);
+		cp.add(frameLengthLabel);
+	
+		frameLengthText.setBounds(419, 129, 36, 20);
+		frameLengthText.setFont(font);
+		cp.add(frameLengthText);
+
+
+		remainingLabel.setBounds(530, 113, 90, 13);
 		remainingLabel.setText("Remaining:");
 		remainingLabel.setFont(font);
 		cp.add(remainingLabel);
+
+		durationSlider.setBounds(417, 108, 110, 23);
+		durationSlider.addChangeListener(this);
+		cp.add(durationSlider);
 		
-		frameRemaining.setBounds(530, 134, 49, 20);
+		frameRemaining.setBounds(530, 129, 49, 20);
 		frameRemaining.setEditable(false);
 		frameRemaining.setText(String.valueOf(worker.memoryRemaining()));
 		frameRemaining.setFont(font);
@@ -767,11 +781,11 @@ public class Frame extends JFrame implements ListSelectionListener {
 		filePanel.setBorder(BorderFactory.createTitledBorder("Load/Save"));
 		cp.add(filePanel);
 	
-		serialPanel.setBounds(409, 167, 243, 92);
+		serialPanel.setBounds(409, 160, 243, 99);
 		serialPanel.setBorder(BorderFactory.createTitledBorder("Serial communication"));
 		cp.add(serialPanel);
 	
-		settingsPanel.setBounds(409, 100, 243, 65);
+		settingsPanel.setBounds(409, 75, 243, 82);
 		settingsPanel.setBorder(BorderFactory.createTitledBorder("Frame duration"));
 		cp.add(settingsPanel);
 	
