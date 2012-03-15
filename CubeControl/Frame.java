@@ -33,14 +33,9 @@ import javax.vecmath.Point3d;
 import java.util.Arrays;
 
 public class Frame extends JFrame implements ListSelectionListener, ChangeListener{
-
-	private static final long serialVersionUID = 23421337L;
-	// Anfang Variablen
 	private GraphicsConfiguration gConfig;
 	private Canvas3D cubeCanvas;
 	public Led3D ledView;
-
-	// Anfang Attribute
 	private JButton editA = new JButton();
 	private JButton editB = new JButton();
 	private JButton editC = new JButton();
@@ -59,7 +54,7 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 	private JButton frameRemove = new JButton();
 	private JButton frameRename = new JButton();
 	private JList animList = new JList();
-	private DefaultListModel animModel = new DefaultListModel();
+	private DefaultListModel animListModel = new DefaultListModel();
 	private JScrollPane animScrollPane = new JScrollPane(animList);
 	private JButton animUp = new JButton();
 	private JButton animDown = new JButton();
@@ -89,16 +84,12 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 	private JPanel serialPanel = new JPanel();
 	private JPanel settingsPanel = new JPanel();
 	private JSlider durationSlider = new JSlider(1, 256 ,1); //min, max, value
-
-
-	// Ende Attribute
-	
+	private int lastSelectedFrame = 0;
+	private int lastSelectedAnim = 0;
 	public cubeWorker worker = new cubeWorker(this);
 	private boolean fileSelected = false;
 	private Frame thisFrame;
 	private static Frame recentFrame;
-
-	// Ende Variablen
 
 	private int saveExitDialog() {
 		String[] Optionen = { "Yes", "No" };
@@ -174,6 +165,20 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 			ledView.setData(worker.getAnimation(animList.getSelectedIndex()).getFrame(frameList.getSelectedIndex()).getData());
 		}
 	}
+
+	private void rebuildFrameList() {
+		// animList selection changed, update frameList
+		frameListModel.clear();
+
+		// System.out.println("Selected Animation: " + animList.getSelectedIndex());
+		int max = worker.getAnimation(animList.getSelectedIndex()).size();
+	
+		for (int i = 0; i < max; i++) {
+			frameListModel.addElement(worker.getAnimation(
+			animList.getSelectedIndex()).getFrame(i).getName());
+		}
+		frameList.setModel(frameListModel);
+	}
 	
 	/**
 	 * ListSelectionListener that updates Anim & Frame List
@@ -182,40 +187,55 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 	 * @param evt List that generated the event. Has to be animList or frameList
 	 */
 	public void valueChanged(ListSelectionEvent evt) {
-		if ((!evt.getValueIsAdjusting())
-			&& ((evt.getSource() == animList) || (evt.getSource() == frameList))) {
-			// If animList or framsList is the source, we act...
-	
-			if ((evt.getSource() == animList)
-				&& (animList.getSelectedIndex() != -1)) {
-				// animList selection changed, update frameList
-				frameListModel.clear();
-	
-				// System.out.println("Selected Animation: " + animList.getSelectedIndex());
-				int max = worker.getAnimation(animList.getSelectedIndex()).size();
-	
-				for (int i = 0; i < max; i++) {
-				frameListModel.addElement(worker.getAnimation(
-					animList.getSelectedIndex()).getFrame(i).getName());
+		if ((!evt.getValueIsAdjusting()) && ((evt.getSource() == animList) || (evt.getSource() == frameList))) {
+			// Select an animation, if not already done
+			if (animList.getSelectedIndex() == -1) {
+				if ((animListModel.getSize() > lastSelectedAnim) && (lastSelectedAnim != -1)) {
+					animList.setSelectedIndex(lastSelectedAnim);
+				} else {
+					animList.setSelectedIndex(0);
 				}
-				frameList.setModel(frameListModel);
 			}
-	
-			// If both selections are valid, update Frame duration and set 3D
-			// data
+
+			// Rebuild the frame list, if possible & needed
+			if ((evt.getSource() == animList) && (animList.getSelectedIndex() != -1)) {
+				rebuildFrameList();
+			}
+
+			// Select a frame, if not already done
+			if (frameList.getSelectedIndex() == -1) {
+				if ((frameListModel.getSize() > lastSelectedFrame) && (lastSelectedFrame != -1)) {
+					frameList.setSelectedIndex(lastSelectedFrame);
+				} else {
+					frameList.setSelectedIndex(0);
+				}
+				lastSelectedFrame = frameList.getSelectedIndex();
+			}
+
+			// If possible, set all data for selected frame
 			if ((animList.getSelectedIndex() != -1) && (frameList.getSelectedIndex() != -1)) {
 				ledView.setData(worker.getAnimation(animList.getSelectedIndex()).getFrame(frameList.getSelectedIndex()).getData());
 				frameLengthText.setText(Integer.toString(worker.getAnimation(animList.getSelectedIndex()).getFrame(frameList.getSelectedIndex()).getTime()));
-			} else {
-				// clear Frame duration
-				frameLengthText.setText("");
+				durationSlider.setValue(Integer.parseInt(frameLengthText.getText()));
+			}
+
+			if (frameList.getSelectedIndex() != -1) {
+				lastSelectedAnim = animList.getSelectedIndex();
+			}
+			if (frameList.getSelectedIndex() != -1) {
+				lastSelectedFrame = frameList.getSelectedIndex();
+			}
+			if (lastSelectedAnim == -1) {
+				lastSelectedAnim = 0;
+			}
+			if (lastSelectedFrame == -1) {
+				lastSelectedFrame = 0;
 			}
 		}
 	}
 
 	public void stateChanged(ChangeEvent e){
-			frameLengthText.setText(durationSlider.getValue() + "");
-		
+		frameLengthText.setText(durationSlider.getValue() + "");
 	}
 	
 	private void save() {
@@ -258,7 +278,7 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 
 		// Build Animation List
 		for (int i = 0; i < worker.size(); i++) {
-			animModel.addElement(worker.getAnimation(i).getName());
+			animListModel.addElement(worker.getAnimation(i).getName());
 		}
 
 		// Ask user to save before closing the window
@@ -323,7 +343,7 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		cp.add(frameListScrollPane);
 		// Add Animation List
 		animScrollPane.setBounds(18, 378, 187, 219);
-		animList.setModel(animModel);
+		animList.setModel(animListModel);
 		cp.add(animScrollPane);
 
 		// Add Move Frame Up Button
@@ -432,10 +452,10 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		animUp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				int i = animList.getSelectedIndex();
-				if ((i > 0) && (animModel.getSize() >= 2)) {
-					Object tmp = animModel.get(i);
-					animModel.set(i, animModel.get(i - 1));
-					animModel.set(i - 1, tmp);
+				if ((i > 0) && (animListModel.getSize() >= 2)) {
+					Object tmp = animListModel.get(i);
+					animListModel.set(i, animListModel.get(i - 1));
+					animListModel.set(i - 1, tmp);
 					animList.setSelectedIndex(i - 1);
 					worker.moveAnimationUp(i);
 				}
@@ -443,17 +463,17 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		});
 
 		// Add Move Animation Down Button
-		animDown.setBounds(211, 423, 110, 39);
+		animDown.setBounds(211, 558, 110, 39);
 		animDown.setText("Move down");
 		animDown.setFont(font);
 		cp.add(animDown);
 		animDown.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				int i = animList.getSelectedIndex();
-				if ((i >= 0) && (animModel.getSize() >= 2) && (i < (animModel.getSize() - 1))) {
-					Object tmp = animModel.get(i);
-					animModel.set(i, animModel.get(i + 1));
-					animModel.set(i + 1, tmp);
+				if ((i >= 0) && (animListModel.getSize() >= 2) && (i < (animListModel.getSize() - 1))) {
+					Object tmp = animListModel.get(i);
+					animListModel.set(i, animListModel.get(i + 1));
+					animListModel.set(i + 1, tmp);
 					animList.setSelectedIndex(i + 1);
 					worker.moveAnimationDown(i);
 				}
@@ -461,7 +481,7 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		});
 
 		// Add Rename Animation Button
-		animRename.setBounds(211, 468, 110, 39);
+		animRename.setBounds(211, 513, 110, 39);
 		animRename.setText("Rename");
 		animRename.setFont(font);
 		cp.add(animRename);
@@ -473,13 +493,13 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 					return;
 				}
 				worker.getAnimation(a).setName(askString("Rename", "Rename " + animList.getSelectedValue() + "?"));
-				animModel.set(a, worker.getAnimation(a).getName());
-				animList.setModel(animModel);
+				animListModel.set(a, worker.getAnimation(a).getName());
+				animList.setModel(animListModel);
 			}
 		});
 
 		// Add button for adding animations
-		animAdd.setBounds(211, 513, 110, 39);
+		animAdd.setBounds(211, 423, 110, 39);
 		animAdd.setText("Add");
 		animAdd.setFont(font);
 		cp.add(animAdd);
@@ -488,17 +508,17 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 				if (worker.addAnimation() == -1) {
 					errorMessage("Could not add animation!");
 				} else {
-					animModel.clear();
+					animListModel.clear();
 					for (int i = 0; i < worker.size(); i++) {
-						animModel.add(i, worker.getAnimation(i).getName());
+						animListModel.add(i, worker.getAnimation(i).getName());
 					}
-					animList.setModel(animModel);
+					animList.setModel(animListModel);
 				}
 			}
 		});
 
 		// Add Animation remove button
-		animRemove.setBounds(211, 558, 110, 39);
+		animRemove.setBounds(211, 468, 110, 39);
 		animRemove.setText("Remove");
 		animRemove.setFont(font);
 		cp.add(animRemove);
@@ -508,8 +528,8 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 					errorMessage("Select an animation.");
 				} else {
 					worker.removeAnimation(animList.getSelectedIndex());
-					animModel.removeElementAt(animList.getSelectedIndex());
-					animList.setModel(animModel);
+					animListModel.removeElementAt(animList.getSelectedIndex());
+					animList.setModel(animListModel);
 				}
 			}
 		});
@@ -602,7 +622,7 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		});
 	
 		frameDuration.setBounds(462, 129, 55, 20);
-		frameDuration.setText("OK");
+		frameDuration.setText("Save");
 		frameDuration.setFont(font);
 		cp.add(frameDuration);
 		frameDuration.addActionListener(new ActionListener() {
@@ -628,8 +648,6 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 				}
 			}
 		});
-
-		
 	
 		animPath.setBounds(417, 281, 228, 20);
 		animPath.setEditable(false);
@@ -652,11 +670,11 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 					}
 					animPath.setText(file.getPath());
 					worker.loadState(animPath.getText());
-					animModel.clear();
+					animListModel.clear();
 					for (int i = 0; i < worker.size(); i++) {
-						animModel.addElement(worker.getAnimation(i).getName());
+						animListModel.addElement(worker.getAnimation(i).getName());
 					}
-					animList.setModel(animModel);
+					animList.setModel(animListModel);
 					frameListModel.clear();
 					frameList.setModel(frameListModel);
 				}
@@ -743,7 +761,7 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		frameLengthLabel.setFont(font);
 		cp.add(frameLengthLabel);
 	
-		frameLengthText.setBounds(419, 129, 36, 20);
+		frameLengthText.setBounds(419, 129, 40, 20);
 		frameLengthText.setFont(font);
 		cp.add(frameLengthText);
 
@@ -794,6 +812,8 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		frameList.addListSelectionListener(this);
 		setResizable(false);
 		setVisible(true);
+
+		valueChanged(new ListSelectionEvent(animList, 0, 0, false));
 	}
 	
 	public Led3D get3D() {
