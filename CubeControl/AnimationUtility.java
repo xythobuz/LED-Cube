@@ -69,7 +69,6 @@ public class AnimationUtility {
 		for (int i = 0; i < animationArray.length; i++) {
 			newArray[i] = animationArray[i];
 		}
-		//animations = newArray;
 		return newArray;
 	}
 

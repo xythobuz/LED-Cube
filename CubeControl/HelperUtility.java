@@ -36,7 +36,7 @@ import java.util.StringTokenizer;
 public class HelperUtility {
 
 	// Load libraries, copy from Jar if needed
-	// Mostly from:
+	// Inspired by:
 	// http://stackoverflow.com/questions/1611357/how-to-make-a-jar-file-that-include-dll-files
 	static {
 		// System.out.println("Loading Serial Library...");

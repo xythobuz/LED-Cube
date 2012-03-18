@@ -170,17 +170,6 @@ public class Animation {
 		frames = newArray;
 	}
 
-	/* private void shiftSpace(int newFree) {
-		AFrame temp = null;
-		for (int i = newFree; i < (frames.length - 1); i++) {
-			// Max i: vorletztes element
-			AFrame tmp = frames[i];
-			frames[i] = temp;
-			temp = frames[i + 1];
-			frames[i + 1] = tmp;
-		}
-	} */
-
 	private void shiftOver(int toForget) {
 		for (int i = (toForget + 1); i < frames.length; i++) {
 			frames[i - 1] = frames[i];
