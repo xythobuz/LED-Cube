@@ -33,7 +33,7 @@
 #include <dirent.h>
 #include <errno.h>
 
-#define BAUD B19200
+#define BAUD B38400
 
 int fd = -1;
 

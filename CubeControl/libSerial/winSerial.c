@@ -28,7 +28,7 @@
 #include <stdio.h>
 #include <windows.h>
 
-#define BAUD CBR_19200;
+#define BAUD CBR_38400;
 
 HANDLE hSerial = INVALID_HANDLE_VALUE;
 

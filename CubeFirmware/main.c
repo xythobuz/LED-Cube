@@ -86,7 +86,7 @@ int main(void) {
 	uint64_t lastChecked;
 
 	initCube();
-	serialInit(51, 8, NONE, 1);
+	serialInit(25, 8, NONE, 1);
 	i2c_init();
 	initSystemTimer();
 	sei(); // Enable Interrupts
@@ -115,7 +115,7 @@ int main(void) {
 #ifdef DEBUG
 	refreshAnimationCount = 0; // Don't talk to FRAM yet...
 
-	serialWriteString("Initialized: ");
+	serialWriteString("\n\nInitialized: ");
 	serialWriteString(VERSION);
 	serialWriteString("Took ");
 	serialWriteString(itoa(getSystemTime(), buffer, 10));
@@ -220,6 +220,7 @@ void serialHandler(char c) {
 #ifdef DEBUG
 		serialWriteString("(t)ime, (a)udio, (c)ount, (x)Custom count\n");
 		serialWriteString("(y)Set fixed animation count\n");
+		serialWriteString("S(e)lf Test\n");
 #endif
 		break;
 
@@ -285,6 +286,14 @@ void serialHandler(char c) {
 	case 'y': case 'Y':
 		setAnimationCount(0x2201);
 		serialWriteString("Animation count now 8705!\n");
+		break;
+
+	case 'e': case 'E':
+		c = selfTest();
+		serialWriteString("Self-Test: 0b");
+		serialWriteString(itoa(c, buffer, 2));
+		serialWrite('\n');
+		printErrors(c);
 		break;
 #endif
 
