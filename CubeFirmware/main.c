@@ -31,7 +31,7 @@
 #ifdef DEBUG
 #define VERSION "v2 (Debug Build)\nNOT COMPATIBLE WITH CubeControl!\n"
 #else
-#define VERSION "v2\n"
+#define VERSION "v2 Release\n"
 #endif
 
 #include <avr/io.h>
@@ -56,7 +56,6 @@
 #define MEMORYERROR 2
 // Memory not writeable
 #define MEMORYWRITEERROR 4
-
 // x = errorcode, e = error definition, not NOERROR
 #define ISERROR(x, e) ((x) & (e))
 
@@ -66,10 +65,10 @@ void sendAudioData(void);
 void recieveAnimations(void);
 void transmitAnimations(void);
 uint8_t audioModeSelected(void);
-inline void setPixelBuffer(uint8_t x, uint8_t y, uint8_t z, uint8_t **buf);
-inline void clearPixelBuffer(uint8_t x, uint8_t y, uint8_t z, uint8_t **buf);
-void setRow(uint8_t x, uint8_t z, uint8_t height, uint8_t **buf);
-void visualizeAudioData(uint8_t *audioData, uint8_t **imageData);
+inline void setPixelBuffer(uint8_t x, uint8_t y, uint8_t z, uint8_t *buf);
+inline void clearPixelBuffer(uint8_t x, uint8_t y, uint8_t z, uint8_t *buf);
+void setRow(uint8_t x, uint8_t z, uint8_t height, uint8_t *buf);
+void visualizeAudioData(uint8_t *audioData, uint8_t *imageData);
 #ifdef DEBUG
 void printErrors(uint8_t e);
 #endif
@@ -79,9 +78,9 @@ uint8_t lastButtonState = 0;
 char buffer[11];
 
 int main(void) {
-	uint8_t *audioData;
-	uint8_t **imageData;
-	uint8_t i, lastMode;
+	uint8_t *audioData = NULL;
+	uint8_t *imageData = NULL;
+	uint8_t i, length = 0, lastMode;
 	uint16_t count;
 	uint64_t lastChecked;
 
@@ -96,25 +95,21 @@ int main(void) {
 	DDRC = 0xFF; // Latch Enable
 	DDRA = 0xFF; // Latch Data
 
+#ifdef DEBUG
+	// Kill animation counter in debug mode
+	// => Don't preserve animations while power down
+	setAnimationCount(0);
+
 	i = selfTest();
 	if (i) {
-		// Something is not working
-#ifdef DEBUG
 		serialWriteString("Self-Test Error: 0b");
 		serialWriteString(itoa(i, buffer, 2));
 		serialWrite('\n');
 		printErrors(i);
+	}
 #endif
-	}
-
-	imageData = (uint8_t **)malloc(8 * sizeof(uint8_t *));
-	for (i = 0; i < 8; i++) {
-		imageData[i] = (uint8_t *)malloc(8 * sizeof(uint8_t));
-	}
 
 #ifdef DEBUG
-	refreshAnimationCount = 0; // Don't talk to FRAM yet...
-
 	serialWriteString("\n\nInitialized: ");
 	serialWriteString(VERSION);
 	serialWriteString("Took ");
@@ -125,35 +120,47 @@ int main(void) {
 	lastMode = audioModeSelected();
 	lastChecked = getSystemTime();
 
+	i = 0;
+	count = getAnimationCount();
 	while (1) {
-		//if(lastMode) {
+		if(lastMode) {
 			// Get Audio Data and visualize it
-			/* audioData = getAudioData();
-			if (audioData != NULL) {
-				visualizeAudioData(audioData, imageData);
-				setImage(imageData);
-				free(audioData);
+			if (isFinished()) {
+				audioData = getAudioData();
+				if (audioData != NULL) {
+					visualizeAudioData(audioData, imageData);
+					setImage(imageData);
+					free(audioData);
+				}
 			}
-			while(!isFinished()); // Wait for it to display */
-		//} else {
-			// Look for commands, play from fram
-			// We have 128*1024 bytes
-			// A Frame needs 65 bytes (64 data + duration)
-			// We place 2016 Frames in mem => 131040
-			// That gives us 32 bytes at the beginning, 0 -> 31
-			// The first frame starts at 32
-			if (serialHasChar()) {
-				serialHandler((char)(serialGet()));
-			}
-
-			/* if (refreshAnimationCount) {
+		} else {
+			if (refreshAnimationCount) {
 				// Get animation count stored in FRAM via TWI, if needed
 				count = getAnimationCount();
 				refreshAnimationCount = 0;
-			} */
-		//}
+				i = 0;
+			}
 
-		if ((getSystemTime() - lastChecked) > 100) {
+			if (isFinished() > length) {
+				// Load next image
+				if (i < (count - 1)) {
+					i++;
+				} else {
+					i = 0;
+				}
+
+				imageData = getFrame(i);
+				length = imageData[64];
+				setImage(imageData);
+				free(imageData);
+			}
+		}
+
+		if (serialHasChar()) {
+			serialHandler((char)(serialGet()));
+		}
+
+		if ((getSystemTime() - lastChecked) > 150) {
 			lastMode = audioModeSelected();
 			lastChecked = getSystemTime();
 		} 
@@ -483,32 +490,25 @@ uint8_t audioModeSelected(void) {
 	return lastButtonState;
 }
 
-inline void setPixelBuffer(uint8_t x, uint8_t y, uint8_t z, uint8_t **buf) {
-	buf[z][y] |= (1 << x);
+inline void setPixelBuffer(uint8_t x, uint8_t y, uint8_t z, uint8_t *buf) {
+	buf[(8 * z) + y] |= (1 << x);
 }
 
-inline void clearPixelBuffer(uint8_t x, uint8_t y, uint8_t z, uint8_t **buf) {
-	buf[z][y] &= ~(1 << x);
+inline void clearPixelBuffer(uint8_t x, uint8_t y, uint8_t z, uint8_t *buf) {
+	buf[(8 * z) + y] &= ~(1 << x);
 }
 
-void setBuffer(uint8_t d, uint8_t *buf, uint8_t length) {
-	uint8_t i;
-	for (i = 0; i < length; i++) {
-		buf[i] = d;
-	}
-}
-
-void setRow(uint8_t x, uint8_t z, uint8_t height, uint8_t **buf) {
+void setRow(uint8_t x, uint8_t z, uint8_t height, uint8_t *buf) {
 	uint8_t i = 0;
 	for (; i < height; i++) {
 		setPixelBuffer(x, i, z, buf);
 	}
 }
 
-void visualizeAudioData(uint8_t *audioData, uint8_t **imageData) {
+void visualizeAudioData(uint8_t *audioData, uint8_t *imageData) {
 	uint8_t i;
-	for (i = 0; i < 8; i++) {
-		setBuffer(0, imageData[i], 8);
+	for (i = 0; i < 64; i++) {
+		imageData[i] = 0;
 	}
 
 	// 8 LEDs, Max Val 255:

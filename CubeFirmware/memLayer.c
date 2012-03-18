@@ -27,6 +27,12 @@
  #include "memLayer.h"
  #include "serial.h"
 
+// We have 128*1024 bytes
+// A Frame needs 65 bytes (64 data + duration)
+// We place 2016 Frames in mem => 131040
+// That gives us 32 bytes at the beginning, 0 -> 31
+// The first frame starts at 32
+
 // Free after usage!
 uint8_t *getFrame(uint16_t frameNumber) {
 	return memGetBytes(32 + (65 * frameNumber), 65);
@@ -48,7 +54,12 @@ uint16_t getAnimationCount() {
 	uint8_t lsb = memGetByte(0);
 	uint8_t msb = memGetByte(1);
 	uint16_t animationCount = (uint16_t)lsb;
-	return (animationCount | (((uint16_t)(msb)) << 8));
+	animationCount |= (((uint16_t)(msb)) << 8);
+	if (animationCount <= 2016) {
+		return animationCount;
+	} else {
+		return 2016;
+	}
 }
 
 void setAnimationCount(uint16_t c) {

@@ -29,7 +29,7 @@
 extern void initCube(void);
 
 // Copies the data in img into its own buffer, so free img afterwards...
-extern void setImage(uint8_t **img); // img[8][8]
+extern void setImage(uint8_t *img); // img[64]
 extern uint8_t isFinished(void);
 extern void close(void);
 

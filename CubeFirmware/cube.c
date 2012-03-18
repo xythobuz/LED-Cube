@@ -48,14 +48,14 @@ volatile uint8_t layer = 0;
 inline void delay_ns(int16_t ns);
 inline void isrCall(void);
 
-void setImage(uint8_t **img) {
+void setImage(uint8_t *img) {
 	uint8_t i, j;
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		changedFlag = 1;
 		imgFlag = 0;
 		for (i = 0; i < 8; i++) {
 			for (j = 0; j < 8; j++) {
-				imgBuffer[i][j] = img[i][j];
+				imgBuffer[i][j] = img[j + (i * 8)];
 			}
 		}
 	}
