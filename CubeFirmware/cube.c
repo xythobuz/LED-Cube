@@ -26,7 +26,9 @@
 #include <stdlib.h>
 #include <util/atomic.h>
 
- #include "serial.h"
+#ifdef DEBUG
+#include "serial.h"
+#endif
 #include "cube.h"
 
 #ifndef F_CPU
@@ -87,10 +89,22 @@ void initCube(void) {
 	// We just assume this works, because after reset,
 	// enough Memory should be available...
 	imgBuffer = malloc(8 * sizeof(uint8_t*));
+	if (imgBuffer == NULL) {
+#ifdef DEBUG
+		serialWriteString("initCube: No memory!\nHalting!");
+#endif
+		while(1);
+	}
 
 	for(ctr = 0; ctr < 8; ctr++) {
 		// Same reasoning here...
 		imgBuffer[ctr] = malloc(8 * sizeof(uint8_t));
+		if (imgBuffer[ctr] == NULL) {
+#ifdef DEBUG
+			serialWriteString("initCube: No memory!\nHalting!");
+#endif
+			while(1);
+		}
 	}
 }
 

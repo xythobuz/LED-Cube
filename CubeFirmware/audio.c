@@ -26,13 +26,22 @@
 
 #include "twi.h"
 #include "audio.h"
+#ifdef DEBUG
+#include "serial.h"
+#endif
 
 // free returned memory!
 uint8_t *getAudioData(void) {
 	// We read 7 bytes from our Audio µC
 	uint8_t i;
 	uint8_t *ret = (uint8_t *)malloc(7);
-
+	if (ret == NULL) {
+		// Ran out of memory...
+#ifdef DEBUG
+		serialWriteString("getAudioData: No memory!\n");
+#endif
+		return NULL;
+	}
 	if (i2c_start(TWIADDRESSAUDIO | I2C_READ) == 0) {
 		for (i = 0; i < 6; i++) {
 			ret[i] = i2c_readAck();
@@ -41,6 +50,7 @@ uint8_t *getAudioData(void) {
 		i2c_stop();
 		return ret;
 	} else {
+		free(ret);
 		return NULL;
 	}
 }

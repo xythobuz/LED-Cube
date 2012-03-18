@@ -19,6 +19,7 @@
 # To rebuild project do "make clean" then "make all".
 #
 
+CDEFS = -D DEBUG
 
 # MCU name
 MCU = atmega32
@@ -76,9 +77,6 @@ EXTRAINCDIRS =
 # c99   - ISO C99 standard (not yet fully implemented)
 # gnu99 - c99 plus GCC extensions
 CSTANDARD = -std=gnu99
-
-# Place -D or -U options here
-CDEFS = -D DEBUG
 
 # Place -I options here
 CINCS =

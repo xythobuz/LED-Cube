@@ -45,12 +45,29 @@ void clearMem() {
 }
 
 uint16_t getAnimationCount() {
-	uint16_t animationCount = memGetByte(0);
-	animationCount |= (memGetByte(1) << 8);
-	return animationCount;
+	uint8_t lsb = memGetByte(0);
+	uint8_t msb = memGetByte(1);
+	uint16_t animationCount = (uint16_t)lsb;
+	return (animationCount | (((uint16_t)(msb)) << 8));
 }
 
 void setAnimationCount(uint16_t c) {
-	memWriteByte(0, (uint8_t)(c & 0x00FF));
-	memWriteByte(0, (uint8_t)((c & 0xFF00) >> 8));
+	uint8_t lsb = (uint8_t)(c & 0x00FF);
+	uint8_t msb = (uint8_t)((c & 0xFF00) >> 8);
+	memWriteByte(0, lsb);
+	memWriteByte(1, msb);
+}
+
+void setGeneralPurposeByte(uint8_t address, uint8_t data) {
+	if (address < 30) {
+		memWriteByte(address + 2, data);
+	}
+}
+
+uint8_t getGeneralPurposeByte(uint8_t address) {
+	if (address < 30) {
+		return memGetByte(address + 2);
+	} else {
+		return 0;
+	}
 }

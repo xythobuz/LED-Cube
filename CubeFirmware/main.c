@@ -28,7 +28,11 @@
 #define OK 0x42
 #define ERROR 0x23
 
-#define VERSION "8^3 LED-Cube v1\n"
+#ifdef DEBUG
+#define VERSION "v2 (Debug Build)\nNOT COMPATIBLE WITH CubeControl!\n"
+#else
+#define VERSION "v2\n"
+#endif
 
 #include <avr/io.h>
 #include <util/delay.h>
@@ -41,9 +45,22 @@
 #include "cube.h"
 #include "time.h"
 #include "audio.h"
+#include "mem.h"
 #include "memLayer.h"
 #include "twi.h"
 
+#define NOERROR 0
+// Audio does not answer
+#define AUDIOERROR 1
+// Memory does not answer
+#define MEMORYERROR 2
+// Memory not writeable
+#define MEMORYWRITEERROR 4
+
+// x = errorcode, e = error definition, not NOERROR
+#define ISERROR(x, e) ((x) & (e))
+
+uint8_t selfTest(void);
 void serialHandler(char c);
 void sendAudioData(void);
 void recieveAnimations(void);
@@ -53,6 +70,9 @@ inline void setPixelBuffer(uint8_t x, uint8_t y, uint8_t z, uint8_t **buf);
 inline void clearPixelBuffer(uint8_t x, uint8_t y, uint8_t z, uint8_t **buf);
 void setRow(uint8_t x, uint8_t z, uint8_t height, uint8_t **buf);
 void visualizeAudioData(uint8_t *audioData, uint8_t **imageData);
+#ifdef DEBUG
+void printErrors(uint8_t e);
+#endif
 
 uint8_t refreshAnimationCount = 1;
 uint8_t lastButtonState = 0;
@@ -75,6 +95,17 @@ int main(void) {
 	DDRB = 0xFE;
 	DDRC = 0xFF; // Latch Enable
 	DDRA = 0xFF; // Latch Data
+
+	i = selfTest();
+	if (i) {
+		// Something is not working
+#ifdef DEBUG
+		serialWriteString("Self-Test Error: 0b");
+		serialWriteString(itoa(i, buffer, 2));
+		serialWrite('\n');
+		printErrors(i);
+#endif
+	}
 
 	imageData = (uint8_t **)malloc(8 * sizeof(uint8_t *));
 	for (i = 0; i < 8; i++) {
@@ -132,12 +163,64 @@ int main(void) {
 	return 0;
 }
 
+uint8_t selfTest(void) {
+	uint8_t result = NOERROR;
+	
+	uint8_t *data = getAudioData();
+	if (data == NULL) {
+		result |= AUDIOERROR;
+	} else {
+		free(data);
+	}
+
+	data = memGetBytes(0, 1);
+	if (data == NULL) {
+		result |= MEMORYERROR;
+	} else {
+		free(data);
+	}
+
+	setGeneralPurposeByte(0, 0x42);
+	if (getGeneralPurposeByte(0) != 0x42) {
+		result |= MEMORYWRITEERROR;
+	}
+
+	return result;
+}
+
+#ifdef DEBUG
+void printErrors(uint8_t e) {
+	if (ISERROR(e, AUDIOERROR)) {
+		serialWriteString(" => No answer from Audio!\n");
+	}
+	if (ISERROR(e, MEMORYERROR)) {
+		serialWriteString(" => No answer from Memory!\n");
+	}
+	if (ISERROR(e, MEMORYWRITEERROR)) {
+		serialWriteString(" => Can't write to Memory!\n");
+	}
+}
+#endif
+
 void serialHandler(char c) {
 	// Used letters:
 	// a, c, d, g, s, t, v, x
+#ifdef DEBUG
+	serialWrite(c);
+	serialWriteString(": ");
+#endif
+
 	switch(c) {
 	case OK:
 		serialWrite(OK);
+		break;
+
+	case 'h': case 'H':
+		serialWriteString("(d)elete, (g)et anims, (s)et anims, (v)ersion\n");
+#ifdef DEBUG
+		serialWriteString("(t)ime, (a)udio, (c)ount, (x)Custom count\n");
+		serialWriteString("(y)Set fixed animation count\n");
+#endif
 		break;
 
 	case 'd': case 'D':
@@ -157,6 +240,7 @@ void serialHandler(char c) {
 		serialWriteString(VERSION);
 		break;
 
+#ifdef DEBUG
 	case 't': case 'T':
 		serialWriteString("System Time: ");
 		serialWriteString(ltoa(getSystemTime(), buffer, 10));
@@ -190,42 +274,46 @@ void serialHandler(char c) {
 
 	case 'x': case 'X':
 		// Get byte, store as animation count
-		serialWriteString("Send a byte...");
+		serialWriteString("Send a byte... ");
 		while (!serialHasChar());
-		setAnimationCount(serialGet());
-		serialWriteString(" Byte written!\n");
+		c = serialGet();
+		setAnimationCount(c);
+		serialWriteString(itoa(c, buffer, 10));
+		serialWriteString(" written!\n");
 		break;
 
-	case '\n':
-		serialWriteString(VERSION);
-		serialWriteString("See xythobuz.org for more Infos!\n");
+	case 'y': case 'Y':
+		setAnimationCount(0x2201);
+		serialWriteString("Animation count now 8705!\n");
 		break;
+#endif
 
 	default:
 		serialWrite(ERROR);
 		break;
 	}
+	// c was used as temp var and does not contain the char anymore...!
 }
 
+#ifdef DEBUG
 void sendAudioData(void) {
 	uint8_t i;
 	uint8_t *audioData = getAudioData();
 	if (audioData == NULL) {
 		serialWriteString("Could not access device!\n");
-		return;
+	} else {
+		serialWriteString("Audio Data:\n");
+		for (i = 0; i < 7; i++) {
+			serialWrite(i + '0');
+			serialWriteString(": ");
+			itoa(audioData[i], buffer, 10);
+			serialWriteString(buffer);
+			serialWrite('\n');
+		}
+		free(audioData);
 	}
-
-	serialWriteString("Audio Data:\n");
-	for (i = 0; i < 7; i++) {
-		serialWrite(i + '0');
-		serialWriteString(": ");
-		itoa(audioData[i], buffer, 10);
-		serialWriteString(buffer);
-		serialWrite('\n');
-	}
-
-	free(audioData);
 }
+#endif
 
 void recieveAnimations() {
 	uint8_t animCount, a, frameCount, f, i;

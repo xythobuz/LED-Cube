@@ -73,7 +73,7 @@ int main(void) {
 			PORTB ^= (1 << PB2); // Toggle for every transaction
 			twiSetDataToSend(music);
 		}
-		eqLed(music);
+		// eqLed(music);
 		free(music);
 
 		// Heartbeat

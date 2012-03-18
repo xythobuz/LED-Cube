@@ -23,12 +23,14 @@
 
 // Free after usage!
 uint8_t *getFrame(uint16_t frameNumber);
-
 // 65 bytes framedata, data and duration...
 void setFrame(uint16_t frameNumber, uint8_t *frameData);
 
 void clearMem(void);
 
 uint16_t getAnimationCount(void);
-
 void setAnimationCount(uint16_t c);
+
+// address 0 - 29
+void setGeneralPurposeByte(uint8_t address, uint8_t data);
+uint8_t getGeneralPurposeByte(uint8_t address);

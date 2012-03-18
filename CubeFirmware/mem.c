@@ -20,11 +20,15 @@
  * You should have received a copy of the GNU General Public License
  * along with LED-Cube.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #include <avr/io.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include "twi.h"
 #include "mem.h"
+#ifdef DEBUG
+#include "serial.h"
+#endif
 
 // address is a number between (inclusive) zero and 131071
 uint8_t memGetByte(uint32_t address) {
@@ -60,6 +64,12 @@ uint8_t *memGetBytes(uint32_t address, uint8_t length) {
 	addA = memAddress & 0xFF00;
 	addB = memAddress & 0xFF;
 	ret = (uint8_t *)malloc(length); // Allocate memory for values read
+	if (ret == NULL) {
+#ifdef DEBUG
+		serialWriteString("memGetBytes: No memory!\n");
+#endif
+		return NULL;
+	}
 
 	if (i2c_start(memAddress | I2C_WRITE) == 0) {
 		i2c_write(addA);

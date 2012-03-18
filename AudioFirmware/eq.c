@@ -82,7 +82,6 @@ uint8_t *equalizerGet(void) {
 		_delay_us(STROBEDELAY);
 	}
 
-	eqLed(result);
 	return result;
 }
 
