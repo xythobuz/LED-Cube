@@ -57,19 +57,20 @@ public class AnimationUtility {
 			if (sc.hasNextLine()) {
 				sc.nextLine();
 			}
-			extendArray(animations);
+			animations = extendArray(animations);
 			animations[animations.length - 1] = tmp;
 		} while (sc.hasNextLine());
 
 		return animations;
 	}
 
-	private static void extendArray(Animation[] animations) {
-		Animation newArray[] = new Animation[animations.length + 1];
-		for (int i = 0; i < animations.length; i++) {
-			newArray[i] = animations[i];
+	private static Animation[] extendArray(Animation[] animationArray) {
+		Animation newArray[] = new Animation[animationArray.length + 1];
+		for (int i = 0; i < animationArray.length; i++) {
+			newArray[i] = animationArray[i];
 		}
-		animations = newArray;
+		//animations = newArray;
+		return newArray;
 	}
 
 	/**
