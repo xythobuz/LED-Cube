@@ -195,8 +195,12 @@ public class Led3D extends MouseAdapter {
 							}
 						}
 					}
+				} else {
+					System.out.println("Clicked, but not a sphere. Clicked object: " + p.getClass().getName());
 				}
 			}
+		} else {
+			System.out.println("Clicked, but hit nothing");
 		}
 	}
 
