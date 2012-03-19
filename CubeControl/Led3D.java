@@ -179,7 +179,7 @@ public class Led3D extends MouseAdapter {
 			Primitive p = (Primitive)result.getNode(PickResult.PRIMITIVE);
 			if (p != null) {
 				// p is now a Primitive that the user clicked
-				if (p.getClass().getName().equals("com.sun.j3d.utils.geometry.Cylinder")) {
+				if (p.getClass().getName().equals("com.sun.j3d.utils.geometry.Sphere")) {
 					// p is a Cylinder. Our LEDs are Spheres, so p.equals(led[x][y][z]) does not find anything...
 					for (int x = 0; x < 8; x++) {
 						for (int y = 0; y < 8; y++) {
