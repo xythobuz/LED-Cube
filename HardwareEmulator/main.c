@@ -14,6 +14,9 @@
 #define OK 0x42
 #define ERROR 0x23
 
+int sendFrames(void);
+int recieveFrames(void);
+int deleteFrames(void);
 int serialWriteString(char *s);
 int serialWriteTry(char *data, size_t length);
 void intHandler(int dummy);
@@ -47,21 +50,42 @@ int main(int argc, char *argv[]) {
 			switch(c) {
 				case OK:
 					if (serialWriteTry(&c, 1)) {
-						printf("Could not write to pseudo terminal");
+						printf("Could not write to pseudo terminal\n");
 						return -1;
 					}
 					break;
 
 				case 'h': case 'H':
 					if (serialWriteString("(d)elete, (g)et anims, (s)et anims, (v)ersion\n")) {
-						printf("Could not write to pseudo terminal");
+						printf("Could not write to pseudo terminal\n");
 						return -1;
 					}
 					break;
 
 				case 'v': case 'V':
 					if (serialWriteString(VERSION)) {
-						printf("Could not write to pseudo terminal");
+						printf("Could not write to pseudo terminal\n");
+						return -1;
+					}
+					break;
+
+				case 's': case 'S':
+					if (recieveFrames()) {
+						printf("Error while recieving frames!\n");
+						return -1;
+					}
+					break;
+
+				case 'g': case 'G':
+					if (sendFrames()) {
+						printf("Error while sending frames!\n");
+						return -1;
+					}
+					break;
+
+				case 'd': case 'D':
+					if (deleteFrames()) {
+						printf("Error while deleting frames!\n");
 						return -1;
 					}
 					break;
@@ -69,7 +93,7 @@ int main(int argc, char *argv[]) {
 				default:
 					c = ERROR;
 					if (serialWriteTry(&c, 1)) {
-						printf("Could not write to pseudo terminal");
+						printf("Could not write to pseudo terminal\n");
 						return -1;
 					}
 					break;
@@ -80,6 +104,18 @@ int main(int argc, char *argv[]) {
 	serialClose();
 
 	return 0;
+}
+
+int sendFrames() {
+
+}
+
+int recieveFrames() {
+
+}
+
+int deleteFrames() {
+
 }
 
 int serialWriteString(char *s) {

@@ -1,6 +1,7 @@
 CC = gcc
 SRC = main.c
 SRC += serial.c
+SRC += mem.c
 
 TARGET = cubeEmu
 
