@@ -305,7 +305,6 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		setLocation(x, y);
 		Container cp = getContentPane();
 		cp.setLayout(null);
-		Font font = new Font("Dialog", Font.PLAIN, 13);
 
 		// ----- 3D Stuff -----
 		// --------------------
@@ -321,7 +320,6 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 			final String nameStart = "Layer ";
 			editButtons[i].setText(nameStart + (char)('A' + i));
 			editButtons[i].setBounds(299, 32 + (35 * i), 102, 29);
-			editButtons[i].setFont(font);
 			cp.add(editButtons[i]);
 			editButtons[i].addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
@@ -348,7 +346,6 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		// Add Move Frame Up Button
 		frameUp.setBounds(532, 378, 110, 39);
 		frameUp.setText("Move up");
-		frameUp.setFont(font);
 		cp.add(frameUp);
 		frameUp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -366,7 +363,6 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		// Add Move Frame Down Button
 		frameDown.setBounds(532, 558, 110, 39);
 		frameDown.setText("Move down");
-		frameDown.setFont(font);
 		cp.add(frameDown);
 		frameDown.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -384,7 +380,6 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		// Add 'Frame Add' Button
 		frameAdd.setBounds(532, 423, 110, 39);
 		frameAdd.setText("Add");
-		frameAdd.setFont(font);
 		cp.add(frameAdd);
 		frameAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -403,7 +398,6 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		// Add button for frame removal
 		frameRemove.setBounds(532, 468, 110, 39);
 		frameRemove.setText("Remove");
-		frameRemove.setFont(font);
 		cp.add(frameRemove);
 		frameRemove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -423,7 +417,6 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		// Add frame rename button
 		frameRename.setBounds(532, 513, 110, 39);
 		frameRename.setText("Rename");
-		frameRename.setFont(font);
 		cp.add(frameRename);
 		frameRename.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -446,7 +439,6 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		// Add Move Animation Up Button
 		animUp.setBounds(211, 378, 110, 39);
 		animUp.setText("Move up");
-		animUp.setFont(font);
 		cp.add(animUp);
 		animUp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -464,7 +456,6 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		// Add Move Animation Down Button
 		animDown.setBounds(211, 558, 110, 39);
 		animDown.setText("Move down");
-		animDown.setFont(font);
 		cp.add(animDown);
 		animDown.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -482,7 +473,6 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		// Add Rename Animation Button
 		animRename.setBounds(211, 513, 110, 39);
 		animRename.setText("Rename");
-		animRename.setFont(font);
 		cp.add(animRename);
 		animRename.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -500,7 +490,6 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		// Add button for adding animations
 		animAdd.setBounds(211, 423, 110, 39);
 		animAdd.setText("Add");
-		animAdd.setFont(font);
 		cp.add(animAdd);
 		animAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -519,7 +508,6 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		// Add Animation remove button
 		animRemove.setBounds(211, 468, 110, 39);
 		animRemove.setText("Remove");
-		animRemove.setFont(font);
 		cp.add(animRemove);
 		animRemove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -536,7 +524,6 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 			
 		fullScreenButton.setText("Fullscreen");
 		fullScreenButton.setBounds(18, 312, 134, 35);
-		fullScreenButton.setFont(font);
 		cp.add(fullScreenButton);
 		fullScreenButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -570,7 +557,6 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 	
 		playAnimation.setText("Play");
 		playAnimation.setBounds(159, 312, 134, 35);
-		playAnimation.setFont(font);
 		cp.add(playAnimation);
 		playAnimation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt){
@@ -596,7 +582,6 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 	
 		playAnimationFullscreen.setText("Play");
 		playAnimationFullscreen.setBounds(Toolkit.getDefaultToolkit().getScreenSize().width-310, Toolkit.getDefaultToolkit().getScreenSize().height-80, 150, 25);
-		playAnimationFullscreen.setFont(font);
 		playAnimationFullscreen.setVisible(false);
 		cp.add(playAnimationFullscreen);
 		playAnimationFullscreen.addActionListener(new ActionListener() {
@@ -622,7 +607,6 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 	
 		frameDuration.setBounds(462, 129, 55, 20);
 		frameDuration.setText("Save");
-		frameDuration.setFont(font);
 		cp.add(frameDuration);
 		frameDuration.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -651,12 +635,10 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		animPath.setBounds(417, 281, 228, 20);
 		animPath.setEditable(false);
 		animPath.setText("Select an animation file...");
-		animPath.setFont(font);
 		cp.add(animPath);
 		
 		load.setBounds(417, 307, 72, 39);
 		load.setText("Load");
-		load.setFont(font);
 		cp.add(load);
 		load.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -682,7 +664,6 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 	
 		save.setBounds(491, 307, 72, 39);
 		save.setText("Save");
-		save.setFont(font);
 		cp.add(save);
 		save.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -703,7 +684,6 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 	
 		saveAs.setBounds(565, 307, 82, 39);
 		saveAs.setText("Save As");
-		saveAs.setFont(font);
 		cp.add(saveAs);
 		saveAs.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -726,12 +706,10 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		});
 
 		serialPortSelector.setBounds(417, 182, 228, 25);
-		serialPortSelector.setFont(font);
 		cp.add(serialPortSelector);
 
 		upload.setBounds(417, 212, 111, 39);
 		upload.setText("Upload");
-		upload.setFont(font);
 		cp.add(upload);
 		upload.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -744,7 +722,6 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 	
 		download.setBounds(534, 212, 111, 39);
 		download.setText("Download");
-		download.setFont(font);
 		cp.add(download);
 		download.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -757,17 +734,14 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 	
 		frameLengthLabel.setBounds(420, 97, 130, 13);
 		frameLengthLabel.setText("Time (1/24 sec)");
-		frameLengthLabel.setFont(font);
 		cp.add(frameLengthLabel);
 	
 		frameLengthText.setBounds(419, 129, 40, 20);
-		frameLengthText.setFont(font);
 		cp.add(frameLengthText);
 
 
 		remainingLabel.setBounds(530, 113, 90, 13);
 		remainingLabel.setText("Remaining:");
-		remainingLabel.setFont(font);
 		cp.add(remainingLabel);
 
 		durationSlider.setBounds(417, 108, 110, 23);
@@ -777,10 +751,7 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		frameRemaining.setBounds(530, 129, 49, 20);
 		frameRemaining.setEditable(false);
 		frameRemaining.setText(String.valueOf(worker.memoryRemaining()));
-		frameRemaining.setFont(font);
 		cp.add(frameRemaining);
-		animList.setFont(font);
-		frameList.setFont(font);
 	
 		previewPanel.setBounds(8, 12, 399, 342);
 		previewPanel.setBorder(BorderFactory.createTitledBorder("Preview"));
