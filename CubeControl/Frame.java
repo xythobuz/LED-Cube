@@ -300,10 +300,9 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		int frameHeight = 646;
 		setSize(frameWidth, frameHeight);
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-		// int x = (d.width - getSize().width) / 2;
-		// int y = (d.height - getSize().height) / 2;
-		// setLocation(x, y);
-		setLocation(50, 50);
+		int x = (d.width - frameWidth) / 2;
+		int y = (d.height - frameHeight) / 2;
+		setLocation(x, y);
 		Container cp = getContentPane();
 		cp.setLayout(null);
 		Font font = new Font("Dialog", Font.PLAIN, 13);
@@ -651,7 +650,7 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 	
 		animPath.setBounds(417, 281, 228, 20);
 		animPath.setEditable(false);
-		animPath.setText("Load/Save an animation file...");
+		animPath.setText("Select an animation file...");
 		animPath.setFont(font);
 		cp.add(animPath);
 		
@@ -675,8 +674,8 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 						animListModel.addElement(worker.getAnimation(i).getName());
 					}
 					animList.setModel(animListModel);
-					frameListModel.clear();
-					frameList.setModel(frameListModel);
+					animList.setSelectedIndex(0);
+					rebuildFrameList();
 				}
 			}
 		});

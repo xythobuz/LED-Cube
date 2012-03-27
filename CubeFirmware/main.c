@@ -77,6 +77,15 @@ uint8_t refreshAnimationCount = 1;
 uint8_t lastButtonState = 0;
 char buffer[11];
 
+uint8_t defaultImage[64] = 	{	0xe7, 0xc3, 0xa5, 0x18, 0x18, 0xa5, 0xc3, 0xe7,
+								0x81, 0x81, 0x00, 0x18, 0x18, 0x00, 0x81, 0x81,
+								0x81, 0x00, 0x81, 0x18, 0x18, 0x81, 0x00, 0x81,
+								0x00, 0x00, 0x00, 0xff, 0xff, 0x00, 0x00, 0x00,
+								0x00, 0x00, 0x00, 0xff, 0xff, 0x00, 0x00, 0x00,
+								0x81, 0x00, 0x81, 0x18, 0x18, 0x81, 0x00, 0x81,
+								0x81, 0x81, 0x00, 0x18, 0x18, 0x00, 0x81, 0x81,
+								0xe7, 0xc3, 0xa5, 0x18, 0x18, 0xa5, 0xc3, 0xe7 };
+
 int main(void) {
 	uint8_t *audioData = NULL;
 	uint8_t *imageData = NULL;
@@ -94,6 +103,8 @@ int main(void) {
 	DDRB = 0xFE;
 	DDRC = 0xFF; // Latch Enable
 	DDRA = 0xFF; // Latch Data
+
+	setImage(defaultImage); // Display something
 
 #ifdef DEBUG
 	// Kill animation counter in debug mode
@@ -141,18 +152,20 @@ int main(void) {
 				i = 0;
 			}
 
-			if (isFinished() > length) {
-				// Load next image
-				if (i < (count - 1)) {
-					i++;
-				} else {
-					i = 0;
-				}
+			if (count > 0) {
+				if (isFinished() > length) {
+					// Load next image
+					if (i < (count - 1)) {
+						i++;
+					} else {
+						i = 0;
+					}
 
-				imageData = getFrame(i);
-				length = imageData[64];
-				setImage(imageData);
-				free(imageData);
+					imageData = getFrame(i);
+					length = imageData[64];
+					setImage(imageData);
+					free(imageData);
+				}
 			}
 		}
 
