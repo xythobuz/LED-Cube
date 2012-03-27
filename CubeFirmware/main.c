@@ -59,18 +59,19 @@
 // x = errorcode, e = error definition, not NOERROR
 #define ISERROR(x, e) ((x) & (e))
 
-uint8_t selfTest(void);
 void serialHandler(char c);
 void sendAudioData(void);
 void recieveAnimations(void);
 void transmitAnimations(void);
 uint8_t audioModeSelected(void);
-inline void setPixelBuffer(uint8_t x, uint8_t y, uint8_t z, uint8_t *buf);
-inline void clearPixelBuffer(uint8_t x, uint8_t y, uint8_t z, uint8_t *buf);
+void setPixelBuffer(uint8_t x, uint8_t y, uint8_t z, uint8_t *buf);
 void setRow(uint8_t x, uint8_t z, uint8_t height, uint8_t *buf);
 void visualizeAudioData(uint8_t *audioData, uint8_t *imageData);
 #ifdef DEBUG
 void printErrors(uint8_t e);
+uint8_t selfTest(void);
+
+#include "snake.c"
 #endif
 
 uint8_t refreshAnimationCount = 1;
@@ -139,8 +140,10 @@ int main(void) {
 			if (isFinished()) {
 				audioData = getAudioData();
 				if (audioData != NULL) {
+					imageData = (uint8_t *)malloc(64);
 					visualizeAudioData(audioData, imageData);
 					setImage(imageData);
+					free(imageData);
 					free(audioData);
 				}
 			}
@@ -183,6 +186,7 @@ int main(void) {
 	return 0;
 }
 
+#ifdef DEBUG
 uint8_t selfTest(void) {
 	uint8_t result = NOERROR;
 	
@@ -208,7 +212,6 @@ uint8_t selfTest(void) {
 	return result;
 }
 
-#ifdef DEBUG
 void printErrors(uint8_t e) {
 	if (ISERROR(e, AUDIOERROR)) {
 		serialWriteString(" => No answer from Audio!\n");
@@ -241,6 +244,7 @@ void serialHandler(char c) {
 		serialWriteString("(t)ime, (a)udio, (c)ount, (x)Custom count\n");
 		serialWriteString("(y)Set fixed animation count\n");
 		serialWriteString("S(e)lf Test\n");
+		serialWriteString("Play S(n)ake\n");
 #endif
 		break;
 
@@ -314,6 +318,10 @@ void serialHandler(char c) {
 		serialWriteString(itoa(c, buffer, 2));
 		serialWrite('\n');
 		printErrors(c);
+		break;
+
+	case 'n': case 'N':
+		snake();
 		break;
 #endif
 
@@ -503,19 +511,15 @@ uint8_t audioModeSelected(void) {
 	return lastButtonState;
 }
 
-inline void setPixelBuffer(uint8_t x, uint8_t y, uint8_t z, uint8_t *buf) {
-	buf[(8 * z) + y] |= (1 << x);
-}
-
-inline void clearPixelBuffer(uint8_t x, uint8_t y, uint8_t z, uint8_t *buf) {
-	buf[(8 * z) + y] &= ~(1 << x);
-}
-
 void setRow(uint8_t x, uint8_t z, uint8_t height, uint8_t *buf) {
 	uint8_t i = 0;
 	for (; i < height; i++) {
 		setPixelBuffer(x, i, z, buf);
 	}
+}
+
+void setPixelBuffer(uint8_t x, uint8_t y, uint8_t z, uint8_t *buf) {
+	buf[(8 * z) + y] |= (1 << x);
 }
 
 void visualizeAudioData(uint8_t *audioData, uint8_t *imageData) {
