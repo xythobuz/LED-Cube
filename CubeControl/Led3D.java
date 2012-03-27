@@ -75,15 +75,15 @@ public class Led3D extends MouseAdapter {
 		// Position viewer, so we are looking at object
 		trans3D = new Transform3D();
 		mat = new Matrix4d();
-		mat.setRow(0, 0.744, 0.0237, -0.66756, -0.34);
-		mat.setRow(1, 0.136, -0.9837, 0.117, 3.24);
-		mat.setRow(2, -0.6536, -0.1785, -0.735, -8.32);
+		mat.setRow(0, 0.7597, -0.0204, 0.64926, 0.56);
+		mat.setRow(1, -0.08, -0.995, 0.061, 0.02);
+		mat.setRow(2, 0.64473, -0.09786, -0.758, -14.68);
 		mat.setRow(3, 0.0, 0.0, 0.0, 1.0);
 
 		fullScreenMat = new Matrix4d();
-		fullScreenMat.setRow(0, 0.744, 0.0237, -0.66756, -0.34);
-		fullScreenMat.setRow(1, 0.136, -0.9837, 0.117, 3.24);
-		fullScreenMat.setRow(2, -0.6536, -0.1785, -0.735, -18.0);
+		fullScreenMat.setRow(0, 0.7597, -0.0204, 0.64926, 0.56);
+		fullScreenMat.setRow(1, -0.08, -0.995, 0.061, 0.02);
+		fullScreenMat.setRow(2, 0.64473, -0.09786, -0.758, -14.68);
 		fullScreenMat.setRow(3, 0.0, 0.0, 0.0, 1.0);
 
 
@@ -133,21 +133,21 @@ public class Led3D extends MouseAdapter {
 
 					TransformGroup tg = new TransformGroup();
 					Transform3D transform = new Transform3D();
-					Vector3f vector = new Vector3f(x, y, z);
+					Vector3f vector = new Vector3f(x - 4, y - 4, z - 4);
 					transform.setTranslation(vector);
 					tg.setTransform(transform);
 					tg.addChild(leds[x][y][z]);
 					transGroup.addChild(tg);
 
-					drawLedFeetVertical((double) x, y + 0.5, (double) z, 0.9f, 0.01f);
+					drawLedFeetVertical((double) x - 4, y - 3.5, (double) z-4, 0.9f, 0.01f);
 					if (x < 7)
-						drawLedFeetHorizontal(x + 0.5, (double) y, (double) z, 0.9f, 0.01f, 0);
+						drawLedFeetHorizontal(x - 3.5, (double) y - 4, (double) z - 4, 0.9f, 0.01f, 0);
 				}
 			}
 			// 8 times, use x as y
-			drawLedFeetHorizontal(0.5, (double) x, 3.5, 7.0f, 0.02f, 90);
-			drawLedFeetHorizontal(6.5, (double) x, 3.5, 7.0f, 0.02f, 90);
-			drawLedFeetHorizontal(3.5, (double) x, 3.5, 7.0f, 0.02f, 90);
+			drawLedFeetHorizontal(-3.5, (double) x-4, 3.5, 7.0f, 0.02f, 90);
+			drawLedFeetHorizontal(2.5, (double) x-4, 3.5, 7.0f, 0.02f, 90);
+			drawLedFeetHorizontal(-1.5, (double) x-4, 3.5, 7.0f, 0.02f, 90);
 		}
 
 		// Add an ambient light
