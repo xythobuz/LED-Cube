@@ -84,6 +84,8 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 	private JPanel serialPanel = new JPanel();
 	private JPanel settingsPanel = new JPanel();
 	private JSlider durationSlider = new JSlider(1, 256 ,1); //min, max, value
+	private JLabel logoText = new JLabel();
+
 	private int lastSelectedFrame = 0;
 	private int lastSelectedAnim = 0;
 	public cubeWorker worker = new cubeWorker(this);
@@ -766,7 +768,7 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		cp.add(animPanel);
 	
 		filePanel.setBounds(409, 262, 243, 92);
-		filePanel.setBorder(BorderFactory.createTitledBorder("Load/Save"));
+		filePanel.setBorder(BorderFactory.createTitledBorder("Animation File"));
 		cp.add(filePanel);
 	
 		serialPanel.setBounds(409, 160, 243, 99);
@@ -776,7 +778,12 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		settingsPanel.setBounds(409, 75, 243, 82);
 		settingsPanel.setBorder(BorderFactory.createTitledBorder("Frame duration"));
 		cp.add(settingsPanel);
-	
+
+		logoText.setText("CubeControl");
+		logoText.setBounds(415, 10, 243, 65);
+		logoText.setFont(new Font("Default", Font.BOLD, 38));
+		cp.add(logoText);
+
 		// Ende Komponenten
 		animList.addListSelectionListener(this);
 		frameList.addListSelectionListener(this);
