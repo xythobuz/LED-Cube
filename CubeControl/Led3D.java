@@ -145,9 +145,9 @@ public class Led3D extends MouseAdapter {
 				}
 			}
 			// 8 times, use x as y
-			drawLedFeetHorizontal(-3.5, (double) x-4, 3.5, 7.0f, 0.02f, 90);
-			drawLedFeetHorizontal(2.5, (double) x-4, 3.5, 7.0f, 0.02f, 90);
-			drawLedFeetHorizontal(-1.5, (double) x-4, 3.5, 7.0f, 0.02f, 90);
+				for(int i = 0; i > -8; i--){
+					drawLedFeetHorizontal(i+3, (double) x-4, -0.5, 7.0f, 0.02f, 90);
+				}
 		}
 
 		// Add an ambient light
@@ -191,12 +191,16 @@ public class Led3D extends MouseAdapter {
 									break;
 								} else if ((x == 7) && (y == 7) && (z == 7)) {
 									System.out.println("Clicked, but LED not found!");
+
 								}
 							}
 						}
 					}
 				} else {
 					System.out.println("Clicked, but not a sphere. Clicked object: " + p.getClass().getName());
+					if(p.getClass().getName().equals("com.sun.j3d.utils.geometry.Cylinder")){
+
+					}
 				}
 			}
 		} else {
