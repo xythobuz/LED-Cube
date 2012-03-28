@@ -133,21 +133,21 @@ public class Led3D extends MouseAdapter {
 
 					TransformGroup tg = new TransformGroup();
 					Transform3D transform = new Transform3D();
-					Vector3f vector = new Vector3f(x - 4, y - 4, z - 4);
+					Vector3f vector = new Vector3f(x - 3.5f, y -3.5f, z-3.5f);
 					transform.setTranslation(vector);
 					tg.setTransform(transform);
 					tg.addChild(leds[x][y][z]);
 					transGroup.addChild(tg);
 
-					drawLedFeetVertical((double) x - 4, y - 3.5, (double) z-4, 0.9f, 0.01f);
+					drawLedFeetVertical((double) x - 3.5, y - 3.5, (double) z-3.5, 0.9f, 0.01f);
 					if (x < 7)
-						drawLedFeetHorizontal(x - 3.5, (double) y - 4, (double) z - 4, 0.9f, 0.01f, 0);
+						drawLedFeetHorizontal(x - 3, (double) y - 3.5, (double) z - 3.5, 0.9f, 0.01f, 0);
 				}
 			}
 			// 8 times, use x as y
-				for(int i = 0; i > -8; i--){
-					drawLedFeetHorizontal(i+3, (double) x-4, -0.5, 7.0f, 0.02f, 90);
-				}
+			for(int i = 0; i > -8; i--){
+				drawLedFeetHorizontal(i+3.5, (double) x, 0, 7.0f, 0.02f, 90);
+			}
 		}
 
 		// Add an ambient light
