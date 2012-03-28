@@ -607,7 +607,7 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 			}
 		});
 	
-		frameDuration.setBounds(462, 129, 55, 20);
+		frameDuration.setBounds(462, 129, 65, 20);
 		frameDuration.setText("Save");
 		cp.add(frameDuration);
 		frameDuration.addActionListener(new ActionListener() {
@@ -741,12 +741,11 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		frameLengthText.setBounds(419, 129, 40, 20);
 		cp.add(frameLengthText);
 
-
 		remainingLabel.setBounds(530, 113, 90, 13);
 		remainingLabel.setText("Remaining:");
 		cp.add(remainingLabel);
 
-		durationSlider.setBounds(417, 108, 110, 23);
+		durationSlider.setBounds(417, 108, 115, 23);
 		durationSlider.addChangeListener(this);
 		cp.add(durationSlider);
 		
