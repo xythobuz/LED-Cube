@@ -188,15 +188,16 @@ public class Led3D extends MouseAdapter {
 									// Clicked led found!
 									System.out.println("Clicked LED found: " + x + " " + y + " " + z);
 									parentFrame.toggleLED(x, y, z);
-									break;
-								} else if ((x == 7) && (y == 7) && (z == 7)) {
-									System.out.println("Clicked, but LED not found!");
+									x = 8;
+									y = 8;
+									z = 8;
 								}
 							}
 						}
 					}
 				} else {
 					System.out.println("Clicked, but not a sphere. Clicked object: " + p.getClass().getName());
+
 				}
 			}
 		} else {
