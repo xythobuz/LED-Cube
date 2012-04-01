@@ -50,6 +50,7 @@ public class Led3D extends MouseAdapter {
 	private Matrix4d mat = null;
 	private Matrix4d fullScreenMat = null;
 	private Frame parentFrame = null;
+	private boolean inFullscreen = false;
 
 	private Sphere[][][] leds = new Sphere[8][8][8];
 	private static ColoringAttributes redColor = new ColoringAttributes(
@@ -82,9 +83,9 @@ public class Led3D extends MouseAdapter {
 		mat.setRow(3, 0.0, 0.0, 0.0, 1.0);
 
 		fullScreenMat = new Matrix4d();
-		fullScreenMat.setRow(0, 0.7597, -0.0204, 0.64926, 0.56);
-		fullScreenMat.setRow(1, -0.08, -0.995, 0.061, 0.02);
-		fullScreenMat.setRow(2, 0.64473, -0.09786, -0.758, -14.68);
+		fullScreenMat.setRow(0, 0.7597, -0.0204, 0.64926, 0.68);
+		fullScreenMat.setRow(1, -0.08, -0.995, 0.061, 0.7);
+		fullScreenMat.setRow(2, 0.64473, -0.09786, -0.758, -22.88);
 		fullScreenMat.setRow(3, 0.0, 0.0, 0.0, 1.0);
 
 
@@ -293,10 +294,18 @@ public class Led3D extends MouseAdapter {
 	 */
 	public void resetView() {
 		Matrix4d mat = new Matrix4d();
-		mat.setRow(0, 0.744, 0.0237, -0.66756, -0.34);
-		mat.setRow(1, 0.136, -0.9837, 0.117, 3.24);
-		mat.setRow(2, -0.6536, -0.1785, -0.735, -8.32);
-		mat.setRow(3, 0.0, 0.0, 0.0, 1.0);
+		
+		if(inFullscreen){
+			mat.setRow(0, 0.7597, -0.0204, 0.64926, 0.68);
+			mat.setRow(1, -0.08, -0.995, 0.061, 0.7);
+			mat.setRow(2, 0.64473, -0.09786, -0.758, -22.88);
+			mat.setRow(3, 0.0, 0.0, 0.0, 1.0);	
+		} else {
+			mat.setRow(0, 0.7597, -0.0204, 0.64926, 0.56);
+			mat.setRow(1, -0.08, -0.995, 0.061, 0.02);
+			mat.setRow(2, 0.64473, -0.09786, -0.758, -14.68);
+			mat.setRow(3, 0.0, 0.0, 0.0, 1.0);
+		}
 		trans3D.set(mat);
 		transGroup.setTransform(trans3D);
 		feetGroup.setTransform(trans3D);
@@ -359,6 +368,7 @@ public class Led3D extends MouseAdapter {
 		background = createBackground();
 		group.addChild(background);
 		universe.addBranchGraph(group);
+		inFullscreen = !inFullscreen;
 	}
 	
 	/**
@@ -369,6 +379,7 @@ public class Led3D extends MouseAdapter {
 		trans3D.set(fullScreenMat);
 		transGroup.setTransform(trans3D);
 		feetGroup.setTransform(trans3D);
+		resetView(); //This is important. For some reason some legs are missing when entering fullscreen mode. Calling this function solves the problem.
 	}
 	
 	/**
