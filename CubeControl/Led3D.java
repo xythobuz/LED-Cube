@@ -43,8 +43,10 @@ public class Led3D extends MouseAdapter {
 	private PickCanvas pickCanvas = null;
 	private SimpleUniverse universe = null;
 	private BranchGroup group = null;
+	private BranchGroup group2 = null;
 	private Transform3D trans3D = null;
 	private TransformGroup transGroup = null;
+	private TransformGroup feetGroup = null;
 	private Matrix4d mat = null;
 	private Matrix4d fullScreenMat = null;
 	private Frame parentFrame = null;
@@ -70,6 +72,7 @@ public class Led3D extends MouseAdapter {
 		canvas = canv;
 		parentFrame = f;
 		group = new BranchGroup();
+		group2 = new BranchGroup();
 		// Position viewer, so we are looking at object
 		trans3D = new Transform3D();
 		mat = new Matrix4d();
@@ -90,6 +93,9 @@ public class Led3D extends MouseAdapter {
 		transGroup = new TransformGroup(trans3D);
 		transGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
 		transGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+		feetGroup = new TransformGroup(trans3D);
+		feetGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
+		feetGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 		ViewingPlatform viewingPlatform = new ViewingPlatform();
 		Viewer viewer = new Viewer(canvas);
 		universe = new SimpleUniverse(viewingPlatform, viewer);
@@ -101,20 +107,37 @@ public class Led3D extends MouseAdapter {
 		behaviour.setSchedulingBounds(boundBox);
 		transGroup.addChild(behaviour);
 
+		MouseRotate feetBehaviour = new MouseRotate(feetGroup);
+		feetBehaviour.setSchedulingBounds(boundBox);
+		feetGroup.addChild(feetBehaviour);
+
 		// zoom with middle mouse button
 		MouseZoom beh2 = new MouseZoom(transGroup);
 		beh2.setSchedulingBounds(boundBox);
 		transGroup.addChild(beh2);
+
+		MouseZoom feetBeh2 = new MouseZoom(feetGroup);
+		feetBeh2.setSchedulingBounds(boundBox);
+		feetGroup.addChild(feetBeh2);
 
 		// move with right mouse button
 		MouseTranslate beh3 = new MouseTranslate(transGroup);
 		beh3.setSchedulingBounds(boundBox);
 		transGroup.addChild(beh3);
 
+		MouseTranslate feetBeh3 = new MouseTranslate(feetGroup);
+		feetBeh3.setSchedulingBounds(boundBox);
+		feetGroup.addChild(feetBeh3);
+
 		
 		group.setCapability(BranchGroup.ALLOW_CHILDREN_READ);
 		group.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
 		group.setCapability(BranchGroup.ALLOW_DETACH);
+
+		group2.setCapability(BranchGroup.ALLOW_CHILDREN_READ);
+		group2.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
+		group2.setCapability(BranchGroup.ALLOW_DETACH);
+
 		background = createBackground();
 		group.addChild(background);
 
@@ -163,7 +186,7 @@ public class Led3D extends MouseAdapter {
 		transform.setTranslation(vector);
 		tg.setTransform(transform);
 		tg.addChild(center);
-		transGroup.addChild(tg);	
+		feetGroup.addChild(tg);	
 
 
 		// Add an ambient light
@@ -175,7 +198,9 @@ public class Led3D extends MouseAdapter {
 		light2.setEnable(true);
 		transGroup.addChild(light2);
 		group.addChild(transGroup);
+		group2.addChild(feetGroup);
 		universe.addBranchGraph(group); // Add group to universe
+		universe.addBranchGraph(group2);
 
 		// Mouse-Selectable objects
 		pickCanvas = new PickCanvas(canvas, group);
@@ -239,7 +264,7 @@ public class Led3D extends MouseAdapter {
 		tg.setTransform(transform);
 		tg.addChild(c);
 
-		transGroup.addChild(tg);
+		feetGroup.addChild(tg);
 	}
 
 	private void drawLedFeetHorizontal(double x, double y, double z,
@@ -260,7 +285,7 @@ public class Led3D extends MouseAdapter {
 		tg.setTransform(transform);
 		tg.addChild(c);
 
-		transGroup.addChild(tg);
+		feetGroup.addChild(tg);
 	}
 
 	/**
@@ -274,6 +299,7 @@ public class Led3D extends MouseAdapter {
 		mat.setRow(3, 0.0, 0.0, 0.0, 1.0);
 		trans3D.set(mat);
 		transGroup.setTransform(trans3D);
+		feetGroup.setTransform(trans3D);
 	}
 
 	/**
@@ -342,6 +368,7 @@ public class Led3D extends MouseAdapter {
 		toggleFullscreen();
 		trans3D.set(fullScreenMat);
 		transGroup.setTransform(trans3D);
+		feetGroup.setTransform(trans3D);
 	}
 	
 	/**
@@ -351,5 +378,6 @@ public class Led3D extends MouseAdapter {
 		toggleFullscreen();
 		trans3D.set(mat);
 		transGroup.setTransform(trans3D);
+		feetGroup.setTransform(trans3D);
 	}
 }
