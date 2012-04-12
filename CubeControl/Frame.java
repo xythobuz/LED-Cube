@@ -432,7 +432,9 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 					errorMessage("Select a Frame!");
 					return;
 				}
-				worker.getAnimation(a).getFrame(f).setName(askString("Rename", "Rename " + frameList.getSelectedValue() + "?"));
+				String newName = askString("Rename", "Rename " + frameList.getSelectedValue() + "?");
+				if (!newName.equals("")){
+					worker.getAnimation(a).getFrame(f).setName(newName);}
 				frameListModel.set(f, worker.getAnimation(a).getFrame(f).getName());
 				frameList.setModel(frameListModel);
 			}
@@ -483,7 +485,9 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 					errorMessage("Select an animation!");
 					return;
 				}
-				worker.getAnimation(a).setName(askString("Rename", "Rename " + animList.getSelectedValue() + "?"));
+				String newName = askString("Rename", "Rename " + animList.getSelectedValue() + "?");
+				if (!newName.equals("")){
+					worker.getAnimation(a).setName(newName);}
 				animListModel.set(a, worker.getAnimation(a).getName());
 				animList.setModel(animListModel);
 			}
