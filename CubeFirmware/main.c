@@ -28,12 +28,6 @@
 #define OK 0x42
 #define ERROR 0x23
 
-#ifdef DEBUG
-#define VERSION "v2 (Debug Build)\nNOT COMPATIBLE WITH CubeControl!\n"
-#else
-#define VERSION "v2 Release\n"
-#endif
-
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
@@ -48,6 +42,7 @@
 #include "mem.h"
 #include "memLayer.h"
 #include "twi.h"
+#include "strings.h"
 
 #define NOERROR 0
 // Audio does not answer
@@ -114,7 +109,7 @@ int main(void) {
 
 	i = selfTest();
 	if (i) {
-		serialWriteString("Self-Test Error: 0b");
+		serialWriteString(getString(1));
 		serialWriteString(itoa(i, buffer, 2));
 		serialWrite('\n');
 		printErrors(i);
@@ -122,8 +117,8 @@ int main(void) {
 #endif
 
 #ifdef DEBUG
-	serialWriteString("\n\nInitialized: ");
-	serialWriteString(VERSION);
+	serialWriteString(getString(2));
+	serialWriteString(getString(0));
 	serialWriteString("Took ");
 	serialWriteString(itoa(getSystemTime(), buffer, 10));
 	serialWriteString(" ms!\n");
@@ -214,13 +209,13 @@ uint8_t selfTest(void) {
 
 void printErrors(uint8_t e) {
 	if (ISERROR(e, AUDIOERROR)) {
-		serialWriteString(" => No answer from Audio!\n");
+		serialWriteString(getString(3));
 	}
 	if (ISERROR(e, MEMORYERROR)) {
-		serialWriteString(" => No answer from Memory!\n");
+		serialWriteString(getString(4));
 	}
 	if (ISERROR(e, MEMORYWRITEERROR)) {
-		serialWriteString(" => Can't write to Memory!\n");
+		serialWriteString(getString(5));
 	}
 }
 #endif
@@ -228,6 +223,7 @@ void printErrors(uint8_t e) {
 void serialHandler(char c) {
 	// Used letters:
 	// a, c, d, g, s, t, v, x
+	uint8_t i, y, z;
 #ifdef DEBUG
 	serialWrite(c);
 	serialWriteString(": ");
@@ -239,14 +235,15 @@ void serialHandler(char c) {
 		break;
 
 	case 'h': case 'H': case '?':
-		serialWriteString("(d)elete, (g)et anims, (s)et anims, (v)ersion\n");
+		serialWriteString(getString(6));
 #ifdef DEBUG
-		serialWriteString("(t)ime, (a)udio, (c)ount, (x)Custom count\n");
-		serialWriteString("(y)Set fixed animation count\n");
-		serialWriteString("S(e)lf Test\n");
-		serialWriteString("Play S(n)ake\n");
-		serialWriteString("(0): All LEDs Off\n");
-		serialWriteString("(1): All LEDs On\n");
+		serialWriteString(getString(7));
+		serialWriteString(getString(8));
+		serialWriteString(getString(9));
+		serialWriteString(getString(10));
+		serialWriteString(getString(11));
+		serialWriteString(getString(12));
+		serialWriteString(getString(13));
 #endif
 		break;
 
@@ -264,12 +261,12 @@ void serialHandler(char c) {
 		break;
 
 	case 'v': case 'V':
-		serialWriteString(VERSION);
+		serialWriteString(getString(0));
 		break;
 
 #ifdef DEBUG
 	case 't': case 'T':
-		serialWriteString("System Time: ");
+		serialWriteString(getString(14));
 		serialWriteString(ltoa(getSystemTime(), buffer, 10));
 		serialWriteString("ms");
 		if (getSystemTime() > 1000) {
@@ -296,27 +293,27 @@ void serialHandler(char c) {
 
 	case 'c': case 'C':
 		serialWriteString(itoa(getAnimationCount(), buffer, 10));
-		serialWriteString(" Frames stored\n");
+		serialWriteString(getString(15));
 		break;
 
 	case 'x': case 'X':
 		// Get byte, store as animation count
-		serialWriteString("Send a byte... ");
+		serialWriteString(getString(16));
 		while (!serialHasChar());
 		c = serialGet();
 		setAnimationCount(c);
 		serialWriteString(itoa(c, buffer, 10));
-		serialWriteString(" written!\n");
+		serialWriteString(getString(17));
 		break;
 
 	case 'y': case 'Y':
 		setAnimationCount(0x2201);
-		serialWriteString("Animation count now 8705!\n");
+		serialWriteString(getString(18));
 		break;
 
 	case 'e': case 'E':
 		c = selfTest();
-		serialWriteString("Self-Test: 0b");
+		serialWriteString(getString(19));
 		serialWriteString(itoa(c, buffer, 2));
 		serialWrite('\n');
 		printErrors(c);
@@ -327,17 +324,40 @@ void serialHandler(char c) {
 		break;
 
 	case '0':
-		fillBuffer(0x00);
+		fillBuffer(0);
 		setAnimationCount(0);
 		refreshAnimationCount = 1;
-		serialWriteString("Killed Animation Counter!\n");
+		serialWriteString(getString(20));
 		break;
 
 	case '1':
 		fillBuffer(0xFF);
 		setAnimationCount(0);
 		refreshAnimationCount = 1;
-		serialWriteString("Killed Animation Counter!\n");
+		serialWriteString(getString(20));
+		break;
+
+	case '2':
+		fillBuffer(0);
+		for (i = 0; i < 64; i++) {
+			defaultImage[i] = 0;
+		}
+		while(1) {
+			for (i = 0; i < 8; i++) {
+				for (y = 0; y < 8; y++) {
+					defaultImage[y + (i * 8)] = 0;
+					for (z = 0; z < 8; z++) {
+						defaultImage[y + (i * 8)] |= (1 << z);
+						setImage(defaultImage);
+						while (isFinished() == 0);
+					}
+					defaultImage[y + (i * 8)] = 0;
+				}
+			}
+			if (serialHasChar()) {
+				break;
+			}
+		}
 		break;
 #endif
 
@@ -353,9 +373,9 @@ void sendAudioData(void) {
 	uint8_t i;
 	uint8_t *audioData = getAudioData();
 	if (audioData == NULL) {
-		serialWriteString("Could not access device!\n");
+		serialWriteString(getString(21));
 	} else {
-		serialWriteString("Audio Data:\n");
+		serialWriteString(getString(22));
 		for (i = 0; i < 7; i++) {
 			serialWrite(i + '0');
 			serialWriteString(": ");
