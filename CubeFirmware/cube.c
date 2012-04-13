@@ -36,8 +36,8 @@
 #endif
 
 // Should be 41666
-#define FIRSTCOUNT 41666
-// Time one latch is active in ns, should be 63
+#define FIRSTCOUNT 1000
+// Time we wait for latch in ns, should be 63
 #define LATCHDELAY 63
 
 volatile uint8_t **imgBuffer = NULL; // imgBuffer[8][8]
@@ -55,7 +55,7 @@ void setImage(uint8_t *img) {
 		imgFlag = 0;
 		for (i = 0; i < 8; i++) {
 			for (j = 0; j < 8; j++) {
-				imgBuffer[i][j] = img[j + (i * 8)];
+				imgBuffer[i][j] = ~(img[j + (i * 8)]);
 			}
 		}
 	}
@@ -68,7 +68,7 @@ void fillBuffer(uint8_t val) {
 		imgFlag = 0;
 		for (i = 0; i < 8; i++) {
 			for (j = 0; j < 8; j++) {
-				imgBuffer[i][j] = val;
+				imgBuffer[i][j] = ~(val);
 			}
 		}
 	}
