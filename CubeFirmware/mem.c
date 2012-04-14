@@ -28,6 +28,7 @@
 #include "mem.h"
 #ifdef DEBUG
 #include "serial.h"
+#include "strings.h"
 #endif
 
 // address is a number between (inclusive) zero and 131071
@@ -55,8 +56,7 @@ uint8_t memGetByte(uint32_t address) {
 // Free returned memory!
 uint8_t *memGetBytes(uint32_t address, uint8_t length) {
 	// We could use the High-Speed Mode of the FM24V10 here, but we don't, right now...
-	uint8_t addA, addB, memAddress = MEMTWIADDRESS, i;
-	uint8_t *ret;
+	uint8_t addA, addB, memAddress = MEMTWIADDRESS, i, *ret;
 	if (address >= 65536) {
 		// Address needs more than 16 bits, we have to set the PAGE bit in i2c address
 		memAddress |= 2;
@@ -66,7 +66,7 @@ uint8_t *memGetBytes(uint32_t address, uint8_t length) {
 	ret = (uint8_t *)malloc(length); // Allocate memory for values read
 	if (ret == NULL) {
 #ifdef DEBUG
-		serialWriteString("memGetBytes: No memory!\n");
+		serialWriteString(getString(24));
 #endif
 		return NULL;
 	}

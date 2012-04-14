@@ -36,17 +36,37 @@
 #endif
 
 // Should be 41666
-#define FIRSTCOUNT 1000
-// Time we wait for latch in ns, should be 63
-#define LATCHDELAY 63
+#define COUNT 41666
 
-volatile uint8_t **imgBuffer = NULL; // imgBuffer[8][8]
+/*
+ * We have:
+ * Fosc / prescaler / fps / interruptsPerFrame = interruptCount
+ * 16000000 / 1 / 24 / 8 = 83333 (round-a-bout)
+ * That means, 192 Interrupts per second, 1920 after 10 secs!
+ *
+ * Small Study: Interrupt count after 10 seconds
+ *
+ * |-------------------------------|
+ * |  COUNT   |  1   | 41666 |     |
+ * |----------|------|-------|-----|
+ * | intcount | 2451 | 2451  |     |
+ * |-------------------------------|
+ *
+ * Haha, what's up with that?
+ */
+
+volatile uint8_t imgBuffer[8][8];
 volatile uint8_t changedFlag = 0;
 volatile uint8_t imgFlag = 0;
 volatile uint8_t layer = 0;
 
-inline void delay_ns(int16_t ns);
 inline void isrCall(void);
+
+volatile uint32_t timesTriggered = 0;
+
+uint32_t getTriggerCount(void) {
+	return timesTriggered;
+}
 
 void setImage(uint8_t *img) {
 	uint8_t i, j;
@@ -79,47 +99,19 @@ uint8_t isFinished(void) {
 }
 
 void initCube(void) {
-	uint8_t ctr = 0;
-
 	TCCR1A |= (1 << WGM12); // CTC Mode
 	TCCR1B |= (1 << CS10); // Prescaler: 1
-	OCR1A = FIRSTCOUNT;
+	OCR1A = COUNT;
 	TIMSK = (1 << OCIE1A); // Enable Output Compare Interrupt
-
-	// We just assume this works, because after reset,
-	// enough Memory should be available...
-	imgBuffer = malloc(8 * sizeof(uint8_t*));
-	if (imgBuffer == NULL) {
-#ifdef DEBUG
-		serialWriteString("initCube: No memory!\nHalting!");
-#endif
-		while(1);
-	}
-
-	for(ctr = 0; ctr < 8; ctr++) {
-		// Same reasoning here...
-		imgBuffer[ctr] = malloc(8 * sizeof(uint8_t));
-		if (imgBuffer[ctr] == NULL) {
-#ifdef DEBUG
-			serialWriteString("initCube: No memory!\nHalting!");
-#endif
-			while(1);
-		}
-	}
 }
 
 void close(void) {
-	uint8_t ctr = 0;
-	for (; ctr < 8; ctr++) {
-		free((uint8_t *)imgBuffer[ctr]);
-	}
-	free(imgBuffer);
 	TIMSK &= ~(1 << OCIE1A); // Disable interrupt
 }
 
-// Count to FIRSTCOUNT SECONDCOUNT times...
 ISR(TIMER1_COMPA_vect) {
 	isrCall();
+	timesTriggered++;
 }
 
 // Data is sent to 8 Fet bits...
@@ -139,7 +131,7 @@ inline void selectLatch(uint8_t latchNr) {
 inline void setLatch(uint8_t latchNr, uint8_t data) {
 	selectLatch(latchNr); // Activate current latch
 	PORTA = data; // Put latch data
-	delay_ns(LATCHDELAY); // Wait for latch
+	asm volatile("nop"::); // Wait for latch
 }
 
 inline void isrCall(void) {
@@ -150,7 +142,7 @@ inline void isrCall(void) {
 		layer = 0;
 		changedFlag = 0;
 	}
-	setFet(0);
+	// setFet(0);
 	for (; latchCtr < 8; latchCtr++) {
 		setLatch(latchCtr, imgBuffer[layer][latchCtr]); // Put out all the data
 	}
@@ -163,10 +155,4 @@ inline void isrCall(void) {
 		layer = 0;
 		imgFlag++; // Finished
 	}
-}
-
-inline void delay_ns(int16_t ns) {
-	// minimum 63 nanoseconds (= 1 tick)
-	for (;ns > 0; ns -= 63)
-		asm volatile("nop"::);
 }

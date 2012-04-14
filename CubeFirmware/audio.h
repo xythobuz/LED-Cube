@@ -23,5 +23,5 @@
 
 #define TWIADDRESSAUDIO 0x42
 
-// free returned memory!
+// don't free returned memory! It's static mem
 uint8_t *getAudioData(void);

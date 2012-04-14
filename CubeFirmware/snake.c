@@ -48,6 +48,10 @@ uint8_t pixelSet(uint8_t x, uint8_t y, uint8_t z, uint8_t *buf) {
 
 void displayBuffs(uint8_t *a, uint8_t *b) {
 	uint8_t *buf = (uint8_t *)malloc(64);
+	if (buf == NULL) {
+		serialWriteString(getString(24));
+		while(1);
+	}
 	uint8_t i;
 	for (i = 0; i < 64; i++) {
 		buf[i] = a[i] | b[i];
@@ -150,6 +154,10 @@ void clearTail(uint8_t x, uint8_t y, uint8_t z, uint8_t *buf, uint8_t wrongDir) 
 
 void snake() {
 	uint8_t *snake = (uint8_t *)malloc(64); // Snake
+	if (snake == NULL) {
+		serialWriteString(getString(24));
+		while(1);
+	}
 	uint8_t i, xPos = 3, yPos = 3, zPos = 3, dir = UP, length = 1;
 	uint8_t xCoin = 1, yCoin = 1, zCoin = 1;
 	char c;

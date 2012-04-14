@@ -53,15 +53,21 @@ char stringKillCount[] PROGMEM = "Killed Animation Counter!\n"; // 20
 char stringAccessError[] PROGMEM = "Could not access device!\n"; // 21
 char stringAudioData[] PROGMEM = "Audio Data:\n"; // 22
 char stringSnakeControl[] PROGMEM = "Controls: W A S D Q E, x to quit\n"; // 23
+char stringNoMoreHeap[] PROGMEM = "Ran out of Heap... Bye\n"; // 24
+char stringKilledAnimation[] PROGMEM = "Animation aborted!\n"; // 25
+char stringHelp9[] PROGMEM = "(i)nterrupt count\n"; // 26
 
-#define STRINGNUM 24
+// Last index + 1
+#define STRINGNUM 27
 
 PGM_P stringTable[STRINGNUM] PROGMEM = { stringVersion, stringSelfTestError, stringInit,
 								stringAudioError, stringMemError, stringMemWriteError,
 								stringHelp1, stringHelp2, stringHelp3, stringHelp4, stringHelp5,
 								stringHelp6, stringHelp7, stringHelp8, stringTime, stringFrames,
 								stringByte, stringWritten, stringCount, stringSelfTest,
-								stringKillCount, stringAccessError, stringAudioData, stringSnakeControl };
+								stringKillCount, stringAccessError, stringAudioData,
+								stringSnakeControl, stringNoMoreHeap, stringKilledAnimation,
+								stringHelp9 };
 
 char stringNotFoundError[] PROGMEM = "String not found!\n";
 

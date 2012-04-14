@@ -65,6 +65,7 @@ void visualizeAudioData(uint8_t *audioData, uint8_t *imageData);
 #ifdef DEBUG
 void printErrors(uint8_t e);
 uint8_t selfTest(void);
+void printTime(void);
 
 #include "snake.c"
 #endif
@@ -88,6 +89,7 @@ int main(void) {
 	uint8_t i, length = 0, lastMode;
 	uint16_t count;
 	uint64_t lastChecked;
+	uint8_t DebugDone = 0; // Bit 0: 10s int. count, Bit 1: switch idle display
 
 	initCube();
 	serialInit(25, 8, NONE, 1);
@@ -136,10 +138,15 @@ int main(void) {
 				audioData = getAudioData();
 				if (audioData != NULL) {
 					imageData = (uint8_t *)malloc(64);
+					if (imageData == NULL) {
+#ifdef DEBUG
+						serialWriteString(getString(24));
+#endif
+						while(1);
+					}
 					visualizeAudioData(audioData, imageData);
 					setImage(imageData);
 					free(imageData);
-					free(audioData);
 				}
 			}
 		} else {
@@ -164,11 +171,29 @@ int main(void) {
 					setImage(imageData);
 					free(imageData);
 				}
+			} else {
+				if (isFinished() >= 12) {
+					// Should happen every half second
+					if (DebugDone & 2) {
+						fillBuffer(0);
+						DebugDone &= ~(2);
+					} else {
+						fillBuffer(0xFF);
+						DebugDone |= 2;
+					}
+				}
 			}
 		}
 
 		if (serialHasChar()) {
 			serialHandler((char)(serialGet()));
+		}
+
+		if ((getSystemTime() >= 10000) && ((DebugDone & 1) == 0)) {
+			printTime();
+			serialWriteString(ltoa(getTriggerCount(), buffer, 10));
+			serialWrite('\n');
+			DebugDone |= 1;
 		}
 
 		if ((getSystemTime() - lastChecked) > 150) {
@@ -222,7 +247,7 @@ void printErrors(uint8_t e) {
 
 void serialHandler(char c) {
 	// Used letters:
-	// a, c, d, g, s, t, v, x
+	// a, c, d, e, g, n, s, t, v, x, 0, 1, 2
 	uint8_t i, y, z;
 #ifdef DEBUG
 	serialWrite(c);
@@ -244,6 +269,7 @@ void serialHandler(char c) {
 		serialWriteString(getString(11));
 		serialWriteString(getString(12));
 		serialWriteString(getString(13));
+		serialWriteString(getString(26));
 #endif
 		break;
 
@@ -266,25 +292,7 @@ void serialHandler(char c) {
 
 #ifdef DEBUG
 	case 't': case 'T':
-		serialWriteString(getString(14));
-		serialWriteString(ltoa(getSystemTime(), buffer, 10));
-		serialWriteString("ms");
-		if (getSystemTime() > 1000) {
-			serialWriteString(" (");
-			serialWriteString(itoa(getSystemTime() / 1000, buffer, 10));
-			itoa(getSystemTime() % 1000, buffer, 10);
-			if (buffer[0] != '\0')
-				serialWrite('.');
-			if (buffer[2] == '\0') 
-				serialWrite('0');
-			if (buffer[1] == '\0')
-				serialWrite('0');
-			if (buffer[0] != '\0')
-				serialWriteString(buffer);
-			serialWriteString("s)\n");
-		} else {
-			serialWrite('\n');
-		}
+		printTime();
 		break;
 
 	case 'a': case 'A':
@@ -349,15 +357,26 @@ void serialHandler(char c) {
 					for (z = 0; z < 8; z++) {
 						defaultImage[y + (i * 8)] |= (1 << z);
 						setImage(defaultImage);
-						while (isFinished() == 0);
+						while (isFinished() == 0) {
+							if (serialHasChar()) {
+								goto killMeForIt; // Yes I know...
+								// But I need to break out of 2 while Loops...
+							}
+						}
 					}
 					defaultImage[y + (i * 8)] = 0;
 				}
 			}
-			if (serialHasChar()) {
-				break;
-			}
 		}
+		break;
+killMeForIt:
+		serialGet();
+		serialWriteString(getString(25));
+		break;
+
+	case 'I': case 'i':
+		serialWriteString(ltoa(getTriggerCount(), buffer, 10));
+		serialWrite('\n');
 		break;
 #endif
 
@@ -369,6 +388,28 @@ void serialHandler(char c) {
 }
 
 #ifdef DEBUG
+void printTime(void) {
+	serialWriteString(getString(14));
+	serialWriteString(ltoa(getSystemTime(), buffer, 10));
+	serialWriteString("ms");
+	if (getSystemTime() > 1000) {
+		serialWriteString(" (");
+		serialWriteString(itoa(getSystemTime() / 1000, buffer, 10));
+		itoa(getSystemTime() % 1000, buffer, 10);
+		if (buffer[0] != '\0')
+			serialWrite('.');
+		if (buffer[2] == '\0') 
+			serialWrite('0');
+		if (buffer[1] == '\0')
+			serialWrite('0');
+		if (buffer[0] != '\0')
+			serialWriteString(buffer);
+		serialWriteString("s)\n");
+	} else {
+		serialWrite('\n');
+	}
+}
+
 void sendAudioData(void) {
 	uint8_t i;
 	uint8_t *audioData = getAudioData();
@@ -383,7 +424,6 @@ void sendAudioData(void) {
 			serialWriteString(buffer);
 			serialWrite('\n');
 		}
-		free(audioData);
 	}
 }
 #endif
