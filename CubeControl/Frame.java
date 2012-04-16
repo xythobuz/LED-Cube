@@ -601,17 +601,19 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 				} else {
 					for (int i = 0; i < frameList.getModel().getSize(); i++){
 						frameList.setSelectedIndex(i);
-						short time1 = worker.getAnimation(animList.getSelectedIndex()).getFrame(frameList.getSelectedIndex()).getTime();
-						long time = (long) (((time1+1) * 1/24) * 1000);
+						long time1 = (long) worker.getAnimation(animList.getSelectedIndex()).getFrame(frameList.getSelectedIndex()).getTime();
+						long time = (long) (((time1+1) * 1000) / 24);
+						System.out.println("Wert: " + time1 + " Zeit: " + time);
 						try {
 							Thread.sleep(time);
-						} catch(Exception e) {
+						} catch (Exception e) {
 							System.out.println(e);
 						}
 					} 
 				}
 			}
 		});
+	
 	
 		frameDuration.setBounds(462, 129, 65, 20);
 		frameDuration.setText("Save");
