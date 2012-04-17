@@ -56,9 +56,10 @@ char stringSnakeControl[] PROGMEM = "Controls: W A S D Q E, x to quit\n"; // 23
 char stringNoMoreHeap[] PROGMEM = "Ran out of Heap... Bye\n"; // 24
 char stringKilledAnimation[] PROGMEM = "Animation aborted!\n"; // 25
 char stringHelp9[] PROGMEM = "(i)nterrupt count\n"; // 26
+char stringTimerOverflow[] PROGMEM = "Cube Timer Overflowed (now !)\n"; // 27
 
 // Last index + 1
-#define STRINGNUM 27
+#define STRINGNUM 28
 
 PGM_P stringTable[STRINGNUM] PROGMEM = { stringVersion, stringSelfTestError, stringInit,
 								stringAudioError, stringMemError, stringMemWriteError,
@@ -67,7 +68,7 @@ PGM_P stringTable[STRINGNUM] PROGMEM = { stringVersion, stringSelfTestError, str
 								stringByte, stringWritten, stringCount, stringSelfTest,
 								stringKillCount, stringAccessError, stringAudioData,
 								stringSnakeControl, stringNoMoreHeap, stringKilledAnimation,
-								stringHelp9 };
+								stringHelp9, stringTimerOverflow };
 
 char stringNotFoundError[] PROGMEM = "String not found!\n";
 

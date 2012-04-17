@@ -28,6 +28,7 @@
 
 #ifdef DEBUG
 #include "serial.h"
+#include "strings.h"
 #endif
 #include "cube.h"
 
@@ -63,6 +64,7 @@ volatile uint8_t layer = 0;
 inline void isrCall(void);
 
 volatile uint32_t timesTriggered = 0;
+volatile uint8_t warningDisplayed = 0;
 
 uint32_t getTriggerCount(void) {
 	return timesTriggered;
@@ -99,8 +101,7 @@ uint8_t isFinished(void) {
 }
 
 void initCube(void) {
-	TCCR1A |= (1 << WGM12); // CTC Mode
-	TCCR1B |= (1 << CS10); // Prescaler: 1
+	TCCR1B |= (1 << CS10) | (1 << WGM12); // Prescaler: 1, CTC Mode
 	OCR1A = COUNT;
 	TIMSK = (1 << OCIE1A); // Enable Output Compare Interrupt
 }
@@ -112,6 +113,17 @@ void close(void) {
 ISR(TIMER1_COMPA_vect) {
 	isrCall();
 	timesTriggered++;
+#ifdef DEBUG
+	if (TIFR & TOV1) {
+		if (warningDisplayed) {
+			serialWrite('!');
+		} else {
+			serialWriteString(getString(27));
+			warningDisplayed++;
+		}
+		TIFR |= (1 << TOV1); // Clear flag
+	}
+#endif
 }
 
 // Data is sent to 8 Fet bits...
@@ -142,7 +154,7 @@ inline void isrCall(void) {
 		layer = 0;
 		changedFlag = 0;
 	}
-	// setFet(0);
+	setFet(0);
 	for (; latchCtr < 8; latchCtr++) {
 		setLatch(latchCtr, imgBuffer[layer][latchCtr]); // Put out all the data
 	}

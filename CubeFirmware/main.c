@@ -189,7 +189,7 @@ int main(void) {
 			serialHandler((char)(serialGet()));
 		}
 
-		if ((getSystemTime() >= 10000) && ((DebugDone & 1) == 0)) {
+		if ((getSystemTime() >= 1000) && ((DebugDone & 1) == 0)) {
 			printTime();
 			serialWriteString(ltoa(getTriggerCount(), buffer, 10));
 			serialWrite('\n');
