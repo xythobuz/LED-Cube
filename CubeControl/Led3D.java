@@ -183,18 +183,19 @@ public class Led3D extends MouseAdapter {
 			}
 		}
 
-		drawLedFeetVertical(0, 0, 0, 10, 0.01f); //
-		drawLedFeetHorizontal(0, 0, 0, 10, 0.01f, 0); // x, y, and z axis
+		drawLedFeetVertical(5, 5, -5, 50, 0.02f); //
+		drawLedFeetHorizontal(5, 5, -5, 50, 0.02f, 0); // x, y, and z axis
+		drawLedFeetHorizontal(5, 5, -5, 50, 0.02f, 90);
 
 		Appearance c = new Appearance();
 		c.setMaterial(redMat);
 		c.setColoringAttributes(redColor);
 
 
-		Sphere center = new Sphere(0.04f, Sphere.ENABLE_APPEARANCE_MODIFY, c);
+		Sphere center = new Sphere(0.05f, Sphere.ENABLE_APPEARANCE_MODIFY, c);
 		TransformGroup tg = new TransformGroup();
 		Transform3D transform = new Transform3D();
-		Vector3f vector = new Vector3f(0, 0, 0);
+		Vector3f vector = new Vector3f(5, 5, -5);
 		transform.setTranslation(vector);
 		tg.setTransform(transform);
 		tg.addChild(center);
