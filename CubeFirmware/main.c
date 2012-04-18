@@ -54,6 +54,9 @@
 // x = errorcode, e = error definition, not NOERROR
 #define ISERROR(x, e) ((x) & (e))
 
+// Length of an idle animation frame, 24 -> 1 second
+#define IDLELENGTH 24
+
 void serialHandler(char c);
 void sendAudioData(void);
 void recieveAnimations(void);
@@ -83,13 +86,16 @@ uint8_t defaultImage[64] = 	{	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 								0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 								0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
 
+uint8_t DebugDone = 0; // Bit 0: 10s int. count, Bit 1: switch idle display
+					   // Bit 2: state changed, disable idle
+
 int main(void) {
 	uint8_t *audioData = NULL;
 	uint8_t *imageData = NULL;
 	uint8_t i, length = 0, lastMode;
 	uint16_t count;
 	uint64_t lastChecked;
-	uint8_t DebugDone = 0; // Bit 0: 10s int. count, Bit 1: switch idle display
+	uint32_t temp;
 
 	initCube();
 	serialInit(25, 8, NONE, 1);
@@ -172,14 +178,16 @@ int main(void) {
 					free(imageData);
 				}
 			} else {
-				if (isFinished() >= 12) {
-					// Should happen every half second
-					if (DebugDone & 2) {
-						fillBuffer(0);
-						DebugDone &= ~(2);
-					} else {
-						fillBuffer(0xFF);
-						DebugDone |= 2;
+				if (!(DebugDone & 4)) {
+					if (isFinished() >= IDLELENGTH) {
+						// Should happen every half second
+						if (DebugDone & 2) {
+							fillBuffer(0);
+							DebugDone &= ~(2);
+						} else {
+							fillBuffer(0xFF);
+							DebugDone |= 2;
+						}
 					}
 				}
 			}
@@ -190,9 +198,11 @@ int main(void) {
 		}
 
 		if ((getSystemTime() >= 1000) && ((DebugDone & 1) == 0)) {
-			printTime();
-			serialWriteString(ltoa(getTriggerCount(), buffer, 10));
-			serialWrite('\n');
+			temp = getTriggerCount();
+			serialWriteString(ltoa(temp, buffer, 10));
+			serialWriteString(getString(27));
+			serialWriteString(ltoa((temp / 8), buffer, 10));
+			serialWriteString(getString(28));
 			DebugDone |= 1;
 		}
 
@@ -275,9 +285,15 @@ void serialHandler(char c) {
 
 	case 'd': case 'D':
 		clearMem();
+#ifndef DEBUG
 		serialWrite(OK);
+#endif
+#ifdef DEBUG
+		serialWriteString(getString(29));
+#endif
 		break;
 
+#ifndef DEBUG
 	case 'g': case 'G':
 		transmitAnimations();
 		break;
@@ -285,6 +301,7 @@ void serialHandler(char c) {
 	case 's': case 'S':
 		recieveAnimations();
 		break;
+#endif
 
 	case 'v': case 'V':
 		serialWriteString(getString(0));
@@ -336,6 +353,7 @@ void serialHandler(char c) {
 		setAnimationCount(0);
 		refreshAnimationCount = 1;
 		serialWriteString(getString(20));
+		DebugDone |= 4;
 		break;
 
 	case '1':
@@ -343,9 +361,11 @@ void serialHandler(char c) {
 		setAnimationCount(0);
 		refreshAnimationCount = 1;
 		serialWriteString(getString(20));
+		DebugDone |= 4;
 		break;
 
 	case '2':
+		DebugDone |= 4;
 		fillBuffer(0);
 		for (i = 0; i < 64; i++) {
 			defaultImage[i] = 0;

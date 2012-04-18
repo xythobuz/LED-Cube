@@ -36,35 +36,43 @@
 #define F_CPU 16000000L
 #endif
 
-// Should be 41666
-#define COUNT 41666
-
 /*
- * We have:
- * Fosc / prescaler / fps / interruptsPerFrame = interruptCount
- * 16000000 / 1 / 24 / 8 = 83333 (round-a-bout)
- * That means, 192 Interrupts per second, 1920 after 10 secs!
+ * 24 fps, 8 layers => 192 Interrupts per second
+ * We are at 16MHz, so we count to:
+ * 16000000 / 192 = 83333,33...
+ * We can only count to 2^16, therefore we have a second counter
+ * COUNT * (COUNT2 + 1) = Realcount
+ * 41666 * 2 = 83332
+ * This is flickering really hard.
  *
- * Small Study: Interrupt count after 10 seconds
- *
- * |-------------------------------|
- * |  COUNT   |  1   | 41666 |     |
- * |----------|------|-------|-----|
- * | intcount | 2451 | 2451  |     |
- * |-------------------------------|
- *
- * Haha, what's up with that?
+ * COUNT2 set to 0 on the other hand, thus producing 48fps,
+ * works flicker-free. Now we just return imgFlag / 2 as isFinished(),
+ * so we still fake 24fps for the main program...
  */
+
+#define COUNT 41666
+#define COUNT2 0
 
 volatile uint8_t imgBuffer[8][8];
 volatile uint8_t changedFlag = 0;
 volatile uint8_t imgFlag = 0;
 volatile uint8_t layer = 0;
+volatile uint8_t toggleFlag = 0;
 
 inline void isrCall(void);
 
 volatile uint32_t timesTriggered = 0;
 volatile uint8_t warningDisplayed = 0;
+
+ISR(TIMER1_COMPA_vect) {
+	if (toggleFlag >= COUNT2) {
+		isrCall();
+		toggleFlag = 0;
+		timesTriggered++;
+	} else {
+		toggleFlag++;
+	}
+}
 
 uint32_t getTriggerCount(void) {
 	return timesTriggered;
@@ -97,7 +105,7 @@ void fillBuffer(uint8_t val) {
 }
 
 uint8_t isFinished(void) {
-	return imgFlag;
+	return (imgFlag / 2);
 }
 
 void initCube(void) {
@@ -108,22 +116,6 @@ void initCube(void) {
 
 void close(void) {
 	TIMSK &= ~(1 << OCIE1A); // Disable interrupt
-}
-
-ISR(TIMER1_COMPA_vect) {
-	isrCall();
-	timesTriggered++;
-#ifdef DEBUG
-	if (TIFR & TOV1) {
-		if (warningDisplayed) {
-			serialWrite('!');
-		} else {
-			serialWriteString(getString(27));
-			warningDisplayed++;
-		}
-		TIFR |= (1 << TOV1); // Clear flag
-	}
-#endif
 }
 
 // Data is sent to 8 Fet bits...
