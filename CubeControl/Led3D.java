@@ -51,6 +51,7 @@ public class Led3D extends MouseAdapter {
 	private Matrix4d fullScreenMat = null;
 	private Frame parentFrame = null;
 	private boolean inFullscreen = false;
+	private boolean showLegs = true;
 
 	private Sphere[][][] leds = new Sphere[8][8][8];
 	private static ColoringAttributes redColor = new ColoringAttributes(
@@ -64,6 +65,16 @@ public class Led3D extends MouseAdapter {
 			new Color3f(1.0f, 0.0f, 0.0f), new Color3f(1.0f, 0.0f, 0.0f),
 			new Color3f(1.0f, 0.0f, 0.0f), new Color3f(1.0f, 0.0f, 0.0f), 64.0f);
 	private Background background;
+
+	
+	public void toggleLegs(){
+		if(showLegs){
+			group2.detach();
+		} else {
+			universe.addBranchGraph(group2);
+		}
+		showLegs = !showLegs;
+	}
 
 	/**
 	 * @param canv The Canvas3D we render our cube in

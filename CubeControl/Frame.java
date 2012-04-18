@@ -45,6 +45,7 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 	private JButton editG = new JButton();
 	private JButton editH = new JButton();
 	private JButton[] editButtons = { editA, editB, editC, editD, editE, editF, editG, editH };
+	private JButton toggleLegsButton = new JButton();
 	private DefaultListModel frameListModel = new DefaultListModel();
 	public JList frameList = new JList();
 	private JScrollPane frameListScrollPane = new JScrollPane(frameList);
@@ -90,8 +91,18 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 	private int lastSelectedAnim = 0;
 	public cubeWorker worker = new cubeWorker(this);
 	private boolean fileSelected = false;
+	private boolean showLegs = true;
 	private Frame thisFrame;
 	private static Frame recentFrame;
+
+	private void toggleLegs(){
+		ledView.toggleLegs();
+		if(showLegs) {
+			toggleLegsButton.setText("Beine aus");
+		} else {
+			toggleLegsButton.setText("Beine ein");
+		}
+	}
 
 	private int saveExitDialog() {
 		String[] Optionen = { "Yes", "No" };
@@ -266,6 +277,26 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		}
 	}
 
+	private void playAnimation() {
+		if (animList.getSelectedIndex() == -1) {
+					errorMessage("Please select an animation.");
+				} else if (frameList.getSelectedIndex() == -1) {
+					errorMessage("Please select a Frame.");
+				} else {
+					for (int i = 0; i < frameList.getModel().getSize(); i++){
+						frameList.setSelectedIndex(i);
+						long time1 = (long) worker.getAnimation(animList.getSelectedIndex()).getFrame(frameList.getSelectedIndex()).getTime();
+						long time = (long) (((time1+1) * 1000) / 24);
+						System.out.println("Wert: " + time1 + " Zeit: " + time);
+						try {
+							Thread.sleep(time);
+						} catch (Exception e) {
+							System.out.println(e);
+						}
+				} 
+		}
+	}
+
 	public Frame(String title) {
 		super(title);
 		thisFrame = this;
@@ -335,6 +366,15 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 				}
 			});
 		}
+
+		toggleLegsButton.setBounds(299, 312, 102, 34);
+		toggleLegsButton.setText("Beine aus");
+		cp.add(toggleLegsButton);
+		toggleLegsButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent evt){
+				toggleLegs();
+			}
+		});
 
 		// Add Frame List
 		frameListScrollPane.setBounds(339, 379, 187, 218);
@@ -568,23 +608,7 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		cp.add(playAnimation);
 		playAnimation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt){
-				if (animList.getSelectedIndex() == -1) {
-					errorMessage("Please select an animation.");
-				} else if (frameList.getSelectedIndex() == -1) {
-					errorMessage("Please select a Frame.");
-				} else {
-					for (int i = 0; i < frameList.getModel().getSize(); i++){
-						frameList.setSelectedIndex(i);
-						long time1 = (long) worker.getAnimation(animList.getSelectedIndex()).getFrame(frameList.getSelectedIndex()).getTime();
-						long time = (long) (((time1+1) * 1000) / 24);
-						System.out.println("Wert: " + time1 + " Zeit: " + time);
-						try {
-							Thread.sleep(time);
-						} catch (Exception e) {
-							System.out.println(e);
-						}
-					} 
-				}
+				playAnimation();
 			}
 		});
 	
@@ -594,23 +618,7 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		cp.add(playAnimationFullscreen);
 		playAnimationFullscreen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt){
-				if (animList.getSelectedIndex() == -1) {
-					errorMessage("Please select an animation.");
-				} else if (frameList.getSelectedIndex() == -1) {
-					errorMessage("Please select a Frame.");
-				} else {
-					for (int i = 0; i < frameList.getModel().getSize(); i++){
-						frameList.setSelectedIndex(i);
-						long time1 = (long) worker.getAnimation(animList.getSelectedIndex()).getFrame(frameList.getSelectedIndex()).getTime();
-						long time = (long) (((time1+1) * 1000) / 24);
-						System.out.println("Wert: " + time1 + " Zeit: " + time);
-						try {
-							Thread.sleep(time);
-						} catch (Exception e) {
-							System.out.println(e);
-						}
-					} 
-				}
+				playAnimation();
 			}
 		});
 	
@@ -835,6 +843,9 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 
 				if (s.equals("r") || s.equals("reset"))
 					l.resetView();
+
+				if (s.equals("l"))
+					f.toggleLegs();
 		
 				if (s.equals("on") || s.equals("1")) {
 					short[] d = new short[64];
