@@ -98,10 +98,11 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 	private void toggleLegs(){
 		ledView.toggleLegs();
 		if(showLegs) {
-			toggleLegsButton.setText("Beine aus");
+			toggleLegsButton.setText("Show legs");
 		} else {
-			toggleLegsButton.setText("Beine ein");
+			toggleLegsButton.setText("Hide legs");
 		}
+		showLegs = !showLegs;
 	}
 
 	private int saveExitDialog() {
@@ -368,7 +369,7 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		}
 
 		toggleLegsButton.setBounds(299, 312, 102, 34);
-		toggleLegsButton.setText("Beine aus");
+		toggleLegsButton.setText("Hide legs");
 		cp.add(toggleLegsButton);
 		toggleLegsButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt){
