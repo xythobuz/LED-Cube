@@ -46,6 +46,7 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 	private JButton editH = new JButton();
 	private JButton[] editButtons = { editA, editB, editC, editD, editE, editF, editG, editH };
 	private JButton toggleLegsButton = new JButton();
+	private JButton toggleLegsButtonFullscreen = new JButton();
 	private DefaultListModel frameListModel = new DefaultListModel();
 	public JList frameList = new JList();
 	private JScrollPane frameListScrollPane = new JScrollPane(frameList);
@@ -99,8 +100,10 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		ledView.toggleLegs();
 		if(showLegs) {
 			toggleLegsButton.setText("Show legs");
+			toggleLegsButtonFullscreen.setText("Show legs");
 		} else {
 			toggleLegsButton.setText("Hide legs");
+			toggleLegsButtonFullscreen.setText("Hide legs");
 		}
 		showLegs = !showLegs;
 	}
@@ -583,6 +586,7 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 				int h = Toolkit.getDefaultToolkit().getScreenSize().height;
 				setSize(w - 5, h - 30);
 				playAnimationFullscreen.setVisible(true);
+				toggleLegsButtonFullscreen.setVisible(true);
 				cubeCanvas.setBounds(0, 0, w - 5, h - 80);
 			}
 		});
@@ -593,6 +597,7 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		exitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				playAnimationFullscreen.setVisible(false);
+				toggleLegsButtonFullscreen.setVisible(false);
 				setLocation(0,0);
 				setSize(672, 656);
 				ledView.leaveFullscreen();
@@ -622,6 +627,17 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 				playAnimation();
 			}
 		});
+
+		toggleLegsButtonFullscreen.setBounds(Toolkit.getDefaultToolkit().getScreenSize().width-470, Toolkit.getDefaultToolkit().getScreenSize().height-80, 150, 25);
+		toggleLegsButtonFullscreen.setText("Hide legs");
+		toggleLegsButtonFullscreen.setVisible(false);
+		cp.add(toggleLegsButtonFullscreen);
+		toggleLegsButtonFullscreen.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent evt){
+				toggleLegs();
+			}
+		});
+
 	
 	
 		frameDuration.setBounds(462, 129, 65, 20);
