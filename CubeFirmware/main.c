@@ -253,11 +253,39 @@ void printErrors(uint8_t e) {
 		serialWriteString(getString(5));
 	}
 }
+
+void randomAnimation(void) {
+	uint8_t *b = (uint8_t *)malloc(64);
+	uint8_t x, y, z;
+	if (b == NULL) {
+		serialWriteString(getString(24));
+		return;
+	}
+	for (x = 0; x < 64; x++) {
+		b[x] = 0;
+	}
+	while(1) {
+		setImage(b);
+		while(isFinished() == 0);
+		x = rand() / 4096;
+		y = rand() / 4096;
+		z = rand() / 4096;
+		b[x + (8 * y)] ^= (1 << z);
+
+		if (serialHasChar()) {
+			serialWriteString(getString(25));
+			free(b);
+			serialHandler(serialGet());
+			return;
+		}
+	}
+	free(b);
+}
 #endif
 
 void serialHandler(char c) {
 	// Used letters:
-	// a, c, d, e, g, n, s, t, v, x, 0, 1, 2
+	// a, c, d, e, g, i, n, r, s, t, v, x, y, 0, 1, 2
 	uint8_t i, y, z;
 #ifdef DEBUG
 	serialWrite(c);
@@ -308,6 +336,10 @@ void serialHandler(char c) {
 		break;
 
 #ifdef DEBUG
+	case 'r': case 'R':
+		randomAnimation();
+		break;
+
 	case 't': case 'T':
 		printTime();
 		break;
@@ -350,17 +382,11 @@ void serialHandler(char c) {
 
 	case '0':
 		fillBuffer(0);
-		setAnimationCount(0);
-		refreshAnimationCount = 1;
-		serialWriteString(getString(20));
 		DebugDone |= 4;
 		break;
 
 	case '1':
 		fillBuffer(0xFF);
-		setAnimationCount(0);
-		refreshAnimationCount = 1;
-		serialWriteString(getString(20));
 		DebugDone |= 4;
 		break;
 

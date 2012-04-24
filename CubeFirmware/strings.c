@@ -27,7 +27,7 @@ char buffer[60];
 #ifdef DEBUG
 char stringVersion[] PROGMEM = "v2 (Debug Build)\nNOT COMPATIBLE WITH CubeControl!\n"; // 0
 #else
-char stringVersion[] PROGMEM = "v2 Release\n" // 0
+char stringVersion[] PROGMEM = "v2 Release\n"; // 0
 #endif
 
 char stringInit[] PROGMEM = "\n\nInitialized: "; // 1
@@ -53,9 +53,9 @@ char stringKillCount[] PROGMEM = "Killed Animation Counter!\n"; // 20
 char stringAccessError[] PROGMEM = "Could not access device!\n"; // 21
 char stringAudioData[] PROGMEM = "Audio Data:\n"; // 22
 char stringSnakeControl[] PROGMEM = "Controls: W A S D Q E, x to quit\n"; // 23
-char stringNoMoreHeap[] PROGMEM = "Ran out of Heap... Bye\n"; // 24
+char stringNoMoreHeap[] PROGMEM = "Ran out of Heap!\n"; // 24
 char stringKilledAnimation[] PROGMEM = "Animation aborted!\n"; // 25
-char stringHelp9[] PROGMEM = "(i)nterrupt count\n"; // 26
+char stringHelp9[] PROGMEM = "(i)nterrupt count, (r)andom\n"; // 26
 char stringInterrupts[] PROGMEM = " Interrupts after 1000msec\n"; // 27
 char stringFrames2[] PROGMEM = " Frames per Second\n"; // 28
 char stringDeleted[] PROGMEM = "Memory deleted!\n"; // 29

@@ -288,8 +288,8 @@ end:
 
 
 # Display size of file.
-HEXSIZE = $(SIZE) --target=$(FORMAT) $(TARGET).hex
-ELFSIZE = $(SIZE) -A $(TARGET).elf
+HEXSIZE = $(SIZE)  --mcu=$(MCU) --target=$(FORMAT) $(TARGET).hex
+ELFSIZE = $(SIZE)  --mcu=$(MCU) -C $(TARGET).elf
 sizebefore:
 	@if [ -f $(TARGET).elf ]; then echo; echo $(MSG_SIZE_BEFORE); $(ELFSIZE); echo; fi
 
