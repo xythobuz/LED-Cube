@@ -65,6 +65,7 @@ public class Led3D extends MouseAdapter {
 			new Color3f(1.0f, 0.0f, 0.0f), new Color3f(1.0f, 0.0f, 0.0f),
 			new Color3f(1.0f, 0.0f, 0.0f), new Color3f(1.0f, 0.0f, 0.0f), 64.0f);
 	private Background background;
+	private	Appearance feetApp = new Appearance();
 
 	
 	public void toggleLegs(){
@@ -72,6 +73,10 @@ public class Led3D extends MouseAdapter {
 			group2.detach();
 		} else {
 			universe.addBranchGraph(group2);
+			Transform3D t = new Transform3D();
+			transGroup.getTransform(t);
+			feetGroup.setTransform(t);
+
 		}
 		showLegs = !showLegs;
 	}
@@ -265,7 +270,7 @@ public class Led3D extends MouseAdapter {
 	private void drawLedFeetVertical(double x, double y, double z,
 			float length, float rad) {
 		// draw Feet going down
-		Appearance feetApp = new Appearance();
+		
 		feetApp.setMaterial(whiteMat);
 		feetApp.setColoringAttributes(whiteColor);
 		Cylinder c = new Cylinder(rad, length, feetApp);
@@ -283,7 +288,7 @@ public class Led3D extends MouseAdapter {
 	private void drawLedFeetHorizontal(double x, double y, double z,
 			float length, float rad, int deg) {
 		// draw Feet going down
-		Appearance feetApp = new Appearance();
+	
 		feetApp.setMaterial(whiteMat);
 		feetApp.setColoringAttributes(whiteColor);
 		Cylinder c = new Cylinder(rad, length, feetApp);
