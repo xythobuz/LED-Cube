@@ -34,6 +34,7 @@
 #include <avr/pgmspace.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <avr/wdt.h>
 
 #include "serial.h"
 #include "cube.h"
@@ -73,8 +74,10 @@ void printTime(void);
 #include "snake.c"
 #endif
 
+uint8_t shouldRestart = 0;
 uint8_t refreshAnimationCount = 1;
 uint8_t lastButtonState = 0;
+uint8_t mcusr_mirror;
 char buffer[11];
 
 uint8_t defaultImage[64] = 	{	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -97,11 +100,17 @@ int main(void) {
 	uint64_t lastChecked;
 	uint32_t temp;
 
+	mcusr_mirror = MCUCSR;
+	MCUCSR = 0;
+	wdt_disable();
+
 	initCube();
 	serialInit(25, 8, NONE, 1);
 	i2c_init();
 	initSystemTimer();
 	sei(); // Enable Interrupts
+
+	wdt_enable(WDTO_500MS); // Enable watchdog reset after 500ms
 
 	DDRD = 0xFC; // Mosfets as Output
 	DDRB = 0xFE;
@@ -122,14 +131,26 @@ int main(void) {
 		serialWrite('\n');
 		printErrors(i);
 	}
-#endif
 
-#ifdef DEBUG
 	serialWriteString(getString(2));
 	serialWriteString(getString(0));
 	serialWriteString("Took ");
 	serialWriteString(itoa(getSystemTime(), buffer, 10));
 	serialWriteString(" ms!\n");
+
+	if (mcusr_mirror & WDRF) {
+		serialWriteString(getString(31));
+	} else if (mcusr_mirror & BORF) {
+		serialWriteString(getString(32));
+	} else if (mcusr_mirror & EXTRF) {
+		serialWriteString(getString(34));
+	} else if (mcusr_mirror & JTRF) {
+		serialWriteString(getString(35));
+	} else if (mcusr_mirror & PORF) {
+		serialWriteString(getString(36));
+	} else {
+		serialWriteString(getString(33));
+	}
 #endif
 
 	lastMode = audioModeSelected();
@@ -138,6 +159,11 @@ int main(void) {
 	i = 0;
 	count = getAnimationCount();
 	while (1) {
+		// Reset if requested
+		if (!shouldRestart) {
+			wdt_reset();
+		}
+
 		if(lastMode) {
 			// Get Audio Data and visualize it
 			if (isFinished()) {
@@ -197,6 +223,8 @@ int main(void) {
 			serialHandler((char)(serialGet()));
 		}
 
+#ifdef DEBUG
+		// Print frames per second
 		if ((getSystemTime() >= 1000) && ((DebugDone & 1) == 0)) {
 			temp = getTriggerCount();
 			serialWriteString(ltoa(temp, buffer, 10));
@@ -205,6 +233,13 @@ int main(void) {
 			serialWriteString(getString(28));
 			DebugDone |= 1;
 		}
+
+		// Show how stable we are running :)
+		if (((getSystemTime() % 60000) == 0) && (getSystemTime() > 0)) {
+			serialWriteString(getString(37));
+			printTime();
+		}
+#endif
 
 		if ((getSystemTime() - lastChecked) > 150) {
 			lastMode = audioModeSelected();
@@ -285,7 +320,7 @@ void randomAnimation(void) {
 
 void serialHandler(char c) {
 	// Used letters:
-	// a, c, d, e, g, i, n, r, s, t, v, x, y, 0, 1, 2
+	// a, c, d, e, g, i, n, q, r, s, t, v, x, y, 0, 1, 2
 	uint8_t i, y, z;
 #ifdef DEBUG
 	serialWrite(c);
@@ -336,6 +371,11 @@ void serialHandler(char c) {
 		break;
 
 #ifdef DEBUG
+	case 'q': case 'Q':
+		shouldRestart = 1;
+		serialWriteString(getString(30));
+		break;
+
 	case 'r': case 'R':
 		randomAnimation();
 		break;
@@ -438,6 +478,11 @@ void printTime(void) {
 	serialWriteString(getString(14));
 	serialWriteString(ltoa(getSystemTime(), buffer, 10));
 	serialWriteString("ms");
+	if (getSystemTime() > 60000) {
+		serialWriteString(" (");
+		serialWriteString(itoa(getSystemTime() / 60000, buffer, 10));
+		serialWriteString(" min)");
+	}
 	if (getSystemTime() > 1000) {
 		serialWriteString(" (");
 		serialWriteString(itoa(getSystemTime() / 1000, buffer, 10));

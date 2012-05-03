@@ -30,7 +30,7 @@ char stringVersion[] PROGMEM = "v2 (Debug Build)\nNOT COMPATIBLE WITH CubeContro
 char stringVersion[] PROGMEM = "v2 Release\n"; // 0
 #endif
 
-char stringInit[] PROGMEM = "\n\nInitialized: "; // 1
+char stringInit[] PROGMEM = "\nInitialized: "; // 1
 char stringSelfTestError[] PROGMEM = "Self-Test Error: 0b"; // 2
 char stringAudioError[] PROGMEM = " => No answer from Audio!\n"; // 3
 char stringMemError[] PROGMEM = " => No answer from Memory!\n"; // 4
@@ -55,13 +55,21 @@ char stringAudioData[] PROGMEM = "Audio Data:\n"; // 22
 char stringSnakeControl[] PROGMEM = "Controls: W A S D Q E, x to quit\n"; // 23
 char stringNoMoreHeap[] PROGMEM = "Ran out of Heap!\n"; // 24
 char stringKilledAnimation[] PROGMEM = "Animation aborted!\n"; // 25
-char stringHelp9[] PROGMEM = "(i)nterrupt count, (r)andom\n"; // 26
+char stringHelp9[] PROGMEM = "(i)nterrupt count, (r)andom, (q)reset\n"; // 26
 char stringInterrupts[] PROGMEM = " Interrupts after 1000msec\n"; // 27
 char stringFrames2[] PROGMEM = " Frames per Second\n"; // 28
 char stringDeleted[] PROGMEM = "Memory deleted!\n"; // 29
+char stringReset[] PROGMEM = "Reset in 500ms. Bye!\n"; // 30
+char stringWatchdog[] PROGMEM = "Watchdog Reset detected.\n"; // 31
+char stringBrownout[] PROGMEM = "Brown-Out Reset detected.\n"; // 32
+char stringNothing[] PROGMEM = "No Reset reason detected.\n"; // 33
+char stringExtern[] PROGMEM = "External Reset detected.\n"; // 34
+char stringJtag[] PROGMEM = "JTAG Reset detected.\n"; // 35
+char stringPowerOn[] PROGMEM = "Power-On Reset detected.\n"; // 36
+char stringMinute[] PROGMEM = "Yay! Another minute passed :)\n"; // 37
 
 // Last index + 1
-#define STRINGNUM 30
+#define STRINGNUM 38
 
 PGM_P stringTable[STRINGNUM] PROGMEM = { stringVersion, stringSelfTestError, stringInit,
 								stringAudioError, stringMemError, stringMemWriteError,
@@ -70,7 +78,9 @@ PGM_P stringTable[STRINGNUM] PROGMEM = { stringVersion, stringSelfTestError, str
 								stringByte, stringWritten, stringCount, stringSelfTest,
 								stringKillCount, stringAccessError, stringAudioData,
 								stringSnakeControl, stringNoMoreHeap, stringKilledAnimation,
-								stringHelp9, stringInterrupts, stringFrames2, stringDeleted };
+								stringHelp9, stringInterrupts, stringFrames2, stringDeleted,
+								stringReset, stringWatchdog, stringBrownout, stringNothing,
+								stringExtern, stringJtag, stringPowerOn, stringMinute };
 
 char stringNotFoundError[] PROGMEM = "String not found!\n";
 
