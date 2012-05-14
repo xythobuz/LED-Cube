@@ -126,9 +126,15 @@ inline void setFet(uint8_t data) {
 
 // Give id of latch, 0 - 7
 inline void selectLatch(uint8_t latchNr) {
-	PORTC = 0;
-	if (latchNr < 8) {
-		PORTC = 1 << latchNr;
+	// Disable all latches
+	PORTC &= ~(0xFC); // 2 - 7
+	PORTB &= ~(6); // 0 & 1
+
+	// Enable desired latch
+	if (latchNr > 1) {
+		PORTC |= (1 << latchNr);
+	} else {
+		PORTB |= (1 << (latchNr + 1));
 	}
 }
 

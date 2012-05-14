@@ -112,10 +112,10 @@ int main(void) {
 
 	wdt_enable(WDTO_500MS); // Enable watchdog reset after 500ms
 
-	DDRD = 0xFC; // Mosfets as Output
-	DDRB = 0xFE;
-	DDRC = 0xFF; // Latch Enable
-	DDRA = 0xFF; // Latch Data
+	DDRA = 0xFF; // Latch Data Bus as Output
+	DDRD = 0xFC; DDRB = 24; // Mosfets as Output
+	DDRC = 0xFC; DDRB |= 6; // Latch Enable as Output
+	DDRB &= ~(1 << PB0); // Pushbutton as Input
 
 	setImage(defaultImage); // Display something
 
