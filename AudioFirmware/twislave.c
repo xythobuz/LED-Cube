@@ -82,7 +82,7 @@ void twiSetDataToSend(uint8_t *d) { // 7 bytes
 	}
 }
 
-uint8_t twiDataWasSent() {
+uint8_t twiDataWasSent(void) {
 	if (dataSent != 0) {
 		dataSent = 0;
 		return 1;

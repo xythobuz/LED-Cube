@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include <avr/io.h>
 #include <util/delay.h>
+#include <avr/wdt.h>
 
 #include "adc.h"
 #include "eq.h"
@@ -34,23 +35,19 @@
 #endif
 
 void blinkStatus(void) {
-	// uint8_t i, mem[7] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
-
 	PORTB |= (1 << PB2);
 	PORTB &= ~(1 << PB1);
-	// eqLed(mem);
 	_delay_ms(250);
 	PORTB &= ~(1 << PB2);
 	PORTB |= (1 << PB1);
-	// for (i = 0; i < 7; i++) {
-	// 	mem[i] = 0x00;
-	// }
-	// eqLed(mem);
 	_delay_ms(250);
 }
 
 int main(void) {
 	uint8_t *music;
+
+	MCUCSR = 0;
+	wdt_disable();
 
 	DDRB = 0x3F;
 	DDRC = 0x0C;
@@ -63,23 +60,27 @@ int main(void) {
 	blinkStatus();
 	blinkStatus();
 
+	wdt_enable(WDTO_500MS); // Enable watchdog reset after 500ms
+
 	music = equalizerGet();
 	twiSetDataToSend(music);
 	free(music);
 
 	while (1) {
-		music = equalizerGet();
 		if (twiDataWasSent()) {
 			PORTB ^= (1 << PB2); // Toggle for every transaction
+			
+			music = equalizerGet();
 			twiSetDataToSend(music);
+			free(music);
 		}
-		// eqLed(music);
-		free(music);
 
 		// Heartbeat
 		PORTB ^= (1 << PB1);
 		_delay_ms(1); // Everything locks if this is removed :(
 		// still don't know why...
+
+		wdt_reset();
 	}
 
 	return 0;

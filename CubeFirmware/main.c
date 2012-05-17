@@ -80,16 +80,37 @@ uint8_t lastButtonState = 0;
 uint8_t mcusr_mirror;
 char buffer[11];
 
-uint8_t defaultImage[64] = 	{	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-								0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-								0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-								0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-								0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-								0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-								0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-								0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+uint8_t defaultImageA[64] = {	0xff, 0x01, 0x01, 0x01, 0xff, 0x80, 0x80, 0xff,
+								0xff, 0x01, 0x01, 0x01, 0xff, 0x80, 0x80, 0xff,
+								0xff, 0x01, 0x01, 0x01, 0xff, 0x80, 0x80, 0xff,
+								0xff, 0x01, 0x01, 0x01, 0xff, 0x80, 0x80, 0xff,
+								0xff, 0x01, 0x01, 0x01, 0xff, 0x80, 0x80, 0xff,
+								0xff, 0x01, 0x01, 0x01, 0xff, 0x80, 0x80, 0xff,
+								0xff, 0x01, 0x01, 0x01, 0xff, 0x80, 0x80, 0xff,
+								0xff, 0x01, 0x01, 0x01, 0xff, 0x80, 0x80, 0xff };
 
-uint8_t DebugDone = 0; // Bit 0: 10s int. count, Bit 1: switch idle display
+uint8_t defaultImageB[64] = {	0x7e, 0x81, 0x81, 0x81, 0xff, 0x81, 0x81, 0x81,
+								0x7e, 0x81, 0x81, 0x81, 0xff, 0x81, 0x81, 0x81,
+								0x7e, 0x81, 0x81, 0x81, 0xff, 0x81, 0x81, 0x81,
+								0x7e, 0x81, 0x81, 0x81, 0xff, 0x81, 0x81, 0x81,
+								0x7e, 0x81, 0x81, 0x81, 0xff, 0x81, 0x81, 0x81,
+								0x7e, 0x81, 0x81, 0x81, 0xff, 0x81, 0x81, 0x81,
+								0x7e, 0x81, 0x81, 0x81, 0xff, 0x81, 0x81, 0x81,
+								0x7e, 0x81, 0x81, 0x81, 0xff, 0x81, 0x81, 0x81 };
+
+uint8_t defaultImageC[64] = {	0x1e, 0x22, 0x22, 0x22, 0x1e, 0x02, 0x02, 0x02,
+								0x1e, 0x22, 0x22, 0x22, 0x1e, 0x02, 0x02, 0x02,
+								0x1e, 0x22, 0x22, 0x22, 0x1e, 0x02, 0x02, 0x02,
+								0x1e, 0x22, 0x22, 0x22, 0x1e, 0x02, 0x02, 0x02,
+								0x1e, 0x22, 0x22, 0x22, 0x1e, 0x02, 0x02, 0x02,
+								0x1e, 0x22, 0x22, 0x22, 0x1e, 0x02, 0x02, 0x02,
+								0x1e, 0x22, 0x22, 0x22, 0x1e, 0x02, 0x02, 0x02,
+								0x1e, 0x22, 0x22, 0x22, 0x1e, 0x02, 0x02, 0x02 };
+
+#define IDLEANIMATIONCOUNT 3
+uint8_t *idleAnimation[IDLEANIMATIONCOUNT] = { defaultImageA, defaultImageB, defaultImageC };
+
+uint8_t DebugDone = 0; // Bit 0: 10s int. count, Bit 1: unused
 					   // Bit 2: state changed, disable idle
 
 int main(void) {
@@ -98,7 +119,10 @@ int main(void) {
 	uint8_t i, length = 0, lastMode;
 	uint16_t count;
 	uint64_t lastChecked;
+	uint8_t idleCounter = 0;
+#ifdef DEBUG
 	uint32_t temp;
+#endif
 
 	mcusr_mirror = MCUCSR;
 	MCUCSR = 0;
@@ -110,14 +134,15 @@ int main(void) {
 	initSystemTimer();
 	sei(); // Enable Interrupts
 
-	wdt_enable(WDTO_500MS); // Enable watchdog reset after 500ms
+	// wdt_enable(WDTO_500MS); // Enable watchdog reset after 500ms
+	wdt_enable(WDTO_1S); // Watchdog reset after 1 second
 
 	DDRA = 0xFF; // Latch Data Bus as Output
 	DDRD = 0xFC; DDRB = 24; // Mosfets as Output
 	DDRC = 0xFC; DDRB |= 6; // Latch Enable as Output
 	DDRB &= ~(1 << PB0); // Pushbutton as Input
 
-	setImage(defaultImage); // Display something
+	setImage(defaultImageA); // Display something
 
 #ifdef DEBUG
 	// Kill animation counter in debug mode
@@ -167,14 +192,14 @@ int main(void) {
 		if(lastMode) {
 			// Get Audio Data and visualize it
 			if (isFinished()) {
-				audioData = getAudioData();
+				audioData = getAudioData(); // Not malloc'ed => Don't free
 				if (audioData != NULL) {
 					imageData = (uint8_t *)malloc(64);
 					if (imageData == NULL) {
 #ifdef DEBUG
 						serialWriteString(getString(24));
 #endif
-						while(1);
+						while(1); // Ran out of heap => Watchdog Reset
 					}
 					visualizeAudioData(audioData, imageData);
 					setImage(imageData);
@@ -204,15 +229,14 @@ int main(void) {
 					free(imageData);
 				}
 			} else {
-				if (!(DebugDone & 4)) {
+				if (!(DebugDone & 4)) { // Idle animation allowed
 					if (isFinished() >= IDLELENGTH) {
 						// Should happen every half second
-						if (DebugDone & 2) {
-							fillBuffer(0);
-							DebugDone &= ~(2);
+						setImage(idleAnimation[idleCounter]);
+						if (idleCounter < (IDLEANIMATIONCOUNT - 1)) {
+							idleCounter++;
 						} else {
-							fillBuffer(0xFF);
-							DebugDone |= 2;
+							idleCounter = 0;
 						}
 					}
 				}
@@ -269,8 +293,8 @@ uint8_t selfTest(void) {
 		free(data);
 	}
 
-	setGeneralPurposeByte(0, 0x42);
-	if (getGeneralPurposeByte(0) != 0x42) {
+	setGeneralPurposeByte(0, 0x23);
+	if (getGeneralPurposeByte(0) != 0x23) {
 		result |= MEMORYWRITEERROR;
 	}
 
@@ -321,8 +345,8 @@ void randomAnimation(void) {
 void serialHandler(char c) {
 	// Used letters:
 	// a, c, d, e, g, i, n, q, r, s, t, v, x, y, 0, 1, 2
-	uint8_t i, y, z;
 #ifdef DEBUG
+	uint8_t i, y, z;
 	serialWrite(c);
 	serialWriteString(": ");
 #endif
@@ -371,6 +395,11 @@ void serialHandler(char c) {
 		break;
 
 #ifdef DEBUG
+	case 'm': case 'M':
+		lastButtonState = !lastButtonState;
+		serialWriteString(getString(40));
+		break;
+
 	case 'q': case 'Q':
 		shouldRestart = 1;
 		serialWriteString(getString(30));
@@ -434,15 +463,15 @@ void serialHandler(char c) {
 		DebugDone |= 4;
 		fillBuffer(0);
 		for (i = 0; i < 64; i++) {
-			defaultImage[i] = 0;
+			defaultImageA[i] = 0;
 		}
 		while(1) {
 			for (i = 0; i < 8; i++) {
 				for (y = 0; y < 8; y++) {
-					defaultImage[y + (i * 8)] = 0;
+					defaultImageA[y + (i * 8)] = 0;
 					for (z = 0; z < 8; z++) {
-						defaultImage[y + (i * 8)] |= (1 << z);
-						setImage(defaultImage);
+						defaultImageA[y + (i * 8)] |= (1 << z);
+						setImage(defaultImageA);
 						while (isFinished() == 0) {
 							if (serialHasChar()) {
 								goto killMeForIt; // Yes I know...
@@ -450,7 +479,7 @@ void serialHandler(char c) {
 							}
 						}
 					}
-					defaultImage[y + (i * 8)] = 0;
+					defaultImageA[y + (i * 8)] = 0;
 				}
 			}
 		}
@@ -669,9 +698,11 @@ uint8_t audioModeSelected(void) {
 		}
 
 #ifdef DEBUG
-		serialWriteString("New State (");
-		serialWriteString(itoa(lastButtonState, buffer, 10));
-		serialWriteString(")\n");
+		if (lastButtonState) {
+			serialWriteString(getString(38));
+		} else {
+			serialWriteString(getString(39));
+		}
 #endif
 
 	}
@@ -686,7 +717,7 @@ void setRow(uint8_t x, uint8_t z, uint8_t height, uint8_t *buf) {
 }
 
 void setPixelBuffer(uint8_t x, uint8_t y, uint8_t z, uint8_t *buf) {
-	buf[(8 * z) + y] |= (1 << x);
+	buf[(8 * z) + (7 - y)] |= (1 << x);
 }
 
 void visualizeAudioData(uint8_t *audioData, uint8_t *imageData) {

@@ -85,7 +85,7 @@ void setImage(uint8_t *img) {
 		imgFlag = 0;
 		for (i = 0; i < 8; i++) {
 			for (j = 0; j < 8; j++) {
-				imgBuffer[i][j] = ~(img[j + (i * 8)]);
+				imgBuffer[j][i] = ~(img[j + (i * 8)]);
 			}
 		}
 	}

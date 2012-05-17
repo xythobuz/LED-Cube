@@ -25,9 +25,9 @@
 char buffer[60];
 
 #ifdef DEBUG
-char stringVersion[] PROGMEM = "v2 (Debug Build)\nNOT COMPATIBLE WITH CubeControl!\n"; // 0
+char stringVersion[] PROGMEM = "v2.3 Debug Build\nPROBABLY NOT COMPATIBLE WITH CubeControl Software!\n"; // 0
 #else
-char stringVersion[] PROGMEM = "v2 Release\n"; // 0
+char stringVersion[] PROGMEM = "v2.3 Release\n"; // 0
 #endif
 
 char stringInit[] PROGMEM = "\nInitialized: "; // 1
@@ -38,7 +38,7 @@ char stringMemWriteError[] PROGMEM = " => Can't write to Memory!\n"; // 5
 char stringHelp1[] PROGMEM = "(d)elete, (g)et anims, (s)et anims, (v)ersion\n"; // 6
 char stringHelp2[] PROGMEM = "(t)ime, (a)udio, (c)ount, (x)Custom count\n"; // 7
 char stringHelp3[] PROGMEM = "(y)Set fixed animation count\n"; // 8
-char stringHelp4[] PROGMEM = "S(e)lf Test\n"; // 9
+char stringHelp4[] PROGMEM = "S(e)lf Test, (m)ode\n"; // 9
 char stringHelp5[] PROGMEM = "Play S(n)ake\n"; // 10
 char stringHelp6[] PROGMEM = "(0): All LEDs Off\n"; // 11
 char stringHelp7[] PROGMEM = "(1): All LEDs On\n"; // 12
@@ -67,9 +67,12 @@ char stringExtern[] PROGMEM = "External Reset detected.\n"; // 34
 char stringJtag[] PROGMEM = "JTAG Reset detected.\n"; // 35
 char stringPowerOn[] PROGMEM = "Power-On Reset detected.\n"; // 36
 char stringMinute[] PROGMEM = "Yay! Another minute passed :)\n"; // 37
+char stringAudioMode[] PROGMEM = "Audio Mode!\n"; // 38
+char stringCubeMode[] PROGMEM = "Cube Mode!\n"; // 39
+char stringModeChange[] PROGMEM = "Cube mode changed!\n";
 
 // Last index + 1
-#define STRINGNUM 38
+#define STRINGNUM 41
 
 PGM_P stringTable[STRINGNUM] PROGMEM = { stringVersion, stringSelfTestError, stringInit,
 								stringAudioError, stringMemError, stringMemWriteError,
@@ -80,7 +83,8 @@ PGM_P stringTable[STRINGNUM] PROGMEM = { stringVersion, stringSelfTestError, str
 								stringSnakeControl, stringNoMoreHeap, stringKilledAnimation,
 								stringHelp9, stringInterrupts, stringFrames2, stringDeleted,
 								stringReset, stringWatchdog, stringBrownout, stringNothing,
-								stringExtern, stringJtag, stringPowerOn, stringMinute };
+								stringExtern, stringJtag, stringPowerOn, stringMinute, stringAudioMode,
+								stringCubeMode, stringModeChange };
 
 char stringNotFoundError[] PROGMEM = "String not found!\n";
 

@@ -46,25 +46,6 @@ void equalizerInit(void) {
 
 }
 
-void eqLed(uint8_t *d) {
-	uint8_t pins[7] = { PD2, PD3, PD4, PD5, PD6, PD7, PB0 };
-	uint8_t i;
-
-	for (i = 0; i < 7; i++) {
-		if (d[i] >= 127) {
-			if (i < 6)
-				PORTD |= (1 << pins[i]);
-			else
-				PORTB |= (1 << pins[i]);
-		} else {
-			if (i < 6)
-				PORTD &= ~(1 << pins[i]);
-			else
-				PORTB &= ~(1 << pins[i]);
-		}
-	}
-}
-
 uint8_t *equalizerGet(void) {
 	uint8_t *result = (uint8_t *)malloc(7); // Has to work... If not, were screwed anyway :)
 	uint8_t i, offset = getOffset();
@@ -78,7 +59,7 @@ uint8_t *equalizerGet(void) {
 		PORTC &= ~(1 << PC2);
 		adcStartConversion(0x00);
 		_delay_us(READDELAY); // Wait for result to appear
-		result[i] = offset + adcGetByte(); // This line hangs
+		result[i] = offset + adcGetByte();
 		_delay_us(STROBEDELAY);
 	}
 
