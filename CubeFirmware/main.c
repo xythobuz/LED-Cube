@@ -56,7 +56,7 @@
 #define ISERROR(x, e) ((x) & (e))
 
 // Length of an idle animation frame, 24 -> 1 second
-#define IDLELENGTH 24
+#define IDLELENGTH 48
 
 void serialHandler(char c);
 void sendAudioData(void);
@@ -107,6 +107,15 @@ uint8_t defaultImageC[64] = {	0x1e, 0x22, 0x22, 0x22, 0x1e, 0x02, 0x02, 0x02,
 								0x1e, 0x22, 0x22, 0x22, 0x1e, 0x02, 0x02, 0x02,
 								0x1e, 0x22, 0x22, 0x22, 0x1e, 0x02, 0x02, 0x02 };
 
+uint8_t defaultImageCube[64] = {	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+									0xFF, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0xFF,
+									0xFF, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0xFF,
+									0xFF, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0xFF,
+									0xFF, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0xFF,
+									0xFF, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0xFF,
+									0xFF, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0xFF,
+									0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+
 #define IDLEANIMATIONCOUNT 3
 uint8_t *idleAnimation[IDLEANIMATIONCOUNT] = { defaultImageA, defaultImageB, defaultImageC };
 
@@ -128,21 +137,23 @@ int main(void) {
 	MCUCSR = 0;
 	wdt_disable();
 
+	DDRA = 0xFF; // Latch Data Bus as Output
+	DDRD = 0xFC; DDRB = 24; // Mosfets as Output
+	DDRC = 0xFC; DDRB |= 6; // Latch Enable as Output
+	DDRB &= ~(1 << PB0); // Pushbutton as Input
+
 	initCube();
 	serialInit(25, 8, NONE, 1);
 	i2c_init();
 	initSystemTimer();
 	sei(); // Enable Interrupts
 
+#ifndef DEBUG
 	// wdt_enable(WDTO_500MS); // Enable watchdog reset after 500ms
 	wdt_enable(WDTO_1S); // Watchdog reset after 1 second
+#endif
 
-	DDRA = 0xFF; // Latch Data Bus as Output
-	DDRD = 0xFC; DDRB = 24; // Mosfets as Output
-	DDRC = 0xFC; DDRB |= 6; // Latch Enable as Output
-	DDRB &= ~(1 << PB0); // Pushbutton as Input
-
-	setImage(defaultImageA); // Display something
+	setImage(defaultImageCube); // Display something
 
 #ifdef DEBUG
 	// Kill animation counter in debug mode
@@ -344,7 +355,7 @@ void randomAnimation(void) {
 
 void serialHandler(char c) {
 	// Used letters:
-	// a, c, d, e, g, i, n, q, r, s, t, v, x, y, 0, 1, 2
+	// a, c, d, e, g, i, n, q, r, s, t, v, x, y, 0, 1, 2, 3
 #ifdef DEBUG
 	uint8_t i, y, z;
 	serialWrite(c);
@@ -456,6 +467,11 @@ void serialHandler(char c) {
 
 	case '1':
 		fillBuffer(0xFF);
+		DebugDone |= 4;
+		break;
+
+	case '3':
+		setImage(defaultImageCube);
 		DebugDone |= 4;
 		break;
 

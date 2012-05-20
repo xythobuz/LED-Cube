@@ -83,6 +83,7 @@ void setImage(uint8_t *img) {
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		changedFlag = 1;
 		imgFlag = 0;
+		toggleFlag = 0;
 		for (i = 0; i < 8; i++) {
 			for (j = 0; j < 8; j++) {
 				imgBuffer[j][i] = ~(img[j + (i * 8)]);
@@ -96,6 +97,7 @@ void fillBuffer(uint8_t val) {
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		changedFlag = 1;
 		imgFlag = 0;
+		toggleFlag = 0;
 		for (i = 0; i < 8; i++) {
 			for (j = 0; j < 8; j++) {
 				imgBuffer[i][j] = ~(val);
@@ -109,9 +111,36 @@ uint8_t isFinished(void) {
 }
 
 void initCube(void) {
+	uint8_t x, y;
+
 	TCCR1B |= (1 << CS10) | (1 << WGM12); // Prescaler: 1, CTC Mode
 	OCR1A = COUNT;
 	TIMSK = (1 << OCIE1A); // Enable Output Compare Interrupt
+
+	fillBuffer(0); // Clear memory
+	sei(); // Enable interrupts
+
+	// Show test animation
+	for (x = 0; x < 8; x++) {
+		for (y = 0; y < 8; y++) {
+			ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+				imgBuffer[x][y] &= ~(0xFF); // Set a pixel
+				changedFlag = 1;
+				imgFlag = 0;
+				toggleFlag = COUNT2; // Ensure next interrupts starts displaying
+			}
+			while(imgFlag < 1); // Wait for frame to display
+			/* ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+				imgBuffer[x][y] |= (0xFF); // Clear pixel
+			} */
+		}
+	}
+
+	cli(); // Disable interrupts
+
+	timesTriggered = 0;
+	imgFlag = 0;
+	toggleFlag = 0;
 }
 
 void close(void) {
