@@ -44,6 +44,7 @@
 #include "memLayer.h"
 #include "twi.h"
 #include "strings.h"
+#include "visualizer.h"
 
 #define NOERROR 0
 // Audio does not answer
@@ -63,9 +64,6 @@ void sendAudioData(void);
 void recieveAnimations(void);
 void transmitAnimations(void);
 uint8_t audioModeSelected(void);
-void setPixelBuffer(uint8_t x, uint8_t y, uint8_t z, uint8_t *buf);
-void setRow(uint8_t x, uint8_t z, uint8_t height, uint8_t *buf);
-void visualizeAudioData(uint8_t *audioData, uint8_t *imageData);
 #ifdef DEBUG
 void printErrors(uint8_t e);
 uint8_t selfTest(void);
@@ -205,16 +203,7 @@ int main(void) {
 			if (isFinished()) {
 				audioData = getAudioData(); // Not malloc'ed => Don't free
 				if (audioData != NULL) {
-					imageData = (uint8_t *)malloc(64);
-					if (imageData == NULL) {
-#ifdef DEBUG
-						serialWriteString(getString(24));
-#endif
-						while(1); // Ran out of heap => Watchdog Reset
-					}
-					visualizeAudioData(audioData, imageData);
-					setImage(imageData);
-					free(imageData);
+					simpleVisualization(audioData);
 				}
 			}
 		} else {
@@ -723,102 +712,4 @@ uint8_t audioModeSelected(void) {
 
 	}
 	return lastButtonState;
-}
-
-void setRow(uint8_t x, uint8_t z, uint8_t height, uint8_t *buf) {
-	uint8_t i = 0;
-	for (; i < height; i++) {
-		setPixelBuffer(x, i, z, buf);
-	}
-}
-
-void setPixelBuffer(uint8_t x, uint8_t y, uint8_t z, uint8_t *buf) {
-	buf[(8 * z) + (7 - y)] |= (1 << x);
-}
-
-void visualizeAudioData(uint8_t *audioData, uint8_t *imageData) {
-	uint8_t i;
-	for (i = 0; i < 64; i++) {
-		imageData[i] = 0;
-	}
-
-	// 8 LEDs, Max Val 255:
-	// 256 / 8 = 32 => Divide by 31 (FACTOR) to get num of leds to light
-	// 255 / FACTOR = 8,...
-	// 127 / FACTOR = 4,...
-
-	#define FACTOR 31
-
-	// Could not figure out a way to represent this easily in a loop
-	// without using a shitload of 'if's...
-	setRow(0, 0, (audioData[0] / FACTOR), imageData);
-	setRow(0, 1, (audioData[0] / FACTOR), imageData);
-	setRow(1, 0, (audioData[0] / FACTOR), imageData);
-
-	setRow(0, 2, (audioData[1] / FACTOR), imageData);
-	setRow(0, 3, (audioData[1] / FACTOR), imageData);
-	setRow(1, 1, (audioData[1] / FACTOR), imageData);
-	setRow(1, 2, (audioData[1] / FACTOR), imageData);
-	setRow(2, 0, (audioData[1] / FACTOR), imageData);
-	setRow(2, 1, (audioData[1] / FACTOR), imageData);
-
-	setRow(0, 4, (audioData[2] / FACTOR), imageData);
-	setRow(0, 5, (audioData[2] / FACTOR), imageData);
-	setRow(1, 3, (audioData[2] / FACTOR), imageData);
-	setRow(1, 4, (audioData[2] / FACTOR), imageData);
-	setRow(2, 2, (audioData[2] / FACTOR), imageData);
-	setRow(2, 3, (audioData[2] / FACTOR), imageData);
-	setRow(3, 0, (audioData[2] / FACTOR), imageData);
-	setRow(3, 1, (audioData[2] / FACTOR), imageData);
-	setRow(3, 2, (audioData[2] / FACTOR), imageData);
-	setRow(4, 0, (audioData[2] / FACTOR), imageData);
-	setRow(4, 1, (audioData[2] / FACTOR), imageData);
-
-	setRow(0, 6, (audioData[3] / FACTOR), imageData);
-	setRow(0, 7, (audioData[3] / FACTOR), imageData);
-	setRow(1, 5, (audioData[3] / FACTOR), imageData);
-	setRow(1, 6, (audioData[3] / FACTOR), imageData);
-	setRow(2, 4, (audioData[3] / FACTOR), imageData);
-	setRow(2, 5, (audioData[3] / FACTOR), imageData);
-	setRow(3, 3, (audioData[3] / FACTOR), imageData);
-	setRow(3, 4, (audioData[3] / FACTOR), imageData);
-	setRow(4, 2, (audioData[3] / FACTOR), imageData);
-	setRow(4, 3, (audioData[3] / FACTOR), imageData);
-	setRow(5, 0, (audioData[3] / FACTOR), imageData);
-	setRow(5, 1, (audioData[3] / FACTOR), imageData);
-	setRow(5, 2, (audioData[3] / FACTOR), imageData);
-	setRow(6, 0, (audioData[3] / FACTOR), imageData);
-	setRow(6, 1, (audioData[3] / FACTOR), imageData);
-
-	setRow(1, 7, (audioData[4] / FACTOR), imageData);
-	setRow(2, 6, (audioData[4] / FACTOR), imageData);
-	setRow(2, 7, (audioData[4] / FACTOR), imageData);
-	setRow(3, 5, (audioData[4] / FACTOR), imageData);
-	setRow(3, 6, (audioData[4] / FACTOR), imageData);
-	setRow(4, 4, (audioData[4] / FACTOR), imageData);
-	setRow(4, 5, (audioData[4] / FACTOR), imageData);
-	setRow(5, 3, (audioData[4] / FACTOR), imageData);
-	setRow(5, 4, (audioData[4] / FACTOR), imageData);
-	setRow(6, 2, (audioData[4] / FACTOR), imageData);
-	setRow(6, 3, (audioData[4] / FACTOR), imageData);
-	setRow(7, 0, (audioData[4] / FACTOR), imageData);
-	setRow(7, 1, (audioData[4] / FACTOR), imageData);
-
-	setRow(3, 7, (audioData[5] / FACTOR), imageData);
-	setRow(4, 6, (audioData[5] / FACTOR), imageData);
-	setRow(4, 7, (audioData[5] / FACTOR), imageData);
-	setRow(5, 5, (audioData[5] / FACTOR), imageData);
-	setRow(5, 6, (audioData[5] / FACTOR), imageData);
-	setRow(6, 4, (audioData[5] / FACTOR), imageData);
-	setRow(6, 5, (audioData[5] / FACTOR), imageData);
-	setRow(7, 2, (audioData[5] / FACTOR), imageData);
-	setRow(7, 3, (audioData[5] / FACTOR), imageData);
-	setRow(7, 4, (audioData[5] / FACTOR), imageData);
-
-	setRow(5, 7, (audioData[6] / FACTOR), imageData);
-	setRow(6, 6, (audioData[6] / FACTOR), imageData);
-	setRow(6, 7, (audioData[6] / FACTOR), imageData);
-	setRow(7, 5, (audioData[6] / FACTOR), imageData);
-	setRow(7, 6, (audioData[6] / FACTOR), imageData);
-	setRow(7, 7, (audioData[6] / FACTOR), imageData);
 }
