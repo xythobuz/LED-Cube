@@ -27,6 +27,7 @@
 #include <strings.h>
 
 uint8_t *buffNew(void) {
+	uint8_t i;
 	uint8_t *tmp = (uint8_t *)malloc(64);
 	if (tmp == NULL) {
 #ifdef DEBUG
@@ -34,54 +35,19 @@ uint8_t *buffNew(void) {
 #endif
 		while(1); // Ran out of heap => Watchdog Reset
 	}
+	for (i = 0; i < 64; i++) {
+		// Clear pixels
+		tmp[i] = 0;
+	}
 	return tmp;
 }
 
 void buffSetPixel(uint8_t *buffer, uint8_t x, uint8_t y, uint8_t z) {
-	buffer[(8 * z) + (7 - y)] |= (1 << x);
+	buffer[(8 * (7 - z)) + (7 - y)] |= (1 << x);
 }
 
 void buffClearPixel(uint8_t *buffer, uint8_t x, uint8_t y, uint8_t z) {
-	buffer[(8 * z) + (7 - y)] &= ~(1 << x);
-}
-
-void buffFillRect(uint8_t *buffer, uint8_t x1, uint8_t y1, uint8_t z1,
-					uint8_t x2, uint8_t y2, uint8_t z2, uint8_t value) {
-	uint8_t depth, depthMax, depthMin, x, xMax, xMin, y, yMax, yMin;
-
-	if (z1 <= z2) {
-		depthMin = z1;
-		depthMax = z2;
-	} else {
-		depthMin = z2;
-		depthMax = z1;
-	}
-	if (x1 <= x2) {
-		xMin = x1;
-		xMax = x2;
-	} else {
-		xMin = x2;
-		xMax = x1;
-	}
-	if (y1 <= y2) {
-		yMin = y1;
-		yMax = y2;
-	} else {
-		yMin = y2;
-		yMax = y1;
-	}
-	for (depth = depthMin; depth <= depthMax; depth++) {
-		// now draw a 2d rectangle, z = depth
-		for (x = xMin; x <= xMax; x++) {
-			for (y = yMin; y <= yMax; y++) {
-				if (value) {
-					buffSetPixel(buffer, x, y, depth);
-				} else {
-					buffClearPixel(buffer, x, y, depth);
-				}
-			}
-		}
-	}
+	buffer[(8 * (7 - z)) + (7 - y)] &= ~(1 << x);
 }
 
 void buffFree(uint8_t *buffer) {

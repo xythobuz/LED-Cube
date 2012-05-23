@@ -78,44 +78,7 @@ uint8_t lastButtonState = 0;
 uint8_t mcusr_mirror;
 char buffer[11];
 
-uint8_t defaultImageA[64] = {	0xff, 0x01, 0x01, 0x01, 0xff, 0x80, 0x80, 0xff,
-								0xff, 0x01, 0x01, 0x01, 0xff, 0x80, 0x80, 0xff,
-								0xff, 0x01, 0x01, 0x01, 0xff, 0x80, 0x80, 0xff,
-								0xff, 0x01, 0x01, 0x01, 0xff, 0x80, 0x80, 0xff,
-								0xff, 0x01, 0x01, 0x01, 0xff, 0x80, 0x80, 0xff,
-								0xff, 0x01, 0x01, 0x01, 0xff, 0x80, 0x80, 0xff,
-								0xff, 0x01, 0x01, 0x01, 0xff, 0x80, 0x80, 0xff,
-								0xff, 0x01, 0x01, 0x01, 0xff, 0x80, 0x80, 0xff };
-
-uint8_t defaultImageB[64] = {	0x7e, 0x81, 0x81, 0x81, 0xff, 0x81, 0x81, 0x81,
-								0x7e, 0x81, 0x81, 0x81, 0xff, 0x81, 0x81, 0x81,
-								0x7e, 0x81, 0x81, 0x81, 0xff, 0x81, 0x81, 0x81,
-								0x7e, 0x81, 0x81, 0x81, 0xff, 0x81, 0x81, 0x81,
-								0x7e, 0x81, 0x81, 0x81, 0xff, 0x81, 0x81, 0x81,
-								0x7e, 0x81, 0x81, 0x81, 0xff, 0x81, 0x81, 0x81,
-								0x7e, 0x81, 0x81, 0x81, 0xff, 0x81, 0x81, 0x81,
-								0x7e, 0x81, 0x81, 0x81, 0xff, 0x81, 0x81, 0x81 };
-
-uint8_t defaultImageC[64] = {	0x1e, 0x22, 0x22, 0x22, 0x1e, 0x02, 0x02, 0x02,
-								0x1e, 0x22, 0x22, 0x22, 0x1e, 0x02, 0x02, 0x02,
-								0x1e, 0x22, 0x22, 0x22, 0x1e, 0x02, 0x02, 0x02,
-								0x1e, 0x22, 0x22, 0x22, 0x1e, 0x02, 0x02, 0x02,
-								0x1e, 0x22, 0x22, 0x22, 0x1e, 0x02, 0x02, 0x02,
-								0x1e, 0x22, 0x22, 0x22, 0x1e, 0x02, 0x02, 0x02,
-								0x1e, 0x22, 0x22, 0x22, 0x1e, 0x02, 0x02, 0x02,
-								0x1e, 0x22, 0x22, 0x22, 0x1e, 0x02, 0x02, 0x02 };
-
-uint8_t defaultImageCube[64] = {	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-									0xFF, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0xFF,
-									0xFF, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0xFF,
-									0xFF, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0xFF,
-									0xFF, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0xFF,
-									0xFF, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0xFF,
-									0xFF, 0x81, 0x81, 0x81, 0x81, 0x81, 0x81, 0xFF,
-									0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
-
-#define IDLEANIMATIONCOUNT 3
-uint8_t *idleAnimation[IDLEANIMATIONCOUNT] = { defaultImageA, defaultImageB, defaultImageC };
+#include "builtInFrames.c"
 
 uint8_t DebugDone = 0; // Bit 0: 10s int. count, Bit 1: unused
 					   // Bit 2: state changed, disable idle
@@ -146,10 +109,7 @@ int main(void) {
 	initSystemTimer();
 	sei(); // Enable Interrupts
 
-#ifndef DEBUG
-	// wdt_enable(WDTO_500MS); // Enable watchdog reset after 500ms
 	wdt_enable(WDTO_1S); // Watchdog reset after 1 second
-#endif
 
 	setImage(defaultImageCube); // Display something
 
@@ -168,9 +128,10 @@ int main(void) {
 
 	serialWriteString(getString(2));
 	serialWriteString(getString(0));
-	serialWriteString("Took ");
+	
+	/* serialWriteString("Took ");
 	serialWriteString(itoa(getSystemTime(), buffer, 10));
-	serialWriteString(" ms!\n");
+	serialWriteString(" ms!\n"); */
 
 	if (mcusr_mirror & WDRF) {
 		serialWriteString(getString(31));
@@ -192,6 +153,7 @@ int main(void) {
 
 	i = 0;
 	count = getAnimationCount();
+
 	while (1) {
 		// Reset if requested
 		if (!shouldRestart) {
@@ -260,12 +222,12 @@ int main(void) {
 
 		// Show how stable we are running :)
 		if (((getSystemTime() % 60000) == 0) && (getSystemTime() > 0)) {
-			serialWriteString(getString(37));
+			// serialWriteString(getString(37));
 			printTime();
 		}
 #endif
 
-		if ((getSystemTime() - lastChecked) > 150) {
+		if ((getSystemTime() - lastChecked) > 150) { // Check button state every 150ms
 			lastMode = audioModeSelected();
 			lastChecked = getSystemTime();
 		} 
@@ -344,7 +306,7 @@ void randomAnimation(void) {
 
 void serialHandler(char c) {
 	// Used letters:
-	// a, c, d, e, g, i, n, q, r, s, t, v, x, y, 0, 1, 2, 3
+	// a, b, c, d, e, g, i, n, q, r, s, t, v, x, y, 0, 1, 2, 3, #
 #ifdef DEBUG
 	uint8_t i, y, z;
 	serialWrite(c);
@@ -397,7 +359,11 @@ void serialHandler(char c) {
 #ifdef DEBUG
 	case 'm': case 'M':
 		lastButtonState = !lastButtonState;
-		serialWriteString(getString(40));
+		if (lastButtonState) {
+			serialWriteString(getString(41));
+		} else {
+			serialWriteString(getString(40));
+		}
 		break;
 
 	case 'q': case 'Q':
@@ -553,70 +519,88 @@ void sendAudioData(void) {
 }
 #endif
 
+#define TRANSTIMEOUT 10000
+
 void recieveAnimations() {
-	uint8_t animCount, a, frameCount, f, i;
-	uint16_t completeCount = 0, character;
-	uint8_t frame[65];
+	uint8_t animCount, a, frameCount, f, i, c;
+	uint16_t completeCount = 0;
+	uint8_t *frame = (uint8_t *)malloc(65);
+	uint64_t timestamp = getSystemTime();
 
 	serialWrite(OK); // We are ready...
 
-	character = serialGet();
-	while (character & 0xFF00) { // Wait for answer
-		character = serialGet();
+	while (!serialHasChar()) { // Wait for answer
+		if ((getSystemTime() - timestamp) <= TRANSTIMEOUT) {
+			wdt_reset();
+		}
 	}
-
-	animCount = (uint8_t)(character & 0x00FF); // Got animation count
+	c = serialGet();
+	animCount = c; // Got animation count
 	serialWrite(OK);
 
 	for (a = 0; a < animCount; a++) {
-		character = serialGet();
-		while (character & 0xFF00) { // Wait for answer
-			character = serialGet();
+		while (!serialHasChar()) { // Wait for answer
+			if ((getSystemTime() - timestamp) <= TRANSTIMEOUT) {
+				wdt_reset();
+			}
 		}
-
-		frameCount = (uint8_t)(character & 0x00FF); // Got frame count
+		c = serialGet();
+		frameCount = c; // Got frame count
 		serialWrite(OK);
 
 		for (f = 0; f < frameCount; f++) {
-			character = serialGet();
-			while (character & 0xFF00) { // Wait for answer
-				character = serialGet();
+			while (!serialHasChar()) { // Wait for answer
+				if ((getSystemTime() - timestamp) <= TRANSTIMEOUT) {
+					wdt_reset();
+				}
 			}
-
-			frame[64] = (uint8_t)(character & 0x00FF); // Got duration
+			c = serialGet();
+			frame[64] = c; // Got duration
 			serialWrite(OK);
 
 			for (i = 0; i < 64; i++) {
-				character = serialGet();
-				while (character & 0xFF00) { // Wait for answer
-					character = serialGet();
+				while (!serialHasChar()) { // Wait for answer
+					if ((getSystemTime() - timestamp) <= TRANSTIMEOUT) {
+						wdt_reset();
+					}
 				}
-
-				frame[i] = (uint8_t)(character & 0x00FF); // Got data byte
+				c = serialGet();
+				frame[i] = c; // Got data byte
 			}
 			serialWrite(OK);
 
 			setFrame(completeCount++, frame);
 		}
 	}
+	free(frame);
 
-	character = serialGet();
-	while (character & 0xFF00) { // Wait for answer
-		character = serialGet();
+	while (!serialHasChar()) { // Wait for answer
+		if ((getSystemTime() - timestamp) <= TRANSTIMEOUT) {
+			wdt_reset();
+		}
 	}
-	character = serialGet();
-	while (character & 0xFF00) { // Wait for answer
-		character = serialGet();
+	c = serialGet();
+	while (!serialHasChar()) { // Wait for answer
+		if ((getSystemTime() - timestamp) <= TRANSTIMEOUT) {
+			wdt_reset();
+		}
 	}
-	character = serialGet();
-	while (character & 0xFF00) { // Wait for answer
-		character = serialGet();
+	c = serialGet();
+	while (!serialHasChar()) { // Wait for answer
+		if ((getSystemTime() - timestamp) <= TRANSTIMEOUT) {
+			wdt_reset();
+		}
 	}
-	character = serialGet();
-	while (character & 0xFF00) { // Wait for answer
-		character = serialGet();
+	c = serialGet();
+	while (!serialHasChar()) { // Wait for answer
+		if ((getSystemTime() - timestamp) <= TRANSTIMEOUT) {
+			wdt_reset();
+		}
 	}
+	c = serialGet();
+
 	serialWrite(OK);
+
 	setAnimationCount(completeCount);
 	refreshAnimationCount = 1;
 }

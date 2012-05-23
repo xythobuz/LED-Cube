@@ -49,9 +49,9 @@ int main(void) {
 	MCUCSR = 0;
 	wdt_disable();
 
-	DDRB = 0x3F;
-	DDRC = 0x0C;
-	DDRD = 0xFF;
+	DDRB = 6;
+	DDRC = 12;
+	DDRD = 0;
 	
 	twiInit(0x42); // All TWI action happens completely in the background.
 	adcInit();
@@ -69,7 +69,6 @@ int main(void) {
 	while (1) {
 		if (twiDataWasSent()) {
 			PORTB ^= (1 << PB2); // Toggle for every transaction
-			
 			music = equalizerGet();
 			twiSetDataToSend(music);
 			free(music);

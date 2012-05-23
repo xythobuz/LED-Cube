@@ -19,7 +19,7 @@
 # To rebuild project do "make clean" then "make all".
 #
 
-CDEFS = -D DEBUG
+#CDEFS = -D DEBUG
 
 # MCU name
 MCU = atmega32
@@ -262,7 +262,7 @@ ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 
 
 # Default target.
-all: begin gccversion sizebefore build sizeafter finished end
+all: begin gccversion sizebefore build finished end clean
 
 build: elf hex eep lss sym
 
@@ -390,18 +390,12 @@ extcoff: $(TARGET).elf
 
 
 # Target: clean project.
-clean: begin clean_list2 finished end
-
-clean_list2: clean_list
-	$(REMOVE) $(TARGET).hex
+clean: begin clean_list finished end
 
 clean_list:
-	@echo
-	@echo $(MSG_CLEANING)
 	$(REMOVE) $(TARGET).eep
 	$(REMOVE) $(TARGET).obj
 	$(REMOVE) $(TARGET).cof
-	$(REMOVE) $(TARGET).elf
 	$(REMOVE) $(TARGET).map
 	$(REMOVE) $(TARGET).obj
 	$(REMOVE) $(TARGET).a90
@@ -413,8 +407,8 @@ clean_list:
 	$(REMOVE) $(SRC:.c=.s)
 	$(REMOVE) $(SRC:.c=.d)
 	$(REMOVE) .dep/*
-
-
+	@if [ -f $(TARGET).elf ]; then echo; echo $(MSG_SIZE_AFTER); $(ELFSIZE); fi
+	$(REMOVE) $(TARGET).elf
 
 # Include the dependency files.
 -include $(shell mkdir .dep 2>/dev/null) $(wildcard .dep/*)

@@ -29,15 +29,20 @@
 
 void simpleVisualization(uint8_t *data) {
 	uint8_t *buff;
+	int8_t i, h, max, d;
 
 	buff = buffNew();
-	buffFillRect(buff, 0, data[0] / 31, 0, 0, 0, 7, 1);
-	buffFillRect(buff, 1, data[1] / 31, 0, 1, 0, 7, 1);
-	buffFillRect(buff, 2, data[2] / 31, 0, 2, 0, 7, 1);
-	buffFillRect(buff, 3, data[3] / 31, 0, 3, 0, 7, 1);
-	buffFillRect(buff, 4, data[4] / 31, 0, 4, 0, 7, 1);
-	buffFillRect(buff, 5, data[5] / 31, 0, 5, 0, 7, 1);
-	buffFillRect(buff, 6, data[6] / 31, 0, 6, 0, 7, 1);
+
+	for(i = 0; i < 7; i++) {
+		max = data[i] / 31;
+		
+		for (d = 0; d < 8; d++) {
+			for (h = 0; h < max; h++) {
+				buffSetPixel(buff, i, h, d);
+			}
+		}
+	}
+
 	setImage(buff);
 	buffFree(buff);
 }

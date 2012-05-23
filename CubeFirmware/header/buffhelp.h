@@ -23,6 +23,4 @@
 uint8_t *buffNew(void);
 void buffSetPixel(uint8_t *buffer, uint8_t x, uint8_t y, uint8_t z);
 void buffClearPixel(uint8_t *buffer, uint8_t x, uint8_t y, uint8_t z);
-void buffFillRect(uint8_t *buffer, uint8_t x1, uint8_t y1, uint8_t z1,
-					uint8_t x2, uint8_t y2, uint8_t z2, uint8_t value);
 void buffFree(uint8_t *buffer);

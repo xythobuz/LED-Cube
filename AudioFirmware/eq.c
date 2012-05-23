@@ -57,11 +57,13 @@ uint8_t *equalizerGet(void) {
 		PORTC |= (1 << PC2); // Strobe '1'
 		_delay_us(STROBEDELAY); // create minimal pulse width
 		PORTC &= ~(1 << PC2);
-		adcStartConversion(0x00);
 		_delay_us(READDELAY); // Wait for result to appear
+		adcStartConversion(0x00);
 		result[i] = offset + adcGetByte();
 		_delay_us(STROBEDELAY);
 	}
+
+	PORTC |= (1 << PC3); // Enable reset
 
 	return result;
 }

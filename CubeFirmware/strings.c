@@ -30,7 +30,7 @@ char stringVersion[] PROGMEM = "v2.3 Debug Build\nPROBABLY NOT COMPATIBLE WITH C
 char stringVersion[] PROGMEM = "v2.3 Release\n"; // 0
 #endif
 
-char stringInit[] PROGMEM = "\nInitialized: "; // 1
+char stringInit[] PROGMEM = "Initialized: "; // 1
 char stringSelfTestError[] PROGMEM = "Self-Test Error: 0b"; // 2
 char stringAudioError[] PROGMEM = " => No answer from Audio!\n"; // 3
 char stringMemError[] PROGMEM = " => No answer from Memory!\n"; // 4
@@ -69,10 +69,11 @@ char stringPowerOn[] PROGMEM = "Power-On Reset detected.\n"; // 36
 char stringMinute[] PROGMEM = "Yay! Another minute passed :)\n"; // 37
 char stringAudioMode[] PROGMEM = "Audio Mode!\n"; // 38
 char stringCubeMode[] PROGMEM = "Cube Mode!\n"; // 39
-char stringModeChange[] PROGMEM = "Cube mode changed!\n";
+char stringModeChange[] PROGMEM = "Cube mode entered!\n"; // 40
+char stringModeChange2[] PROGMEM = "Audio mode entered!\n"; // 41
 
 // Last index + 1
-#define STRINGNUM 41
+#define STRINGNUM 42
 
 PGM_P stringTable[STRINGNUM] PROGMEM = { stringVersion, stringSelfTestError, stringInit,
 								stringAudioError, stringMemError, stringMemWriteError,
@@ -84,7 +85,7 @@ PGM_P stringTable[STRINGNUM] PROGMEM = { stringVersion, stringSelfTestError, str
 								stringHelp9, stringInterrupts, stringFrames2, stringDeleted,
 								stringReset, stringWatchdog, stringBrownout, stringNothing,
 								stringExtern, stringJtag, stringPowerOn, stringMinute, stringAudioMode,
-								stringCubeMode, stringModeChange };
+								stringCubeMode, stringModeChange, stringModeChange2 };
 
 char stringNotFoundError[] PROGMEM = "String not found!\n";
 
