@@ -36,6 +36,7 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 	private GraphicsConfiguration gConfig;
 	private Canvas3D cubeCanvas;
 	public Led3D ledView;
+	private Container cp;
 	private JButton editA = new JButton();
 	private JButton editB = new JButton();
 	private JButton editC = new JButton();
@@ -340,7 +341,7 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		int x = (d.width - frameWidth) / 2;
 		int y = (d.height - frameHeight) / 2;
 		setLocation(x, y);
-		Container cp = getContentPane();
+		cp = getContentPane();
 		cp.setLayout(null);
 
 		// ----- 3D Stuff -----
@@ -580,6 +581,9 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		fullScreenButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				ledView.enterFullscreen();
+				dispose();
+				setUndecorated(true);
+				setVisible(true);
 				setLocation(0,0);
 				setSize(700, 700);
 				int w = Toolkit.getDefaultToolkit().getScreenSize().width;
@@ -596,6 +600,9 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		cp.add(exitButton);
 		exitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
+				dispose();
+				//setUndecorated(false);
+				setVisible(true);
 				playAnimationFullscreen.setVisible(false);
 				toggleLegsButtonFullscreen.setVisible(false);
 				setLocation(0,0);
