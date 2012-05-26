@@ -45,6 +45,7 @@
 #include "twi.h"
 #include "strings.h"
 #include "visualizer.h"
+#include "animations.h"
 
 #define NOERROR 0
 // Audio does not answer
@@ -80,7 +81,7 @@ char buffer[11];
 
 #include "builtInFrames.c"
 
-uint8_t DebugDone = 0; // Bit 0: 10s int. count, Bit 1: unused
+uint8_t DebugDone = 0; // Bit 0: 10s int. count, Bit 1: idle switch
 					   // Bit 2: state changed, disable idle
 
 int main(void) {
@@ -176,7 +177,7 @@ int main(void) {
 				i = 0;
 			}
 
-			if (count > 0) {
+			if (count > 0) { // We have frames stored
 				if (isFinished() > length) {
 					// Load next image
 					if (i < (count - 1)) {
@@ -190,15 +191,26 @@ int main(void) {
 					setImage(imageData);
 					free(imageData);
 				}
-			} else {
+			} else { // No frames available
 				if (!(DebugDone & 4)) { // Idle animation allowed
-					if (isFinished() >= IDLELENGTH) {
-						// Should happen every half second
-						setImage(idleAnimation[idleCounter]);
-						if (idleCounter < (IDLEANIMATIONCOUNT - 1)) {
-							idleCounter++;
+					if (DebugDone & 2) {
+						if (idleCounter < numOfAnimations()) {
+							executeAnimation(idleCounter++);
 						} else {
 							idleCounter = 0;
+							DebugDone &= ~(2); // Show frames again
+						}
+					} else {
+						// Show idle frames
+						if (isFinished() >= IDLELENGTH) {
+							// Should happen every half second
+							setImage(idleAnimation[idleCounter]);
+							if (idleCounter < (IDLEANIMATIONCOUNT - 1)) {
+								idleCounter++;
+							} else {
+								idleCounter = 0;
+								DebugDone |= 2; // Show animation
+							}
 						}
 					}
 				}
