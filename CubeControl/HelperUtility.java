@@ -39,9 +39,7 @@ public class HelperUtility {
 	// Inspired by:
 	// http://stackoverflow.com/questions/1611357/how-to-make-a-jar-file-that-include-dll-files
 	static {
-		// System.out.println("Loading Serial Library...");
 		loadFromJar();
-		// System.out.println("Loaded!");
 	}
 
 	/**
@@ -55,7 +53,7 @@ public class HelperUtility {
 			loadLib(path, "Serial.dll");
 		} else if (os.indexOf("mac") > -1) {
 			loadLib(path, "libSerial.jnilib");
-		} else {
+		} else { // Hopefully unix/linux...
 			loadLib(path, "libSerial.so");
 		}
 	}

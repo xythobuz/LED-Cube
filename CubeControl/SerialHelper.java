@@ -283,6 +283,7 @@ public class SerialHelper {
 		while (!t.dataWasSent()) {
 			if ((new Date()).getTime() >= (startdate + (data.length * 1000))) {
 				// More than (length * 1000) milliseconds went by
+				// => 1 second per byte
 				return false;
 			}
 		}
@@ -298,6 +299,7 @@ public class SerialHelper {
 		while (!t.dataIsReady()) {
 			if ((new Date()).getTime() >= (startdate + (length * 1000))) {
 				// More than (length * 1000) milliseconds went by
+				// => 1 second per byte
 				return null;
 			}
 		}
