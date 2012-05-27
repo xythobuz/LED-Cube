@@ -292,7 +292,6 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 						frameList.setSelectedIndex(i);
 						long time1 = (long) worker.getAnimation(animList.getSelectedIndex()).getFrame(frameList.getSelectedIndex()).getTime();
 						long time = (long) (((time1+1) * 1000) / 24);
-						System.out.println("Wert: " + time1 + " Zeit: " + time);
 						try {
 							Thread.sleep(time);
 						} catch (Exception e) {
@@ -601,7 +600,7 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		exitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				dispose();
-				//setUndecorated(false);
+				setUndecorated(false);
 				setVisible(true);
 				playAnimationFullscreen.setVisible(false);
 				toggleLegsButtonFullscreen.setVisible(false);
