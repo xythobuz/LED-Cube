@@ -368,7 +368,7 @@ public class Led3D extends MouseAdapter {
 
 	// create nice background
 	private Background createBackground() {
-		Background bg = new Background(0.8f, 0.4f, 0.0f);
+		Background bg = new Background(1.0f, 1.0f, 1.0f);
 		int radius = canvas.getWidth();
 		bg.setApplicationBounds(new BoundingSphere(new Point3d(0.0, 0.0, 0.0), radius));
 		return bg;
