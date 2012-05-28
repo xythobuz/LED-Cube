@@ -16,29 +16,26 @@ int frameCount = 0;
 
 // return != 0 if error
 int addFrame(char *frame) {
-	char *newMem, *oldMem = mem;
-	int i;
+	char *newMem;
 
-	frameCount++;
-
-	if (oldMem != NULL) {
-		newMem = (char *)malloc(65 * frameCount);
+	if (mem != NULL) {
+		newMem = (char *)malloc(65 * (frameCount + 1));
 		if (newMem == NULL) {
 			return 1;
 		}
-		memcpy(newMem, oldMem, 65 * (frameCount - 1)); // Copy old frames
-		free(oldMem);
+		memcpy(newMem, mem, 65 * frameCount); // Copy old frames
+		free(mem);
 	} else {
-		// oldMem == NULL
-		frameCount = 1;
-		newMem = (char *)malloc(65);
+		frameCount = 0;
+		newMem = (char *)malloc(65 * (frameCount + 1));
 		if (newMem == NULL) {
 			return 1;
 		}
 	}
 
-	memcpy((newMem + (65 * (frameCount - 1))), frame, 65); // Add new frame
+	memcpy((newMem + (65 * frameCount)), frame, 65); // Add new frame
 
+	frameCount++;
 	mem = newMem;
 	return 0;
 }
