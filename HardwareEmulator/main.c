@@ -8,6 +8,7 @@
 #include <strings.h>
 
 #include "serial.h"
+#include "mem.h"
 
 #define VERSION "LED-Cube Emu V1\n"
 
@@ -125,19 +126,125 @@ int sendFrames() {
 	return -1;*/
 	char c;
 	ssize_t size;
-	int a, frameCount, f, d;
-	char data[65];
-
-	c = OK;
-	if (serialWriteTry(&c, 1)) {
+	int a, frameCount, f, d, duration, animationCount;
+	char *data;
+	
+	/*while(keepRunning) {
+		size = serialRead(&c, 1);
+		if(size == 1) {
+			break;
+		} else if (size == -1) {
+			printf("Couldn't read from pseudo terminal");
+		}
+	}*/
+	//Insert check
+	
+	animationCount = 1; //dummy
+	c = animationCount;
+	if(serialWriteTry(&c, 1)) {
 		printf("Could not write to pseudo terminal\n");
-		return -1;
+		return -1;	
 	}
 
-	frameCount = framesStored();
-	printf("FrameCount = %d\n", frameCount);
+	/*while(keepRunning) {
+		size = serialRead(&c, 1);
+		if(size == 1) {
+			break;
+		} else if (size == -1) {
+			printf("Couldn't read from pseudo terminal");
+		}
+	}*/
+	//Insert check
 
+
+	frameCount = framesStored();
+	printf("Sending frameCount = %d\n", frameCount);
+
+	c = frameCount;
+	if(serialWriteTry(&c, 1)) {
+		printf("Could not write to pseudo terminal\n");
+		return -1;	
+	}
+
+	/*while(keepRunning) {
+		size = serialRead(&c, 1);
+		if(size == 1) {
+			break;
+		} else if (size == -1) {
+			printf("Couldn't read from pseudo terminal");
+		}
+	}*/
+	//Insert check
 	
+	duration = 1; //Dummy duration time
+	for(f = 0; f < frameCount; f++){
+		data = getFrame(f);
+		
+		printf("Sending duration = %d of frame %d\n", duration, f);
+		c = duration;
+		
+		if(serialWriteTry(&c, 1)) {
+			printf("Could not write to pseudo terminal\n");
+			return -1;	
+		}
+
+		/*while(keepRunning) {
+			size = serialRead(&c, 1);
+			if(size == 1) {
+				break;
+			} else if (size == -1) {
+				printf("Couldn't read from pseudo terminal");
+			}
+		}*/ //insert check	
+		for(d = 0; d < 64; d++) {
+			c = data[d];
+			
+			if(serialWriteTry(&c, 1)) {
+				printf("Could not write to pseudo terminal\n");
+				return -1;	
+			}
+		}
+		printf("Data of frame %d successfully sent\n", f);
+
+		/*while(keepRunning) {
+			size = serialRead(&c, 1);
+			if(size == 1) {
+				break;
+			} else if (size == -1) {
+				printf("Couldn't read from pseudo terminal");
+			}
+		}*/
+	//Insert check
+	}
+
+	printf("Done sending frames, start sending final sequence\n");
+	c = OK;
+	if(serialWriteTry(&c, 1)) {
+		printf("Could not write to pseudo terminal\n");
+		return -1;	
+	}
+	if(serialWriteTry(&c, 1)) {
+		printf("Could not write to pseudo terminal\n");
+		return -1;	
+	}
+	if(serialWriteTry(&c, 1)) {
+		printf("Could not write to pseudo terminal\n");
+		return -1;	
+	}
+	if(serialWriteTry(&c, 1)) {
+		printf("Could not write to pseudo terminal\n");
+		return -1;	
+	}
+	
+	/*while(keepRunning) {
+		size = serialRead(&c, 1);
+		if(size == 1) {
+			break;
+		} else if (size == -1) {
+			printf("Couldn't read from pseudo terminal");
+		}
+	}*/
+	return 0;	
 }
 
 int recieveFrames() {
