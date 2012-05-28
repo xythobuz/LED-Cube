@@ -62,12 +62,17 @@ public class SerialHelper {
 		short[] data = new short[1];
 		data[0] = OK;
 		if (!writeData(data)) {
-			printErrorMessage("Timeout Probing for Cube");
+			printErrorMessage("Timeout sending probe for Cube");
 			return false;
 		}
 		data = readData(1);
 		if ((data == null) || (data[0] != OK)) {
 			printErrorMessage("No response from cube!");
+			if (data == null) {
+				System.out.println("Probe was null!");
+			} else {
+				System.out.println("Probe was " + data[0]);
+			}
 			return false;
 		}
 		return true;
@@ -85,26 +90,32 @@ public class SerialHelper {
 		// Send download command
 		tmp[0] = 'g';
 		if (!writeData(tmp)) {
-			printErrorMessage("Timout Command");
+			printErrorMessage("Timout sending Command");
 			return null;
 		}
 		data = readData(1);
 		if ((data == null) || (data[0] != OK)) {
 			printErrorMessage("Response Error");
+			if (data == null) {
+				System.out.println("Download was null!");
+			} else {
+				System.out.println("Download was " + data[0]);
+			}
 			return null;
 		}
 
 		// Get animation count
 		data = readData(1);
 		if (data == null) {
-			printErrorMessage("Response Error");
+			printErrorMessage("Response Error.");
+			System.out.println("Did not get animation count!");
 			return null;
 		} else {
 			animationCount = data[0];
 		}
 		tmp[0] = OK;
 		if (!writeData(tmp)) {
-			printErrorMessage("Timout Response");
+			printErrorMessage("Timout acknowledging animation count!");
 			return null;
 		}
 
@@ -118,13 +129,14 @@ public class SerialHelper {
 			data = readData(1);
 			if (data == null) {
 				printErrorMessage("Response Error");
+				System.out.println("Did not get frame count!");
 				return null;
 			} else {
 				frameCount = data[0];
 			}
 			tmp[0] = OK;
 			if (!writeData(tmp)) {
-				printErrorMessage("Timout Response");
+				printErrorMessage("Timout sending response Frame Count.");
 				return null;
 			}
 
@@ -136,13 +148,14 @@ public class SerialHelper {
 				data = readData(1);
 				if (data == null) {
 					printErrorMessage("Response Error");
+					System.out.println("Did not get frame duration!");
 					return null;
 				} else {
 					currentFrame.setTime(data[0]);
 				}
 				tmp[0] = OK;
 				if (!writeData(tmp)) {
-					printErrorMessage("Timout Response");
+					printErrorMessage("Timout sending response Frame Duration");
 					return null;
 				}
 
@@ -150,13 +163,14 @@ public class SerialHelper {
 				data = readData(64);
 				if (data == null) {
 					printErrorMessage("Response Error");
+					System.out.println("Did not get frame data!");
 					return null;
 				} else {
 					currentFrame.setData(data);
 				}
 				tmp[0] = OK;
 				if (!writeData(tmp)) {
-					printErrorMessage("Timout Response");
+					printErrorMessage("Timout sending response Frame Data");
 					return null;
 				}
 
@@ -182,24 +196,34 @@ public class SerialHelper {
 		// Send upload command
 		tmp[0] = 's';
 		if (!writeData(tmp)) {
-			printErrorMessage("Timout Command");
+			printErrorMessage("Timout sending Command");
 			return -1;
 		}
 		data = readData(1);
 		if ((data == null) || (data[0] != OK)) {
-			printErrorMessage("Response Error");
+			printErrorMessage("Response Error Command");
+			if (data == null) {
+				System.out.println("Response Command was null!");
+			} else {
+				System.out.println("Response Command was " + data[0]);
+			}
 			return -1;
 		}
 
 		// Send animation count
 		tmp[0] = (short)worker.size();
 		if (!writeData(tmp)) {
-			printErrorMessage("Timeout numOfAnimations");
+			printErrorMessage("Timeout sending numOfAnimations");
 			return -1;
 		}
 		data = readData(1);
 		if ((data == null) || (data[0] != OK)) {
 			printErrorMessage("Response Error");
+			if (data == null) {
+				System.out.println("Response Count was null!");
+			} else {
+				System.out.println("Response Count was " + data[0]);
+			}
 			return -1;
 		}
 
@@ -208,12 +232,17 @@ public class SerialHelper {
 			// Send frame count
 			tmp[0] = (short)worker.getAnimation(a).size();
 			if (!writeData(tmp)) {
-				printErrorMessage("Timeout numOfFrames");
+				printErrorMessage("Timeout sending numOfFrames");
 				return -1;
 			}
 			data = readData(1);
 			if ((data == null) || (data[0] != OK)) {
 				printErrorMessage("Response Error");
+				if (data == null) {
+				System.out.println("Frame Count was null!");
+			} else {
+				System.out.println("Frame Count was " + data[0]);
+			}
 				return -1;
 			}
 
@@ -222,23 +251,33 @@ public class SerialHelper {
 				// Frame duration
 				tmp[0] = worker.getAnimation(a).getFrame(f).getTime();
 				if (!writeData(tmp)) {
-					printErrorMessage("Timeout Frame duration");
+					printErrorMessage("Timeout sending Frame duration");
 					return -1;
 				}
 				data = readData(1);
 				if ((data == null) || (data[0] != OK)) {
 					printErrorMessage("Response Error");
+					if (data == null) {
+						System.out.println("Duration was null!");
+					} else {
+						System.out.println("Duration was " + data[0]);
+					}
 					return -1;
 				}
 
 				// Frame data
 				if (!writeData(worker.getAnimation(a).getFrame(f).getData())) {
-					printErrorMessage("Timeout Frame");
+					printErrorMessage("Timeout sending Frame");
 					return -1;
 				}
 				data = readData(1);
 				if ((data == null) || (data[0] != OK)) {
 					printErrorMessage("Response Error");
+					if (data == null) {
+						System.out.println("Datawas null!");
+					} else {
+						System.out.println("Data was " + data[0]);
+					}
 					return -1;
 				}
 			}
@@ -251,12 +290,17 @@ public class SerialHelper {
 		tmp[2] = OK;
 		tmp[3] = OK;
 		if (!writeData(tmp)) {
-			printErrorMessage("Timeout Finish");
+			printErrorMessage("Timeout sending Finish");
 			return -1;
 		}
 		data = readData(1);
 		if ((data == null) || (data[0] != OK)) {
 			printErrorMessage("Response Error");
+			if (data == null) {
+				System.out.println("Finish was null!");
+			} else {
+				System.out.println("Finish was " + data[0]);
+			}
 			return -1;
 		}
 		return 0;

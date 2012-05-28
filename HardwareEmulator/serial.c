@@ -1,6 +1,8 @@
 /*
- * POSIX compatible serial port library
- * Uses 8 databits, no parity, 1 stop bit, no handshaking
+ * POSIX compatible
+ * Compatible API to libSerial (SerialHelper)
+ * Opens a pseudoterminal, lets you write to it,
+ * gives name of slave side.
  * By: Thomas Buck <taucher.bodensee@gmail.com>
  * Visit: www.xythobuz.org
  */
@@ -13,6 +15,7 @@
 #include <termios.h>
 #include <dirent.h>
 #include <errno.h>
+#include <string.h>
 
 #include "serial.h"
 
@@ -27,22 +30,23 @@ char *serialOpen() {
 		close(fd);
 	}
 
-	fd = posix_openpt(O_RDWR | O_NOCTTY | O_NDELAY);
+	fd = posix_openpt(O_RDWR | O_NOCTTY);
 	if (fd == -1) {
 		return NULL;
 	}
 
 	// Set rigths
-	if (grantpt(fd) != 0) {
+	if (grantpt(fd) == -1) {
 		return NULL;
 	}
 
 	// Unlock slave
-	if (unlockpt(fd) != 0) {
+	if (unlockpt(fd) == -1) {
 		return NULL;
 	}
+
+	fcntl(fd, F_SETFL, FNDELAY); // read non blocking
 	
-	fcntl(fd, F_SETFL, FNDELAY); // read() isn't blocking'
 	tcgetattr(fd, &options);
 	cfsetispeed(&options, BAUD); // Set speed
 	cfsetospeed(&options, BAUD);

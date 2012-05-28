@@ -53,9 +53,11 @@ int main(int argc, char *argv[]) {
 						printf("Could not write to pseudo terminal\n");
 						return -1;
 					}
+					printf("OK!\n");
 					break;
 
 				case 'h': case 'H':
+					printf("Help\n");
 					if (serialWriteString("(d)elete, (g)et anims, (s)et anims, (v)ersion\n")) {
 						printf("Could not write to pseudo terminal\n");
 						return -1;
@@ -63,6 +65,7 @@ int main(int argc, char *argv[]) {
 					break;
 
 				case 'v': case 'V':
+					printf("Version\n");
 					if (serialWriteString(VERSION)) {
 						printf("Could not write to pseudo terminal\n");
 						return -1;
@@ -70,27 +73,34 @@ int main(int argc, char *argv[]) {
 					break;
 
 				case 's': case 'S':
+					printf("Recieving... ");
 					if (recieveFrames()) {
 						printf("Error while recieving frames!\n");
 						return -1;
 					}
+					printf("Done!\n");
 					break;
 
 				case 'g': case 'G':
+					printf("Sending... ");
 					if (sendFrames()) {
 						printf("Error while sending frames!\n");
 						return -1;
 					}
+					printf("Done!\n");
 					break;
 
 				case 'd': case 'D':
+					printf("Deleting... ");
 					if (deleteFrames()) {
 						printf("Error while deleting frames!\n");
 						return -1;
 					}
+					printf("Done!\n");
 					break;
 
 				default:
+					printf("Unknown. Error!\n");
 					c = ERROR;
 					if (serialWriteTry(&c, 1)) {
 						printf("Could not write to pseudo terminal\n");
@@ -107,15 +117,157 @@ int main(int argc, char *argv[]) {
 }
 
 int sendFrames() {
-
+	char c = ERROR;
+	printf("Not implemented!\n");
+	if (serialWriteTry(&c, 1)) {
+		printf("Could not write to pseudo terminal\n");
+	}
+	return -1;
 }
 
 int recieveFrames() {
+	char c;
+	ssize_t size;
+	int animCount, a, frameCount, f, d;
+	char data[65];
 
+	clearMemory();
+
+	// First send acknowledge
+	c = OK;
+	if (serialWriteTry(&c, 1)) {
+		printf("Could not write to pseudo terminal\n");
+		return -1;
+	}
+
+	printf("AnimationCount");
+	while (1) {
+		size = serialRead(&c, 1);
+		if (size == 1) {
+			break;
+		} else if (size == -1) {
+			printf("Could not read from psuedo terminal!\n");
+			return -1;
+		}
+	}
+	printf(" = %d\n", c);
+	animCount = c;
+
+	c = OK;
+	if (serialWriteTry(&c, 1)) {
+		printf("Could not write to pseudo terminal\n");
+		return -1;
+	}
+
+	for (a = 0; a < animCount; a++) {
+		printf("FrameCount");
+		while (1) {
+			size = serialRead(&c, 1);
+			if (size == 1) {
+				break;
+			} else if (size == -1) {
+				printf("Could not read from psuedo terminal!\n");
+				return -1;
+			}
+		}
+		printf(" = %d\n", c);
+		frameCount = c;
+
+		c = OK;
+		if (serialWriteTry(&c, 1)) {
+			printf("Could not write to pseudo terminal\n");
+			return -1;
+		}
+
+		for (f = 0; f < frameCount; f++) {
+			printf("Duration");
+			while (1) {
+				size = serialRead(&c, 1);
+				if (size == 1) {
+					break;
+				} else if (size == -1) {
+					printf("Could not read from psuedo terminal!\n");
+					return -1;
+				}
+			}
+			printf(" = %d\n", c);
+			data[64] = c;
+
+			printf("Data...");
+			for (d = 0; d < 64; d++) {
+				while (1) {
+					size = serialRead(&c, 1);
+					if (size == 1) {
+						break;
+					} else if (size == -1) {
+						printf("Could not read from psuedo terminal!\n");
+						return -1;
+					}
+				}
+				data[d] = c;
+			}
+			printf(" Done!\n");
+
+			addFrame(data);
+		}
+	}
+
+	while (1) {
+		size = serialRead(&c, 1);
+		if (size == 1) {
+			break;
+		} else if (size == -1) {
+			printf("Could not read from psuedo terminal!\n");
+			return -1;
+		}
+	}
+	while (1) {
+		size = serialRead(&c, 1);
+		if (size == 1) {
+			break;
+		} else if (size == -1) {
+			printf("Could not read from psuedo terminal!\n");
+			return -1;
+		}
+	}
+	while (1) {
+		size = serialRead(&c, 1);
+		if (size == 1) {
+			break;
+		} else if (size == -1) {
+			printf("Could not read from psuedo terminal!\n");
+			return -1;
+		}
+	}
+	while (1) {
+		size = serialRead(&c, 1);
+		if (size == 1) {
+			break;
+		} else if (size == -1) {
+			printf("Could not read from psuedo terminal!\n");
+			return -1;
+		}
+	}
+
+	printf("Got 4 OKs!\n");
+
+	c = OK;
+	if (serialWriteTry(&c, 1)) {
+		printf("Could not write to pseudo terminal\n");
+		return -1;
+	}
+
+	return 0;
 }
 
 int deleteFrames() {
-
+	char c = OK;
+	clearMemory();
+	if (serialWriteTry(&c, 1)) {
+		printf("Could not write to pseudo terminal\n");
+		return -1;
+	}
+	return 0;
 }
 
 int serialWriteString(char *s) {
