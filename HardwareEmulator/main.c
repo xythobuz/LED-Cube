@@ -198,13 +198,10 @@ int recieveFrames() {
 				while (1) {
 					size = serialRead(&c, 1);
 					if (size == 1) {
-						break;
+						break; // We got our data byte
 					} else if (size == -1) {
 						printf("Could not read from psuedo terminal!\n");
 						return -1;
-					} else if (size == 0) {
-						//printf("No data for number %d\n", d);
-						break;
 					}
 				}
 				data[d] = c;
