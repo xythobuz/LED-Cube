@@ -19,25 +19,26 @@ int addFrame(char *frame) {
 	char *newMem, *oldMem = mem;
 	int i;
 
+	frameCount++;
+
 	if (oldMem != NULL) {
 		newMem = (char *)malloc(65 * frameCount);
 		if (newMem == NULL) {
 			return 1;
 		}
-		memcpy(newMem, oldMem, 65 * frameCount); // Copy old frames
+		memcpy(newMem, oldMem, 65 * (frameCount - 1)); // Copy old frames
 		free(oldMem);
 	} else {
 		// oldMem == NULL
-		frameCount = 0;
+		frameCount = 1;
 		newMem = (char *)malloc(65);
 		if (newMem == NULL) {
 			return 1;
 		}
 	}
 
-	memcpy((newMem + (65 * frameCount)), frame, 65); // Add new frame
+	memcpy((newMem + (65 * (frameCount - 1))), frame, 65); // Add new frame
 
-	frameCount++;
 	mem = newMem;
 	return 0;
 }
