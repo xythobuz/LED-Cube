@@ -117,12 +117,27 @@ int main(int argc, char *argv[]) {
 }
 
 int sendFrames() {
-	char c = ERROR;
+	/*char c = ERROR;
 	printf("Not implemented!\n");
 	if (serialWriteTry(&c, 1)) {
 		printf("Could not write to pseudo terminal\n");
 	}
-	return -1;
+	return -1;*/
+	char c;
+	ssize_t size;
+	int a, frameCount, f, d;
+	char data[65];
+
+	c = OK;
+	if (serialWriteTry(&c, 1)) {
+		printf("Could not write to pseudo terminal\n");
+		return -1;
+	}
+
+	frameCount = framesStored();
+	printf("FrameCount = %d\n", frameCount);
+
+	
 }
 
 int recieveFrames() {
