@@ -202,6 +202,9 @@ int recieveFrames() {
 					} else if (size == -1) {
 						printf("Could not read from psuedo terminal!\n");
 						return -1;
+					} else if (size == 0) {
+						//printf("No data for number %d\n", d);
+						break;
 					}
 				}
 				data[d] = c;
@@ -209,6 +212,11 @@ int recieveFrames() {
 			printf(" Done!\n");
 
 			addFrame(data);
+			c = OK;
+			if(serialWriteTry(&c, 1)){
+				printf("Could not write to pseudo terminal\n");
+				return -1;
+			}
 		}
 	}
 
