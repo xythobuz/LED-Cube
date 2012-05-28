@@ -118,103 +118,114 @@ int main(int argc, char *argv[]) {
 }
 
 int sendFrames() {
-	/*char c = ERROR;
-	printf("Not implemented!\n");
-	if (serialWriteTry(&c, 1)) {
-		printf("Could not write to pseudo terminal\n");
-	}
-	return -1;*/
 	char c;
 	ssize_t size;
-	int a, frameCount, f, d, duration, animationCount;
+	int frameCount, f, d;
 	char *data;
 	
-	/*while(keepRunning) {
-		size = serialRead(&c, 1);
-		if(size == 1) {
-			break;
-		} else if (size == -1) {
-			printf("Couldn't read from pseudo terminal");
-		}
-	}*/
-	//Insert check
+	// Acknowledge sending this
+	c = OK;
+	if(serialWriteTry(&c, 1)) {
+		printf("Could not write to pseudo terminal\n");
+		return -1;	
+	}
 	
-	animationCount = 1; //dummy
-	c = animationCount;
+	// Send animation count. We dont store animations --> send 1
+	printf("Sending animation count.\n");
+	c = 1;
 	if(serialWriteTry(&c, 1)) {
 		printf("Could not write to pseudo terminal\n");
 		return -1;	
 	}
 
-	/*while(keepRunning) {
+	// Await OK from Host software
+	while(keepRunning) {
 		size = serialRead(&c, 1);
-		if(size == 1) {
+		if (size == 1) {
 			break;
 		} else if (size == -1) {
 			printf("Couldn't read from pseudo terminal");
+			return -1;
 		}
-	}*/
-	//Insert check
+	}
+	if (c != OK) {
+		printf("Invalid acknowledge from Host (%d)!", c);
+		return -1;
+	}
 
-
+	// Send framecount
 	frameCount = framesStored();
 	printf("Sending frameCount = %d\n", frameCount);
-
 	c = frameCount;
 	if(serialWriteTry(&c, 1)) {
 		printf("Could not write to pseudo terminal\n");
 		return -1;	
 	}
 
-	/*while(keepRunning) {
+	// Await OK from Host software
+	while(keepRunning) {
 		size = serialRead(&c, 1);
-		if(size == 1) {
+		if (size == 1) {
 			break;
 		} else if (size == -1) {
 			printf("Couldn't read from pseudo terminal");
+			return -1;
 		}
-	}*/
-	//Insert check
+	}
+	if (c != OK) {
+		printf("Invalid acknowledge from Host (%d)!", c);
+		return -1;
+	}
 	
-	duration = 1; //Dummy duration time
 	for(f = 0; f < frameCount; f++){
 		data = getFrame(f);
-		
-		printf("Sending duration = %d of frame %d\n", duration, f);
-		c = duration;
-		
+
+		printf("Sending duration = %d of frame %d\n", data[64], f);
+		c = data[64]; // duration at end of frame data
 		if(serialWriteTry(&c, 1)) {
 			printf("Could not write to pseudo terminal\n");
 			return -1;	
 		}
 
-		/*while(keepRunning) {
+		// Await OK from Host software
+		while(keepRunning) {
 			size = serialRead(&c, 1);
-			if(size == 1) {
+			if (size == 1) {
 				break;
 			} else if (size == -1) {
 				printf("Couldn't read from pseudo terminal");
+				return -1;
 			}
-		}*/ //insert check	
+		}
+		if (c != OK) {
+			printf("Invalid acknowledge from Host (%d)!", c);
+			return -1;
+		}
+
+		printf("Sending frame data...");
 		for(d = 0; d < 64; d++) {
 			c = data[d];
-			
 			if(serialWriteTry(&c, 1)) {
 				printf("Could not write to pseudo terminal\n");
 				return -1;	
 			}
 		}
-		printf("Data of frame %d successfully sent\n", f);
+		printf(" %d successfully sent\n", f);
 
-		/*while(keepRunning) {
+		// Await OK from Host software
+		while(keepRunning) {
 			size = serialRead(&c, 1);
-			if(size == 1) {
+			if (size == 1) {
 				break;
 			} else if (size == -1) {
 				printf("Couldn't read from pseudo terminal");
+				return -1;
 			}
-		}*/
-	//Insert check
+		}
+		if (c != OK) {
+			printf("Invalid acknowledge from Host (%d)!", c);
+			return -1;
+		}
 	}
 
 	printf("Done sending frames, start sending final sequence\n");
@@ -236,14 +247,20 @@ int sendFrames() {
 		return -1;	
 	}
 	
-	/*while(keepRunning) {
+	// Await OK from Host software
+	while(keepRunning) {
 		size = serialRead(&c, 1);
-		if(size == 1) {
+		if (size == 1) {
 			break;
 		} else if (size == -1) {
 			printf("Couldn't read from pseudo terminal");
+			return -1;
 		}
-	}*/
+	}
+	if (c != OK) {
+		printf("Invalid acknowledge from Host (%d)!", c);
+	}
+
 	return 0;	
 }
 
