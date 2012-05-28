@@ -141,7 +141,7 @@ int recieveFrames() {
 	}
 
 	printf("AnimationCount");
-	while (1) {
+	while (keepRunning) {
 		size = serialRead(&c, 1);
 		if (size == 1) {
 			break;
@@ -161,7 +161,7 @@ int recieveFrames() {
 
 	for (a = 0; a < animCount; a++) {
 		printf("FrameCount");
-		while (1) {
+		while (keepRunning) {
 			size = serialRead(&c, 1);
 			if (size == 1) {
 				break;
@@ -181,7 +181,7 @@ int recieveFrames() {
 
 		for (f = 0; f < frameCount; f++) {
 			printf("Duration");
-			while (1) {
+			while (keepRunning) {
 				size = serialRead(&c, 1);
 				if (size == 1) {
 					break;
@@ -195,7 +195,7 @@ int recieveFrames() {
 
 			printf("Data...");
 			for (d = 0; d < 64; d++) {
-				while (1) {
+				while (keepRunning) {
 					size = serialRead(&c, 1);
 					if (size == 1) {
 						break; // We got our data byte
@@ -217,7 +217,7 @@ int recieveFrames() {
 		}
 	}
 
-	while (1) {
+	while (keepRunning) {
 		size = serialRead(&c, 1);
 		if (size == 1) {
 			break;
@@ -226,7 +226,7 @@ int recieveFrames() {
 			return -1;
 		}
 	}
-	while (1) {
+	while (keepRunning) {
 		size = serialRead(&c, 1);
 		if (size == 1) {
 			break;
@@ -235,7 +235,7 @@ int recieveFrames() {
 			return -1;
 		}
 	}
-	while (1) {
+	while (keepRunning) {
 		size = serialRead(&c, 1);
 		if (size == 1) {
 			break;
@@ -244,7 +244,7 @@ int recieveFrames() {
 			return -1;
 		}
 	}
-	while (1) {
+	while (keepRunning) {
 		size = serialRead(&c, 1);
 		if (size == 1) {
 			break;
@@ -283,7 +283,7 @@ int serialWriteTry(char *data, size_t length) {
 	int i = 0;
 	int written = 0;
 	int ret;
-	while (1) {
+	while (keepRunning) {
 		ret = serialWrite((data + written), (length - written));
 		if (ret == -1) {
 			i++;
