@@ -193,6 +193,13 @@ int recieveFrames() {
 			printf(" = %d\n", c);
 			data[64] = c;
 
+			// Acknowledge frame duration
+			c = OK;
+			if(serialWriteTry(&c, 1)){
+				printf("Could not write to pseudo terminal\n");
+				return -1;
+			}
+
 			printf("Data...");
 			for (d = 0; d < 64; d++) {
 				while (keepRunning) {
@@ -209,6 +216,8 @@ int recieveFrames() {
 			printf(" Done!\n");
 
 			addFrame(data);
+
+			// Acknowledge frame data
 			c = OK;
 			if(serialWriteTry(&c, 1)){
 				printf("Could not write to pseudo terminal\n");
