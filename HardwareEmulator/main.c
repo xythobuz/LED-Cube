@@ -24,6 +24,8 @@ void intHandler(int dummy);
 
 volatile int keepRunning = 1;
 
+#define printf if(keepRunning)printf
+
 int main(int argc, char *argv[]) {
 	char c;
 	ssize_t size;
@@ -449,6 +451,8 @@ int serialWriteTry(char *data, size_t length) {
 }
 
 void intHandler(int dummy) {
-	keepRunning = 0;
 	printf("\nExiting...\n");
+	keepRunning = 0;
+	serialClose();
+	exit(0);
 }

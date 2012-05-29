@@ -38,6 +38,10 @@ public class SerialHelper {
 	private final short OK = 0x42;
 	private final short ERROR = 0x23;
 
+	// Timeout in milliseconds per byte
+	private final int transmitTimeout = 1000;
+	private final int recieveTimeout = 1000;
+
 	private Frame frame;
 
 	/**
@@ -325,9 +329,7 @@ public class SerialHelper {
 		SerialWriteThread t = new SerialWriteThread(data);
 		t.start();
 		while (!t.dataWasSent()) {
-			if ((new Date()).getTime() >= (startdate + (data.length * 1000))) {
-				// More than (length * 1000) milliseconds went by
-				// => 1 second per byte
+			if ((new Date()).getTime() >= (startdate + (data.length * transmitTimeout))) {
 				return false;
 			}
 		}
@@ -337,16 +339,20 @@ public class SerialHelper {
 	private short[] readData(int length) {
 		// return data read or null if timeout
 		long startdate = (new Date()).getTime();
-
+		short[] result;
 		SerialReadThread t = new SerialReadThread(length);
 		t.start();
 		while (!t.dataIsReady()) {
-			if ((new Date()).getTime() >= (startdate + (length * 1000))) {
-				// More than (length * 1000) milliseconds went by
-				// => 1 second per byte
+			if ((new Date()).getTime() >= (startdate + (length * recieveTimeout))) {
 				return null;
 			}
 		}
-		return t.getSerialData();
+		result = t.getSerialData();
+		if (result == null) {
+			System.out.println("Data read was null!");
+		} else if (result.length == 0) {
+			System.out.println("No data read!");
+		}
+		return result;
 	}
 }

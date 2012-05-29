@@ -45,7 +45,7 @@ char *serialOpen() {
 		return NULL;
 	}
 
-	fcntl(fd, F_SETFL, FNDELAY); // read non blocking
+	// fcntl(fd, F_SETFL, FNDELAY); // read non blocking
 	
 	tcgetattr(fd, &options);
 	cfsetispeed(&options, BAUD); // Set speed
