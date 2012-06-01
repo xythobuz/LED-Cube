@@ -48,6 +48,7 @@ SRC += strings.c
 SRC += buffhelp.c
 SRC += visualizer.c
 SRC += animations.c
+SRC += transmit.c
 
 # List Assembler source files here.
 # Make them always end in a capital .S.  Files ending in a lowercase .s
