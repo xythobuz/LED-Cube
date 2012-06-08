@@ -201,7 +201,6 @@ int main(void) {
 					} else {
 						// Show idle frames
 						if (isFinished() >= IDLELENGTH) {
-							// Should happen every half second
 							setImage(idleAnimation[idleCounter]);
 							if (idleCounter < (IDLEANIMATIONCOUNT - 1)) {
 								idleCounter++;

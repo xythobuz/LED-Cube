@@ -25,52 +25,52 @@
 char buffer[60];
 
 #ifdef DEBUG
-char stringVersion[] PROGMEM = "v2.3 Debug Build\nPROBABLY NOT COMPATIBLE WITH CubeControl Software!\n"; // 0
+const char stringVersion[] PROGMEM = "v2.3 Debug Build\nPROBABLY NOT COMPATIBLE WITH CubeControl Software!\n"; // 0
 #else
-char stringVersion[] PROGMEM = "v2.3 Release\n"; // 0
+const char stringVersion[] PROGMEM = "v2.3 Release\n"; // 0
 #endif
 
-char stringInit[] PROGMEM = "Initialized: "; // 1
-char stringSelfTestError[] PROGMEM = "Self-Test Error: 0b"; // 2
-char stringAudioError[] PROGMEM = " => No answer from Audio!\n"; // 3
-char stringMemError[] PROGMEM = " => No answer from Memory!\n"; // 4
-char stringMemWriteError[] PROGMEM = " => Can't write to Memory!\n"; // 5
-char stringHelp1[] PROGMEM = "(d)elete, (g)et anims, (s)et anims, (v)ersion\n"; // 6
-char stringHelp2[] PROGMEM = "(t)ime, (a)udio, (c)ount, (x)Custom count\n"; // 7
-char stringHelp3[] PROGMEM = "(y)Set fixed animation count\n"; // 8
-char stringHelp4[] PROGMEM = "S(e)lf Test, (m)ode\n"; // 9
-char stringHelp5[] PROGMEM = "Play S(n)ake\n"; // 10
-char stringHelp6[] PROGMEM = "All LEDs Off/On (0/1)\n"; // 11
-char stringHelp7[] PROGMEM = "(2): Test Anim. 1\n"; // 12
-char stringHelp8[] PROGMEM = "(3): All Surface LEDs on\n"; // 13
-char stringTime[] PROGMEM = "System Time: "; // 14
-char stringFrames[] PROGMEM = " Frames stored\n"; // 15
-char stringByte[] PROGMEM = "Send a byte... "; // 16
-char stringWritten[] PROGMEM = " written!\n"; // 17
-char stringCount[] PROGMEM = "Animation count now 8705!\n"; // 18
-char stringSelfTest[] PROGMEM = "Self-Test: 0b"; // 19
-char stringKillCount[] PROGMEM = "Killed Animation Counter!\n"; // 20
-char stringAccessError[] PROGMEM = "Could not access device!\n"; // 21
-char stringAudioData[] PROGMEM = "Audio Data:\n"; // 22
-char stringSnakeControl[] PROGMEM = "Controls: W A S D Q E, x to quit\n"; // 23
-char stringNoMoreHeap[] PROGMEM = "Ran out of Heap!\n"; // 24
-char stringKilledAnimation[] PROGMEM = "Animation aborted!\n"; // 25
-char stringHelp9[] PROGMEM = "(i)nterrupt count, (r)andom, (q)reset\n"; // 26
-char stringInterrupts[] PROGMEM = " Interrupts after 1000msec\n"; // 27
-char stringFrames2[] PROGMEM = " Frames per Second\n"; // 28
-char stringDeleted[] PROGMEM = "Memory deleted!\n"; // 29
-char stringReset[] PROGMEM = "Reset in 500ms. Bye!\n"; // 30
-char stringWatchdog[] PROGMEM = "Watchdog Reset detected.\n"; // 31
-char stringBrownout[] PROGMEM = "Brown-Out Reset detected.\n"; // 32
-char stringNothing[] PROGMEM = "No Reset reason detected.\n"; // 33
-char stringExtern[] PROGMEM = "External Reset detected.\n"; // 34
-char stringJtag[] PROGMEM = "JTAG Reset detected.\n"; // 35
-char stringPowerOn[] PROGMEM = "Power-On Reset detected.\n"; // 36
-char stringMinute[] PROGMEM = "Yay! Another minute passed :)\n"; // 37
-char stringAudioMode[] PROGMEM = "Audio Mode!\n"; // 38
-char stringCubeMode[] PROGMEM = "Cube Mode!\n"; // 39
-char stringModeChange[] PROGMEM = "Cube mode entered!\n"; // 40
-char stringModeChange2[] PROGMEM = "Audio mode entered!\n"; // 41
+const char stringInit[] PROGMEM = "Initialized: "; // 1
+const char stringSelfTestError[] PROGMEM = "Self-Test Error: 0b"; // 2
+const char stringAudioError[] PROGMEM = " => No answer from Audio!\n"; // 3
+const char stringMemError[] PROGMEM = " => No answer from Memory!\n"; // 4
+const char stringMemWriteError[] PROGMEM = " => Can't write to Memory!\n"; // 5
+const char stringHelp1[] PROGMEM = "(d)elete, (g)et anims, (s)et anims, (v)ersion\n"; // 6
+const char stringHelp2[] PROGMEM = "(t)ime, (a)udio, (c)ount, (x)Custom count\n"; // 7
+const char stringHelp3[] PROGMEM = "(y)Set fixed animation count\n"; // 8
+const char stringHelp4[] PROGMEM = "S(e)lf Test, (m)ode\n"; // 9
+const char stringHelp5[] PROGMEM = "Play S(n)ake\n"; // 10
+const char stringHelp6[] PROGMEM = "All LEDs Off/On (0/1)\n"; // 11
+const char stringHelp7[] PROGMEM = "(2): Test Anim. 1\n"; // 12
+const char stringHelp8[] PROGMEM = "(3): All Surface LEDs on\n"; // 13
+const char stringTime[] PROGMEM = "System Time: "; // 14
+const char stringFrames[] PROGMEM = " Frames stored\n"; // 15
+const char stringByte[] PROGMEM = "Send a byte... "; // 16
+const char stringWritten[] PROGMEM = " written!\n"; // 17
+const char stringCount[] PROGMEM = "Animation count now 8705!\n"; // 18
+const char stringSelfTest[] PROGMEM = "Self-Test: 0b"; // 19
+const char stringKillCount[] PROGMEM = "Killed Animation Counter!\n"; // 20
+const char stringAccessError[] PROGMEM = "Could not access device!\n"; // 21
+const char stringAudioData[] PROGMEM = "Audio Data:\n"; // 22
+const char stringSnakeControl[] PROGMEM = "Controls: W A S D Q E, x to quit\n"; // 23
+const char stringNoMoreHeap[] PROGMEM = "Ran out of Heap!\n"; // 24
+const char stringKilledAnimation[] PROGMEM = "Animation aborted!\n"; // 25
+const char stringHelp9[] PROGMEM = "(i)nterrupt count, (r)andom, (q)reset\n"; // 26
+const char stringInterrupts[] PROGMEM = " Interrupts after 1000msec\n"; // 27
+const char stringFrames2[] PROGMEM = " Frames per Second\n"; // 28
+const char stringDeleted[] PROGMEM = "Memory deleted!\n"; // 29
+const char stringReset[] PROGMEM = "Reset in 500ms. Bye!\n"; // 30
+const char stringWatchdog[] PROGMEM = "Watchdog Reset detected.\n"; // 31
+const char stringBrownout[] PROGMEM = "Brown-Out Reset detected.\n"; // 32
+const char stringNothing[] PROGMEM = "No Reset reason detected.\n"; // 33
+const char stringExtern[] PROGMEM = "External Reset detected.\n"; // 34
+const char stringJtag[] PROGMEM = "JTAG Reset detected.\n"; // 35
+const char stringPowerOn[] PROGMEM = "Power-On Reset detected.\n"; // 36
+const char stringMinute[] PROGMEM = "Yay! Another minute passed :)\n"; // 37
+const char stringAudioMode[] PROGMEM = "Audio Mode!\n"; // 38
+const char stringCubeMode[] PROGMEM = "Cube Mode!\n"; // 39
+const char stringModeChange[] PROGMEM = "Cube mode entered!\n"; // 40
+const char stringModeChange2[] PROGMEM = "Audio mode entered!\n"; // 41
 
 // Last index + 1
 #define STRINGNUM 42
