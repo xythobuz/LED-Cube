@@ -23,4 +23,5 @@
 uint8_t *buffNew(void);
 void buffSetPixel(uint8_t *buffer, uint8_t x, uint8_t y, uint8_t z);
 void buffClearPixel(uint8_t *buffer, uint8_t x, uint8_t y, uint8_t z);
+void buffClearAllPixels(uint8_t *buffer);
 void buffFree(uint8_t *buffer);

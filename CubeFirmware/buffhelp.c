@@ -49,6 +49,16 @@ void buffSetPixel(uint8_t *buffer, uint8_t x, uint8_t y, uint8_t z) {
 void buffClearPixel(uint8_t *buffer, uint8_t x, uint8_t y, uint8_t z) {
 	buffer[(8 * (7 - z)) + (7 - y)] &= ~(1 << x);
 }
+void buffClearAllPixels(uint8_t *buffer) {
+uint8_t x,y,z;
+for(y = 7; y >= 0; y--) {	
+		for(x = 0; x < 8; x++) {
+			for(z = 0; z < 8; z++) {
+				buffClearPixel(buffer, x, y, z);
+			}
+		}
+	}
+}
 
 void buffFree(uint8_t *buffer) {
 	free(buffer);
