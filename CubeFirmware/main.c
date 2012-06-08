@@ -202,7 +202,7 @@ int main(void) {
 						// Show idle frames
 						if (isFinished() >= IDLELENGTH) {
 							setImage(idleAnimation[idleCounter]);
-							if (idleCounter < (IDLEANIMATIONCOUNT - 1)) {
+							if (idleCounter < IDLEANIMATIONCOUNT) {
 								idleCounter++;
 							} else {
 								idleCounter = 0;
