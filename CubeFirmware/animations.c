@@ -46,26 +46,22 @@ void executeAnimation(uint8_t id) {
 }
 
 void simpleAnimation(void) {
-	// Call this at least every 500ms
-	wdt_reset();
-	// Else it will reset the cpu
-}
-
-void anotherAnimation(void) {
 	uint8_t *buff;
 	int8_t x, y, z;
 	
 	buff = buffNew();
 
-	//Up-wave (Frames 1-8 of showoff.cube)
-	//We still need to set the Time, I haven't done that yet.
 	for(y = 0; y < 8; y++) {
 		for(x = 0; x < 8; x++) {
 			for(z = 0; z < 8; z++) {
 				buffSetPixel(buff, x, y, z);
 			}
 		}
+
 		setImage(buff);
+		while(!isFinished()) {
+			wdt_reset();
+		}
 	
 		for(x = 0; x < 8; x++) {
 			for(z = 0; z < 8; z++) {
@@ -74,14 +70,18 @@ void anotherAnimation(void) {
 		}
 	}
 	
-	//Down-wave (Frames 9-15 of showoff.cube)
+	// Down-wave (Frames 9-15 of showoff.cube)
 	for(y = 7; y >= 0; y--) {
 		for(x = 0; x < 8; x++) {
 			for(z = 0; z < 8; z++) {
 				buffSetPixel(buff, x, y, z);
 			}
 		}
+
 		setImage(buff);
+		while(!isFinished()) {
+			wdt_reset();
+		}
 	
 		for(x = 0; x < 8; x++) {
 			for(z = 0; z < 8; z++) {
@@ -89,4 +89,8 @@ void anotherAnimation(void) {
 			}
 		}
 	}		
+}
+
+void anotherAnimation(void) {
+
 }
