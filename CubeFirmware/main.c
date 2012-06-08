@@ -190,6 +190,7 @@ int main(void) {
 					free(imageData);
 				}
 			} else { // No frames available
+				executeAnimation(1); //Uhm.... I'm sure this belongs here ;)
 				if (!(DebugDone & 4)) { // Idle animation allowed
 					if (DebugDone & 2) {
 						if (idleCounter < numOfAnimations()) {
