@@ -34,7 +34,7 @@
 #define OK 0x42
 #define ERROR 0x23
 
-#define TRANSTIMEOUT 10000
+#define TRANSTIMEOUT 1500
 
 // These are global variables from main.c
 extern char buffer[11];
@@ -124,6 +124,7 @@ void recieveAnimations(void) {
 	refreshAnimationCount = 1;
 }
 
+// TODO: Rewrite for new Serial API
 void transmitAnimations(void) {
 	// We store no animation information in here
 	// So we have to place all frames in one or more
