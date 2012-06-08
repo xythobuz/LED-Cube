@@ -111,7 +111,7 @@ void simpleAnimation(void) {
 			wdt_reset();
 		}
 	
-		ClearAllPixels(buff)	
+		buffClearAllPixels(buff);
 	}
 
 	//z-axis-wave
@@ -130,19 +130,19 @@ void simpleAnimation(void) {
 		buffClearAllPixels(buff);
 	}
 	
-		for(z = 7; z >= 0; z--) {
-			for(x = 0; x < 8; x++) {
-				for(y = 0; y < 8; y++) {
-					buffSetPixel(buff, x, y, z);
-				}
+	for(z = 7; z >= 0; z--) {
+		for(x = 0; x < 8; x++) {
+			for(y = 0; y < 8; y++) {
+				buffSetPixel(buff, x, y, z);
 			}
+		}
 
-			setImage(buff);
-			while(!isFinished()) {
-				wdt_reset();
-			}
-	
-			ClearAllPixels(buff)	
+		setImage(buff);
+		while(!isFinished()) {
+			wdt_reset();
+		}
+
+		buffClearAllPixels(buff);
 	}
 
 }
