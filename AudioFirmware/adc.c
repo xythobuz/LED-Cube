@@ -26,7 +26,6 @@
 #include "adc.h"
 
 void adcInit(void) {
-	DDRC &= ~(3);
 	ADMUX = 0;
 	ADMUX |= (1 << REFS0); // Ref. Voltage: Vcc
 	ADCSRA |= (1 << ADPS2) | (1 << ADPS0); // Prescaler 64

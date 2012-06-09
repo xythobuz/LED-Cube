@@ -20,10 +20,10 @@
  * You should have received a copy of the GNU General Public License
  * along with LED-Cube.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <stdlib.h>
-#include <stdint.h>
 #include <avr/io.h>
+#include <stdint.h>
 #include <util/delay.h>
+#include <avr/interrupt.h>
 #include <avr/wdt.h>
 
 #include "adc.h"
@@ -34,50 +34,35 @@
 #define F_CPU 16000000L
 #endif
 
-void blinkStatus(void) {
-	PORTB |= (1 << PB2);
-	PORTB &= ~(1 << PB1);
-	_delay_ms(250);
-	PORTB &= ~(1 << PB2);
-	PORTB |= (1 << PB1);
-	_delay_ms(250);
-}
-
 int main(void) {
-	uint8_t *music;
+	uint8_t *music = result;
 
 	MCUCSR = 0;
 	wdt_disable();
 
-	DDRB = 6;
-	DDRC = 12;
-	DDRD = 0;
+	DDRB = 6; // LEDs as Output
+	DDRC = 12; // MSGEQ7 Pins as Output
+	DDRD = 0; // Nothing on this Port!
 	
 	twiInit(0x42); // All TWI action happens completely in the background.
 	adcInit();
 	equalizerInit();
 
-	blinkStatus();
-	blinkStatus();
+	sei(); // Enable interrupts
 
 	wdt_enable(WDTO_500MS); // Enable watchdog reset after 500ms
 
-	music = equalizerGet();
 	twiSetDataToSend(music);
-	free(music);
 
 	while (1) {
 		if (twiDataWasSent()) {
 			PORTB ^= (1 << PB2); // Toggle for every transaction
 			music = equalizerGet();
 			twiSetDataToSend(music);
-			free(music);
 		}
 
 		// Heartbeat
 		PORTB ^= (1 << PB1);
-		_delay_ms(1); // Everything locks if this is removed :(
-		// still don't know why...
 
 		wdt_reset();
 	}

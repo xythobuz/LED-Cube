@@ -21,6 +21,8 @@
  * along with LED-Cube.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+extern uint8_t result[7];
+
 void equalizerInit(void);
 
 // 7 elements in byte array

@@ -68,8 +68,6 @@ void twiInit(uint8_t address) {
 		TWAR = address & ~(1);
 	}
 	TWCR = (1 << TWEN) | (1 << TWEA) | (1 << TWIE); // Enable twi, interrupt and acknowledge bit
-	
-	sei(); // Enable interrupts
 }
 
 void twiSetDataToSend(uint8_t *d) { // 7 bytes
@@ -80,11 +78,11 @@ void twiSetDataToSend(uint8_t *d) { // 7 bytes
 	for (i = 0; i < 7; i++) {
 		data[i] = d[i];
 	}
+	dataSent = 0;
 }
 
 uint8_t twiDataWasSent(void) {
 	if (dataSent != 0) {
-		dataSent = 0;
 		return 1;
 	} else {
 		return 0;

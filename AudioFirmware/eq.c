@@ -22,49 +22,53 @@
  */
 #include <avr/io.h>
 #include <stdint.h>
-#include <stdlib.h>
 #include <util/delay.h>
 
 #include "eq.h"
 #include "adc.h"
 
-#define RESETDELAY 1 /* in µs */
-#define RESETSTROBEDELAY 72 /* in µs */
-#define STROBEDELAY 18 /* in µs */
-#define READDELAY 36 /* in µs */
+#define Trs 72
+#define Ts 19
+#define To 36
 
-#if ((STROBEDELAY * 2) + READDELAY) < 72
-#error Strobe to Strobe Delay too short
-#endif
+uint8_t result[7] = {128, 128, 128, 128, 128, 128, 128};
+
+#define RESETPORT PORTC
+#define STROBEPORT PORTC
+#define RESET PC3
+#define STROBE PC2
+
+#define RESETON RESETPORT |= (1 << RESET)
+#define RESETOFF RESETPORT &= ~(1 << RESET)
+#define STROBEON STROBEPORT |= (1 << STROBE)
+#define STROBEOFF STROBEPORT &= ~(1 << STROBE)
 
 void equalizerInit(void) {
-	DDRC |= 12; // Strobe: PC2
-				// Reset: PC3
-				// Out: ADC0
-	PORTC |= (1 << PC3); // Reset enabled
-	_delay_us(RESETDELAY);
-
+	RESETON;
+	STROBEOFF;
 }
 
 uint8_t *equalizerGet(void) {
-	uint8_t *result = (uint8_t *)malloc(7); // Has to work... If not, were screwed anyway :)
 	uint8_t i, offset = getOffset();
 
-	PORTC &= ~(1 << PC3); // Disable reset
-	_delay_us(RESETSTROBEDELAY); // Wait trs
+	RESETOFF;
+	_delay_us(Trs);
 
 	for (i = 0; i < 7; i++) {
-		PORTC |= (1 << PC2); // Strobe '1'
-		_delay_us(STROBEDELAY); // create minimal pulse width
-		PORTC &= ~(1 << PC2);
-		_delay_us(READDELAY); // Wait for result to appear
-		adcStartConversion(0x00);
+		STROBEON;
+		_delay_us(Ts);
+		STROBEOFF;
+		_delay_us(To); // Wait for result
+
+		// Get result, takes ca. 29ms
+		adcStartConversion(0);
 		result[i] = offset + adcGetByte();
-		_delay_us(STROBEDELAY);
 	}
 
-	PORTC |= (1 << PC3); // Enable reset
-
+	RESETON;
+	asm volatile ("nop");
+	asm volatile ("nop");   // Ensure minimal reset pulse width
+							// 2 NOPs at 16MHz are enough...
 	return result;
 }
 
