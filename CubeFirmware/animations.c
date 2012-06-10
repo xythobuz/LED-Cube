@@ -47,104 +47,110 @@ void executeAnimation(uint8_t id) {
 
 void simpleAnimation(void) {
 	uint8_t *buff;
-	int8_t x, y, z;
+	int8_t x, y, z, i;
 	
 	buff = buffNew();
 
 	//Up-wave
-	for(y = 0; y < 8; y++) {
-		for(x = 0; x < 8; x++) {
-			for(z = 0; z < 8; z++) {
-				buffSetPixel(buff, x, y, z);
+	for(i = 0; i < 3; i++) { //Display frame 3/24 seconds
+		for(y = 0; y < 8; y++) {
+			for(x = 0; x < 8; x++) {
+				for(z = 0; z < 8; z++) {
+					buffSetPixel(buff, x, y, z);
+				}
 			}
-		}
 
-		setImage(buff);
-		while(!isFinished()) {
-			wdt_reset();
-		}
+			setImage(buff);
+			while(!isFinished()) {
+				wdt_reset();
+			}
 	
-		buffClearAllPixels(buff);	
+			buffClearAllPixels(buff);	
+		}
 	}
-	
 	// Down-wave (Frames 9-15 of showoff.cube)
-	for(y = 7; y >= 0; y--) {
-		for(x = 0; x < 8; x++) {
-			for(z = 0; z < 8; z++) {
-				buffSetPixel(buff, x, y, z);
+	for(i = 0; i < 3; i++) {
+		for(y = 7; y >= 0; y--) {
+			for(x = 0; x < 8; x++) {
+				for(z = 0; z < 8; z++) {
+					buffSetPixel(buff, x, y, z);
+				}
 			}
-		}
-
-		setImage(buff);
-		while(!isFinished()) {
-			wdt_reset();
-		}
 	
-		buffClearAllPixels(buff);	
+			setImage(buff);
+			while(!isFinished()) {
+				wdt_reset();
+			}
+		
+			buffClearAllPixels(buff);	
+		}
 	}
 
 	//x-axis wave
-	for(x = 0; x < 8; x++) {
-		for(y = 0; y < 8; y++) {
-			for(z = 0; z < 8; z++) {
-				buffSetPixel(buff, x, y, z);
-			}
-		}
-
-		setImage(buff);
-		while(!isFinished()) {
-			wdt_reset();
-		}
-		
-		buffClearAllPixels(buff);
-	}
-	
-		for(x = 7; x >= 0; x--) {
+	for(i = 0; i < 3; i++){
+		for(x = 0; x < 8; x++) {
 			for(y = 0; y < 8; y++) {
 				for(z = 0; z < 8; z++) {
 					buffSetPixel(buff, x, y, z);
+				}
 			}
-		}
-
-		setImage(buff);
-		while(!isFinished()) {
-			wdt_reset();
-		}
 	
-		buffClearAllPixels(buff);
+			setImage(buff);
+			while(!isFinished()) {
+				wdt_reset();
+			}
+			
+			buffClearAllPixels(buff);
+		}
+		
+			for(x = 7; x >= 0; x--) {
+				for(y = 0; y < 8; y++) {
+					for(z = 0; z < 8; z++) {
+						buffSetPixel(buff, x, y, z);
+				}
+			}
+	
+			setImage(buff);
+			while(!isFinished()) {
+				wdt_reset();
+			}
+		
+			buffClearAllPixels(buff);
+		}
 	}
 
 	//z-axis-wave
-	for(z = 0; z < 8; z++) {
-		for(y = 0; y < 8; y++) {
-			for(x = 0; x < 8; x++) {
-				buffSetPixel(buff, x, y, z);
+	for(i = 0; i < 3; i++) {
+		for(z = 0; z < 8; z++) {
+			for(y = 0; y < 8; y++) {
+				for(x = 0; x < 8; x++) {
+					buffSetPixel(buff, x, y, z);
+				}
 			}
-		}
-
-		setImage(buff);
-		while(!isFinished()) {
-			wdt_reset();
+	
+			setImage(buff);
+			while(!isFinished()) {
+				wdt_reset();
+			}
+			
+			buffClearAllPixels(buff);
 		}
 		
-		buffClearAllPixels(buff);
-	}
-	
-	for(z = 7; z >= 0; z--) {
-		for(x = 0; x < 8; x++) {
-			for(y = 0; y < 8; y++) {
-				buffSetPixel(buff, x, y, z);
+		for(z = 7; z >= 0; z--) {
+			for(x = 0; x < 8; x++) {
+				for(y = 0; y < 8; y++) {
+					buffSetPixel(buff, x, y, z);
+				}
 			}
+	
+			setImage(buff);
+			while(!isFinished()) {
+				wdt_reset();
+			}
+	
+			buffClearAllPixels(buff);
 		}
-
-		setImage(buff);
-		while(!isFinished()) {
-			wdt_reset();
-		}
-
-		buffClearAllPixels(buff);
 	}
-
 }
 
 void anotherAnimation(void) {
