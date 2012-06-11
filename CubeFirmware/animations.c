@@ -39,23 +39,23 @@ D)	Implement your animation!
 */
 
 // Prototypes for all animations
-void simpleAnimationA(void);
-void simpleAnimationB(void);
-void simpleAnimationC(void);
-void simpleAnimationD(void);
-void simpleAnimationE(void);
-void simpleAnimationF(void);
-void simpleAnimationG(void);
-void simpleAnimationH(void);
-void simpleAnimationI(void);
-void simpleAnimationJ(void);
+void upWave(void);
+void downWave(void);
+void xWave1(void);
+void xWave2(void);
+void zWave1(void);
+void zWave2(void);
+void tinyCube(void);
+void smallCube(void);
+void bigCube(void);
+void fullCube(void);
 
 
 // Array of animation functions
 #define NUMOFANIMATIONS 10
-void (*animations[NUMOFANIMATIONS])(void) = { &simpleAnimationA, &simpleAnimationB,
-								&simpleAnimationC, &simpleAnimationD, &simpleAnimationE,
-								&simpleAnimationF, &simpleAnimationG, &simpleAnimationH, &simpleAnimationI, &simpleAnimationJ };
+void (*animations[NUMOFANIMATIONS])(void) = { &upWave, &downWave,
+								&xWave1, &xWave2, &zWave1,
+								&zWave2, &tinyCube, &smallCube, &bigCube, &fullCube };
 
 #define WAVELENGTH 2
 
@@ -69,7 +69,7 @@ void executeAnimation(uint8_t id) {
 	}
 }
 
-void simpleAnimationA(void) {
+void upWave(void) {
 	uint8_t *buff;
 	int8_t x, y, z;
 
@@ -90,7 +90,7 @@ void simpleAnimationA(void) {
 	free(buff);
 }
 
-void simpleAnimationB(void) {
+void downWave(void) {
 	uint8_t *buff;
 	int8_t x, y, z;
 
@@ -111,7 +111,7 @@ void simpleAnimationB(void) {
 	free(buff);
 }
 
-void simpleAnimationC(void) {
+void xWave1(void) {
 	uint8_t *buff;
 	int8_t x, y, z;
 
@@ -132,7 +132,7 @@ void simpleAnimationC(void) {
 	free(buff);
 }
 
-void simpleAnimationD(void) {
+void xWave2(void) {
 	uint8_t *buff;
 	int8_t x, y, z;
 
@@ -152,7 +152,7 @@ void simpleAnimationD(void) {
 	free(buff);
 }
 
-void simpleAnimationE(void) {
+void zWave1(void) {
 	uint8_t *buff;
 	int8_t x, y, z;
 
@@ -173,7 +173,7 @@ void simpleAnimationE(void) {
 	free(buff);
 }
 
-void simpleAnimationF(void) {
+void zWave2(void) {
 	uint8_t *buff;
 	int8_t x, y, z;
 
@@ -193,7 +193,7 @@ void simpleAnimationF(void) {
 	free(buff);
 }
 
-void simpleAnimationG(void) {
+void tinyCube(void) {
 	uint8_t *buff;
 	int8_t x, y, z;
 
@@ -213,7 +213,7 @@ void simpleAnimationG(void) {
 	free(buff);
 }
 
-void simpleAnimationH (void){
+void smallCube (void){
 	uint8_t *buff;
 	int8_t x, y, z;
 
@@ -245,7 +245,7 @@ void simpleAnimationH (void){
 	buffClearAllPixels(buff);
 	free(buff);
 }
-void simpleAnimationI (void) {
+void bigCube (void) {
 	uint8_t *buff;
 	int8_t x, y, z;
 
@@ -278,7 +278,7 @@ void simpleAnimationI (void) {
 
 	free(buff);
 }
-void simpleAnimationJ (void) {
+void fullCube (void) {
 	uint8_t *buff;
 	int8_t x, y, z;
 
