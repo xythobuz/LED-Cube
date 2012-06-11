@@ -45,12 +45,13 @@ void simpleAnimationC(void);
 void simpleAnimationD(void);
 void simpleAnimationE(void);
 void simpleAnimationF(void);
+void simpleAnimationG(void);
 
 // Array of animation functions
-#define NUMOFANIMATIONS 6
+#define NUMOFANIMATIONS 7
 void (*animations[NUMOFANIMATIONS])(void) = { &simpleAnimationA, &simpleAnimationB,
 								&simpleAnimationC, &simpleAnimationD, &simpleAnimationE,
-								&simpleAnimationF };
+								&simpleAnimationF, &simpleAnimationG };
 
 #define WAVELENGTH 2
 
@@ -185,5 +186,100 @@ void simpleAnimationF(void) {
 		}
 		buffClearAllPixels(buff);
 	}
+	free(buff);
+}
+
+void simpleAnimationG(void) {
+	uint8_t *buff;
+	int8_t x, y, z;
+
+	buff = buffNew();
+
+	//Cube_1
+	buffSetPixel(buff, 3, 3, 3);
+	buffSetPixel(buff, 4, 3, 3);
+	buffSetPixel(buff, 4, 4, 3);
+	buffSetPixel(buff, 4, 4, 4);
+	setImage(buff);
+	while(isFinished() < WAVELENGTH) {
+		wdt_reset();	
+	}
+	buffClearAllPixels(buff);
+
+	//Cube_2
+	for(x = 2; x < 6; x++) {
+		for(y = 2; y < 6; y++) {
+			buffSetPixel(buff, x, y, 2);
+			buffSetPixel(buff, x, y, 5);
+		}
+	}
+	for(y = 2; y < 6; y++) {
+		for(z = 2; z < 6; z++) {
+			buffSetPixel(buff, 2, y, z);
+			buffSetPixel(buff, 5, y, z);
+		}
+	}
+	for(x = 2; x < 6; x++) {
+		for(z = 2; z < 6; z++) {
+			buffSetPixel(buff, x, 2, z);
+			buffSetPixel(buff, x, 5, z);
+		}
+	}
+	setImage(buff);
+	while(isFinished() < WAVELENGTH) {
+		wdt_reset();	
+	}
+	buffClearAllPixels(buff);
+
+	//Cube_3
+	for(x = 1; x < 7; x++){
+		for(y = 1; y < 7; y++) {
+			buffSetPixel(buff, x, y, 1);
+			buffSetPixel(buff, x, y, 6);
+		}
+	}
+	for(y = 1; y < 7; y++){
+		for(z = 1; z < 7; z++) {
+			buffSetPixel(buff, 1, y, z);
+			buffSetPixel(buff, 6, y, z);
+		}
+	}
+	for(x = 1; x < 7; x++){
+		for(z = 1; z < 7; z++) {
+			buffSetPixel(buff, x, 1, z);
+			buffSetPixel(buff, x, 6, z);
+		}
+	}
+	setImage(buff);
+	while(isFinished() < WAVELENGTH) {
+		wdt_reset();	
+	}
+	buffClearAllPixels(buff);
+
+	//Cube_4
+	for(x = 0; x < 8; x++){
+		for(y = 0; y < 8; y++) {
+			buffSetPixel(buff, x, y, 0);
+			buffSetPixel(buff, x, y, 7);
+		}
+	}
+	for(y = 0; y < 8; y++){
+		for(z = 0; z < 8; z++) {
+			buffSetPixel(buff, 0, y, z);
+			buffSetPixel(buff, 8, y, z);
+		}
+	}
+	for(x = 0; x < 8; x++){
+		for(z = 0; z < 8; z++) {
+			buffSetPixel(buff, x, 0, z);
+			buffSetPixel(buff, x, 8, z);
+		}
+	}
+	setImage(buff);
+	while(isFinished() < WAVELENGTH) {
+		wdt_reset();	
+	}
+	buffClearAllPixels(buff);
+
 	free(buff);
 }
