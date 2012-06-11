@@ -46,12 +46,16 @@ void simpleAnimationD(void);
 void simpleAnimationE(void);
 void simpleAnimationF(void);
 void simpleAnimationG(void);
+void simpleAnimationH(void);
+void simpleAnimationI(void);
+void simpleAnimationJ(void);
+
 
 // Array of animation functions
-#define NUMOFANIMATIONS 7
+#define NUMOFANIMATIONS 10
 void (*animations[NUMOFANIMATIONS])(void) = { &simpleAnimationA, &simpleAnimationB,
 								&simpleAnimationC, &simpleAnimationD, &simpleAnimationE,
-								&simpleAnimationF, &simpleAnimationG };
+								&simpleAnimationF, &simpleAnimationG, &simpleAnimationH, &simpleAnimationI, &simpleAnimationJ };
 
 #define WAVELENGTH 2
 
@@ -206,6 +210,15 @@ void simpleAnimationG(void) {
 	}
 	buffClearAllPixels(buff);
 
+	free(buff);
+}
+
+void simpleAnimationH (void){
+	uint8_t *buff;
+	int8_t x, y, z;
+
+	buff = buffNew();
+
 	//Cube_2
 	for(x = 2; x < 6; x++) {
 		for(y = 2; y < 6; y++) {
@@ -230,6 +243,13 @@ void simpleAnimationG(void) {
 		wdt_reset();	
 	}
 	buffClearAllPixels(buff);
+	free(buff);
+}
+void simpleAnimationI (void) {
+	uint8_t *buff;
+	int8_t x, y, z;
+
+	buff = buffNew();
 
 	//Cube_3
 	for(x = 1; x < 7; x++){
@@ -256,6 +276,14 @@ void simpleAnimationG(void) {
 	}
 	buffClearAllPixels(buff);
 
+	free(buff);
+}
+void simpleAnimationJ (void) {
+	uint8_t *buff;
+	int8_t x, y, z;
+
+	buff = buffNew();
+	
 	//Cube_4
 	for(x = 0; x < 8; x++){
 		for(y = 0; y < 8; y++) {
