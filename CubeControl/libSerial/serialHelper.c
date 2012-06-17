@@ -81,14 +81,21 @@ JNIEXPORT jstring JNICALL Java_HelperUtility_getThePorts(JNIEnv *env, jclass cla
 
 JNIEXPORT jshortArray JNICALL Java_HelperUtility_readDataNative(JNIEnv *env, jclass class, jint length) {
 	jshortArray arr = (*env)->NewShortArray(env, length);
-	int toBeRead = 0, read, i;
+	int toBeRead = 0, read, i, error = 0;
 	char *data = (char *)malloc(length * sizeof(char));
 	jshort *data2 = (jshort *)malloc(length * sizeof(jshort));
 
 	while (length > 0) {
 		read = serialRead(data + toBeRead, length);
-		toBeRead += read;
-		length -= read;
+		if (read == -1) {
+			error++;
+			if (error > 10) {
+				return (*env)->NewShortArray(env, 0);
+			}
+		} else {
+			toBeRead += read;
+			length -= read;
+		}
 	}
 
 	for (i = 0; i < (*env)->GetArrayLength(env, arr); i++) {
@@ -98,20 +105,34 @@ JNIEXPORT jshortArray JNICALL Java_HelperUtility_readDataNative(JNIEnv *env, jcl
 	return arr;
 }
 
-JNIEXPORT void JNICALL Java_HelperUtility_writeDataNative(JNIEnv *env, jclass class, jshortArray data, jint length) {
-	int toWrite = length, written = 0, now, i;
+JNIEXPORT jboolean JNICALL Java_HelperUtility_writeDataNative(JNIEnv *env, jclass class, jshortArray data, jint length) {
+	int toWrite = length, written = 0, now, i, error = 0;
 	char *dat = (char *)malloc(length * sizeof(char));
 	jshort *dat2 = (jshort *)malloc(length * sizeof(jshort));
 
+	// Get unwritten data from argument, place in dat2
+	// move from dat2 into dat1
+	// write dat1
+	// repeat
+
 	while (toWrite > 0) {
-		(*env)->GetShortArrayRegion(env, data, written, length, dat2);
-		for (i = 0; i < length; i++) {
+		(*env)->GetShortArrayRegion(env, data, written, length, dat2); // Unwritten part of data in dat2
+		for (i = 0; i < (length - written); i++) {
 			dat[i] = dat2[i];
 		}
 		now = serialWrite(dat, toWrite);
-		written += now;
-		toWrite -= now;
+		if (now == -1) {
+			error++;
+			if (error > 10) {
+				return JNI_FALSE;
+			}
+		} else {
+			written += now;
+			toWrite -= now;
+		}
 	}
+
+	return JNI_TRUE;
 }
 
 JNIEXPORT void JNICALL Java_HelperUtility_closePortNative(JNIEnv * env, jclass class) {

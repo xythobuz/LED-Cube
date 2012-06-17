@@ -156,12 +156,6 @@ public class AnimationUtility {
 		return frame;
 	}
 
-	/*
-	 * private static short[] invert(short[] a){ short[] tmp = new
-	 * short[a.length]; int j = 0; for(int i = a.length-1; i >= 0; i--){ tmp[j]
-	 * = a[i]; j++; } return tmp; }
-	 */
-
 	private static short[] concat(short[] a, short[] b) {
 		short[] c = new short[a.length + b.length];
 		System.arraycopy(a, 0, c, 0, a.length);

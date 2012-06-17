@@ -53,7 +53,7 @@ JNIEXPORT jshortArray DLL JNICALL Java_HelperUtility_readDataNative
  * Method:    writeDataNative
  * Signature: ([SI)V
  */
-JNIEXPORT void DLL JNICALL Java_HelperUtility_writeDataNative
+JNIEXPORT jboolean DLL JNICALL Java_HelperUtility_writeDataNative
   (JNIEnv *, jclass, jshortArray, jint);
 
 #ifdef __cplusplus

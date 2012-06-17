@@ -213,23 +213,6 @@ public class cubeWorker {
 	}
 
 	/**
-	 * Send all animations to the cube.
-	 * 
-	 * @param port Name of serial port to use
-	 * @return 0 on success, -1 on error
-	 */
-	public int cubeSendState(String port) {
-		try {
-			SerialHelper sh = new SerialHelper(port, parentFrame);
-			int ret = sh.sendAnimationsToCube(this);
-			sh.closeSerialPort();
-			return ret;
-		} catch (Exception e) {
-			return -1;
-		}
-	}
-
-	/**
 	 * Get the array of animations in this worker.
 	 * @return animation array
 	 */
@@ -238,26 +221,191 @@ public class cubeWorker {
 	}
 
 	/**
+	 * Send all animations to the cube.
+	 * 
+	 * @param port Name of serial port to use
+	 * @return 0 on success, -1 on error
+	 */
+	public int cubeSendState(String port) {
+		int a, f;
+		short[] d;
+
+		if (HelperUtility.openPort(port) == false) {
+			error("Could not open Port!");
+			return -1;
+		}
+
+		// Send command
+		d = new short[1];
+		d[0] = 's';
+		if (HelperUtility.writeData(d, 1) == false) {
+			error("Could not write to port!");
+			HelperUtility.closePort();
+			return -1;
+		}
+
+		// Recieve ack
+		d = HelperUtility.readData(1);
+		if (d.length == 0) {
+			error("Could not read from port!");
+			HelperUtility.closePort();
+			return -1;
+		}
+		if (d[0] != 0x42) {
+			error("Cube not OK!");
+			HelperUtility.closePort();
+			return -1;
+		}
+
+		System.out.println("Command sent!");
+
+		// Send animation count
+		d = new short[1];
+		if (animations.length >= 255) {
+			error("Too many animations");
+			return -1;
+		}
+		d[0] = (short)animations.length;
+		if (HelperUtility.writeData(d, 1) == false) {
+			error("Could not write to port!");
+			HelperUtility.closePort();
+			return -1;
+		}
+
+		// Recieve ack
+		d = HelperUtility.readData(1);
+		if (d.length == 0) {
+			error("Could not read from port!");
+			HelperUtility.closePort();
+			return -1;
+		}
+		if (d[0] != 0x42) {
+			error("Cube not OK!");
+			HelperUtility.closePort();
+			return -1;
+		}
+
+		System.out.println("Animation count sent (" + animations.length + ")!");
+
+		for (a = 0; a < animations.length; a++) {
+			// Send frame count
+			d = new short[1];
+			if (animations[a].size() >= 255) {
+				error("Too many frames!");
+				HelperUtility.closePort();
+				return -1;
+			}
+			d[0] = (short)animations[a].size();
+			if (HelperUtility.writeData(d, 1) == false) {
+				error("Could not write to port!");
+				HelperUtility.closePort();
+				return -1;
+			}
+
+			// Recieve ack
+			d = HelperUtility.readData(1);
+			if (d.length == 0) {
+				error("Could not read from port!");
+				HelperUtility.closePort();
+				return -1;
+			}
+			if (d[0] != 0x42) {
+				error("Cube not OK!");
+				HelperUtility.closePort();
+				return -1;
+			}
+
+			System.out.println("Frame count sent (" + animations[a].size() + ")!");
+
+			for (f = 0; f < animations[a].size(); f++) {
+				// Send duration
+				d = new short[1];
+				d[0] = animations[a].getFrame(f).getTime();
+				if (HelperUtility.writeData(d, 1) == false) {
+					error("Could not write to port!");
+					HelperUtility.closePort();
+					return -1;
+				}
+
+				// Recieve ack
+				d = HelperUtility.readData(1);
+				if (d.length == 0) {
+					error("Could not read from port!");
+					HelperUtility.closePort();
+					return -1;
+				}
+				if (d[0] != 0x42) {
+					error("Cube not OK!");
+					HelperUtility.closePort();
+					return -1;
+				}
+
+				System.out.println("Duration sent (" + animations[a].getFrame(f).getTime() + ")!");
+
+				// Send data
+				d = animations[a].getFrame(f).getData();
+				if (HelperUtility.writeData(d, 64) == false) {
+					error("Could not write to port!");
+					HelperUtility.closePort();
+					return -1;
+				}
+
+				// Recieve ack
+				d = HelperUtility.readData(1);
+				if (d.length == 0) {
+					error("Could not read from port!");
+					HelperUtility.closePort();
+					return -1;
+				}
+				if (d[0] != 0x42) {
+					error("Cube not OK!");
+					HelperUtility.closePort();
+					return -1;
+				}
+
+				System.out.println("Data sent");
+			}
+		}
+
+		// Send finish sequence
+		d = new short[4];
+		d[0] = 0x42;
+		d[1] = 0x42;
+		d[2] = 0x42;
+		d[3] = 0x42;
+		if (HelperUtility.writeData(d, 4) == false) {
+			error("Could not write to port!");
+			HelperUtility.closePort();
+			return -1;
+		}
+
+		// Recieve ack
+		d = HelperUtility.readData(1);
+		if (d.length == 0) {
+			error("Could not read from port!");
+			HelperUtility.closePort();
+			return -1;
+		}
+		if (d[0] != 0x42) {
+			error("Cube not OK!");
+			HelperUtility.closePort();
+			return -1;
+		}
+
+		System.out.println("Uploaded animations!");
+
+		return 0;
+	}
+
+	/**
 	 * Get all animations from the cube, place it in this object
 	 * 
 	 * @param port Name of serial port to use
 	 * @return 0 on success, -1 on error
 	 */
+	// We generate error messages in here
 	public int cubeGetState(String port) {
-		try {
-			SerialHelper sh = new SerialHelper(port, parentFrame);
-			cubeWorker ret = sh.getAnimationsFromCube();
-			sh.closeSerialPort();
-			if (ret == null) {
-				return -1;
-			} else {
-				changedState = true;
-				animations = ret.getAnimationArray();
-				return 0;
-			}
-		} catch (Exception e) {
-			return -1;
-		}
+		return -1;
 	}
 
 	/**
@@ -267,14 +415,41 @@ public class cubeWorker {
 	 * @param port Name of serial port
 	 */
 	public boolean cubeProbeConnected(String port) {
-		try {
-			SerialHelper sh = new SerialHelper(port, parentFrame);
-			boolean response = sh.probeForCube();
-			sh.closeSerialPort();
-			return response;
-		} catch (Exception e) {
+		if (HelperUtility.openPort(port) == false) {
+			error("Could not open Port!");
 			return false;
 		}
+
+		short[] d = new short[1];
+		d[0] = 0x42;
+		if (HelperUtility.writeData(d, 1) == false) {
+			error("Could not write to port!");
+			HelperUtility.closePort();
+			return false;
+		}
+
+		d = HelperUtility.readData(1);
+		if (d.length == 0) {
+			error("Could not read from port!");
+			HelperUtility.closePort();
+			return false;
+		}
+
+		HelperUtility.closePort();
+
+		if (d[0] != 0x42) {
+			error("Answer was not OK");
+			return false;
+		} else {
+			System.out.println("Got probe response!");
+			return true;
+		}
+
+	}
+
+	private void error(String s) {
+		System.out.println(s);
+		parentFrame.errorMessage("Serial Error", s);
 	}
 
 	private void extendArray() {

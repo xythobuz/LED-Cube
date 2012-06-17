@@ -179,9 +179,8 @@ public class HelperUtility {
 	/**
 	 * Read data from Cube
 	 * 
-	 * @param length
-	 *            Amount of data to read
-	 * @return Data read
+	 * @param length Amount of data to read
+	 * @return Data read, empty on error
 	 */
 	public static short[] readData(int length) {
 		try {
@@ -201,16 +200,19 @@ public class HelperUtility {
 	 *            Data to write
 	 * @param length
 	 *            Length of data
+	 *
+	 * @return TRUE on success, FALSE on error
 	 */
-	public static void writeData(short[] data, int length) {
+	public static boolean writeData(short[] data, int length) {
 		try {
-			writeDataNative(data, length);
+			return writeDataNative(data, length);
 		} catch (UnsatisfiedLinkError e) {
 			System.out.println("ERROR: Library not loaded! (writeData)");
+			return false;
 		}
 	}
 
-	private static native void writeDataNative(short[] data, int length);
+	private static native boolean writeDataNative(short[] data, int length);
 
 	// http://thomaswabner.wordpress.com/2007/10/09/fast-stream-copy-using-javanio-channels/
 	private static void fastChannelCopy(ReadableByteChannel src, WritableByteChannel dest) throws IOException {
