@@ -598,15 +598,15 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 				setSize(700, 700);
 				int w = Toolkit.getDefaultToolkit().getScreenSize().width;
 				int h = Toolkit.getDefaultToolkit().getScreenSize().height;
-				setSize(w - 5, h - 30);
+				setSize(w - 0, h - 0);
 				playAnimationFullscreen.setVisible(true);
 				toggleLegsButtonFullscreen.setVisible(true);
-				cubeCanvas.setBounds(0, 0, w - 5, h - 80);
+				cubeCanvas.setBounds(0, 0, w - 0, h - 35);
 			}
 		});
 	
 		exitButton = new JButton("Exit Fullscreen");
-		exitButton.setBounds(Toolkit.getDefaultToolkit().getScreenSize().width-150, Toolkit.getDefaultToolkit().getScreenSize().height-80, 150, 25);
+		exitButton.setBounds(Toolkit.getDefaultToolkit().getScreenSize().width-150, Toolkit.getDefaultToolkit().getScreenSize().height-30, 150, 25);
 		cp.add(exitButton);
 		exitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -636,7 +636,7 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		});
 	
 		playAnimationFullscreen.setText("Play");
-		playAnimationFullscreen.setBounds(Toolkit.getDefaultToolkit().getScreenSize().width-310, Toolkit.getDefaultToolkit().getScreenSize().height-80, 150, 25);
+		playAnimationFullscreen.setBounds(Toolkit.getDefaultToolkit().getScreenSize().width-310, Toolkit.getDefaultToolkit().getScreenSize().height-30, 150, 25);
 		playAnimationFullscreen.setVisible(false);
 		cp.add(playAnimationFullscreen);
 		playAnimationFullscreen.addActionListener(new ActionListener() {
@@ -645,7 +645,7 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 			}
 		});
 
-		toggleLegsButtonFullscreen.setBounds(Toolkit.getDefaultToolkit().getScreenSize().width-470, Toolkit.getDefaultToolkit().getScreenSize().height-80, 150, 25);
+		toggleLegsButtonFullscreen.setBounds(Toolkit.getDefaultToolkit().getScreenSize().width-470, Toolkit.getDefaultToolkit().getScreenSize().height-30, 150, 25);
 		toggleLegsButtonFullscreen.setText("Hide legs");
 		toggleLegsButtonFullscreen.setVisible(false);
 		cp.add(toggleLegsButtonFullscreen);

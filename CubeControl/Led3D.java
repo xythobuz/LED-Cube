@@ -100,7 +100,7 @@ public class Led3D extends MouseAdapter {
 
 		fullScreenMat = new Matrix4d();
 		fullScreenMat.setRow(0, 0.7597, -0.0204, 0.64926, 0.68);
-		fullScreenMat.setRow(1, -0.08, -0.995, 0.061, 0.7);
+		fullScreenMat.setRow(1, -0.08, -0.995, 0.061, 0.44);
 		fullScreenMat.setRow(2, 0.64473, -0.09786, -0.758, -22.88);
 		fullScreenMat.setRow(3, 0.0, 0.0, 0.0, 1.0);
 
@@ -314,7 +314,7 @@ public class Led3D extends MouseAdapter {
 		
 		if(inFullscreen){
 			mat.setRow(0, 0.7597, -0.0204, 0.64926, 0.68);
-			mat.setRow(1, -0.08, -0.995, 0.061, 0.7);
+			mat.setRow(1, -0.08, -0.995, 0.061, 0.44);
 			mat.setRow(2, 0.64473, -0.09786, -0.758, -22.88);
 			mat.setRow(3, 0.0, 0.0, 0.0, 1.0);	
 		} else {
