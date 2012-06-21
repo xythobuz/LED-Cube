@@ -74,6 +74,7 @@ void printTime(void);
 uint8_t shouldRestart = 0;
 uint8_t refreshAnimationCount = 1;
 uint8_t lastButtonState = 0;
+uint8_t maxButtonState = 0;
 uint8_t mcusr_mirror;
 char buffer[11];
 
@@ -85,7 +86,7 @@ uint8_t DebugDone = 0; // Bit 0: 10s int. count, Bit 1: idle switch
 int main(void) {
 	uint8_t *audioData = NULL;
 	uint8_t *imageData = NULL;
-	uint8_t i, length = 0, lastMode;
+	uint8_t i, length = 0;
 	uint16_t count;
 	uint64_t lastChecked;
 	uint8_t idleCounter = 0;
@@ -147,10 +148,12 @@ int main(void) {
 	}
 #endif
 
-	lastMode = audioModeSelected();
+	maxButtonState = numberOfVisualizations() + 1; // All visualizations and anim mode
+
+	audioModeSelected();
 	lastChecked = getSystemTime();
 
-	i = 0;
+	i = 0; // Image count
 	count = getAnimationCount();
 
 	while (1) {
@@ -159,12 +162,13 @@ int main(void) {
 			wdt_reset();
 		}
 
-		if(lastMode) {
-			// Get Audio Data and visualize it
+		if(lastButtonState >= 1) {
+			// Get Audio Data and visualize it.
+			// Visualization id is in (lastButtonState - 1)
 			if (isFinished()) {
 				audioData = getAudioData(); // Not malloc'ed => Don't free
 				if (audioData != NULL) {
-					simpleVisualization(audioData);
+					runVisualization(audioData, lastButtonState - 1);
 				}
 			}
 		} else {
@@ -237,13 +241,36 @@ int main(void) {
 #endif
 
 		if ((getSystemTime() - lastChecked) > 150) { // Check button state every 150ms
-			lastMode = audioModeSelected();
+			audioModeSelected();
 			lastChecked = getSystemTime();
 		} 
 	}
 
 	close();
 	return 0;
+}
+
+uint8_t audioModeSelected(void) {
+	// Pushbutton: PB0, Low active
+
+	if (!(PINB & (1 << PB0))) {
+		// Button pushed
+		if (lastButtonState < (maxButtonState - 1)) {
+			lastButtonState++;
+		} else {
+			lastButtonState = 0;
+		}
+
+#ifdef DEBUG
+		if (lastButtonState) {
+			serialWriteString(getString(38));
+		} else {
+			serialWriteString(getString(39));
+		}
+#endif
+
+	}
+	return lastButtonState;
 }
 
 #ifdef DEBUG
@@ -510,26 +537,3 @@ void printTime(void) {
 	}
 }
 #endif
-
-uint8_t audioModeSelected(void) {
-	// Pushbutton: PB0, Low active
-
-	if (!(PINB & (1 << PB0))) {
-		// Button pushed
-		if (lastButtonState == 0) {
-			lastButtonState = 1;
-		} else {
-			lastButtonState = 0;
-		}
-
-#ifdef DEBUG
-		if (lastButtonState) {
-			serialWriteString(getString(38));
-		} else {
-			serialWriteString(getString(39));
-		}
-#endif
-
-	}
-	return lastButtonState;
-}

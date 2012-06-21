@@ -20,5 +20,5 @@
  * You should have received a copy of the GNU General Public License
  * along with LED-Cube.  If not, see <http://www.gnu.org/licenses/>.
  */
-void simpleVisualization(uint8_t *data);
-void wave3DVisualization(uint8_t *data);
+uint8_t numberOfVisualizations(void);
+void runVisualization(uint8_t *data, uint8_t id);

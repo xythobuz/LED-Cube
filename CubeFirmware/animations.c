@@ -195,7 +195,6 @@ void zWave2(void) {
 
 void tinyCube(void) {
 	uint8_t *buff;
-	int8_t x, y, z;
 
 	buff = buffNew();
 
@@ -245,6 +244,7 @@ void smallCube (void){
 	buffClearAllPixels(buff);
 	free(buff);
 }
+
 void bigCube (void) {
 	uint8_t *buff;
 	int8_t x, y, z;
@@ -278,6 +278,7 @@ void bigCube (void) {
 
 	free(buff);
 }
+
 void fullCube (void) {
 	uint8_t *buff;
 	int8_t x, y, z;

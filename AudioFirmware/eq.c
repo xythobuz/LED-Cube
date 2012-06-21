@@ -46,6 +46,7 @@ uint8_t result[7] = {128, 128, 128, 128, 128, 128, 128};
 void equalizerInit(void);
 uint8_t *equalizerGet(void);
 void calcMultiplicator(uint8_t *d);
+void heightenTreble(uint8_t *d);
 void filterNoise(uint8_t *data);
 uint8_t getOffset(void);
 
@@ -74,8 +75,10 @@ uint8_t *equalizerGet(void) {
 	asm volatile ("nop"); // Ensure minimal reset pulse width
 	asm volatile ("nop"); // 2 NOPs at 16MHz are enough...
 
-	filterNoise(result);
-	calcMultiplicator(result);
+	filterNoise(result); // Filter lower values
+	heightenTreble(result); // Heighten higher frequencies, cause they seem damped
+	calcMultiplicator(result); // Multiply with Poti Position
+	filterNoise(result); // Filter lower values
 
 	return result;
 }
@@ -89,11 +92,15 @@ void calcMultiplicator(uint8_t *d) {
 	}
 }
 
+void heightenTreble(uint8_t *d) {
+	d[6] = d[5] * 10 / 15; // Get practically nothing on this channel. So fake something...
+}
+
 void filterNoise(uint8_t *data) {
 	uint8_t i;
 	for (i = 0; i < 7; i++) {
-		if (data[i] <= 40) {
-			data[i] = 0;
+		if (data[i] < 60) {
+			data[i] = data[i] * 10 / 15; // / 1.5
 		}
 	}
 }

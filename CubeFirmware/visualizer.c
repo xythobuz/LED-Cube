@@ -27,30 +27,59 @@
 #include <cube.h>
 #include <buffhelp.h>
 
+void simpleVisualization(uint8_t *data);
+void fullDepthVisualization(uint8_t *data);
+
+#define NUMOFVISUALIZATIONS 2
+
+void (*visualizations[NUMOFVISUALIZATIONS])(uint8_t *data) = { &simpleVisualization,
+													&fullDepthVisualization };
+
+uint8_t numberOfVisualizations(void) {
+	return NUMOFVISUALIZATIONS;
+}
+
+void runVisualization(uint8_t *data, uint8_t id) {
+	if (id < NUMOFVISUALIZATIONS)
+		visualizations[id](data);
+}
+
+void simpleVUMeter(uint8_t *data, uint8_t *buff, uint8_t z) {
+	uint8_t i, h, max;
+	for(i = 0; i < 7; i++) {
+		max = data[i] / 31;
+		for (h = 0; h < max; h++) {
+			if (i == 0) {
+				buffSetPixel(buff, i, h / 2, z);
+			}
+			buffSetPixel(buff, i + 1, h, z);
+		}
+	}
+}
+
 void simpleVisualization(uint8_t *data) {
 	uint8_t *buff;
-	int8_t i, h, max, d;
-
 	buff = buffNew();
 
 	buffClearAllPixels(buff);
 
-	for(i = 0; i < 7; i++) {
-		max = data[i] / 31;
-		
-		// d = 7;
-		for (d = 0; d < 8; d++) {
-			// h = max;
-			for (h = 0; h < max; h++) {
-				buffSetPixel(buff, i, h, d);
-			}
-		}
-	}
+	simpleVUMeter(data, buff, 7);
 
 	setImage(buff);
 	buffFree(buff);
 }
 
-void wave3DVisualization(uint8_t *data) {
+void fullDepthVisualization(uint8_t *data) {
+	uint8_t *buff;
+	uint8_t i;
+	buff = buffNew();
 
+	buffClearAllPixels(buff);
+
+	for (i = 0; i < 8; i++) {
+		simpleVUMeter(data, buff, i);
+	}
+
+	setImage(buff);
+	buffFree(buff);
 }
