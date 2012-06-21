@@ -33,10 +33,14 @@ void simpleVisualization(uint8_t *data) {
 
 	buff = buffNew();
 
+	buffClearAllPixels(buff);
+
 	for(i = 0; i < 7; i++) {
 		max = data[i] / 31;
 		
+		// d = 7;
 		for (d = 0; d < 8; d++) {
+			// h = max;
 			for (h = 0; h < max; h++) {
 				buffSetPixel(buff, i, h, d);
 			}

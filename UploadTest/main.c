@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <strings.h>
+#include <time.h>
 
 #include "serial.h"
 
@@ -20,15 +21,24 @@ volatile int keepRunning = 1;
 int main(int argc, char *argv[]) {
 	char c;
 	int i, f;
-	
-	if (argc != 2) {
-		printf("Usage: %s /dev/port\n", argv[0]);
+	int animationCount = 1;
+	int frameCount = 2;
+	int duration = 3;
+	int data = -1;
+
+	if (argc < 2) {
+		printf("Usage:\n%s /dev/port [-d 0xff]\n", argv[0]);
 		return 0;
 	}
 
 	if (serialOpen(argv[1]) != 0) {
 		printf("Could not open port: %s\n", argv[1]);
 		return 0;
+	}
+
+	if ((argc >= 4) && (strcmp(argv[2], "-d") == 0)) {
+		sscanf(argv[3], "%x", &data);
+		frameCount = 1;
 	}
 
 	signal(SIGINT, intHandler);
@@ -47,7 +57,7 @@ int main(int argc, char *argv[]) {
 	readAck();
 
 	printf("\tSending anim count (1)...");
-	c = 1;
+	c = (char)animationCount;
 	if (serialWriteTry(&c, 1) != 0) {
 		printf(" Could not send it!\n");
 		suicide;
@@ -57,7 +67,7 @@ int main(int argc, char *argv[]) {
 	readAck();
 
 	printf("\tSending frame count (2)...");
-	c = 2;
+	c = (char)frameCount;
 	if (serialWriteTry(&c, 1) != 0) {
 		printf(" Could not send it!\n");
 		suicide;
@@ -66,9 +76,9 @@ int main(int argc, char *argv[]) {
 
 	readAck();
 
-	for (f = 0; f < 2; f++) {
+	for (f = 0; f < frameCount; f++) {
 		printf("\tSending duration (3)...");
-		c = 3;
+		c = (char)duration;
 		if (serialWriteTry(&c, 1) != 0) {
 			printf(" Could not send it!\n");
 			suicide;
@@ -79,29 +89,25 @@ int main(int argc, char *argv[]) {
 
 		printf("\tSending data");
 		
-		if (f == 0) {
-			for(i = 0; i < 64; i++) {
-				c = (char)i; // Some test data
-				if (serialWriteTry(&c, 1) != 0) {
-					printf(" Error while sending!\n");
-					suicide;
+		for(i = 0; i < 64; i++) {
+			if (data == -1) {
+				if (f == 0) {
+					c = (char)i; // Some test data
 				} else {
-					printf(".");
+					c = (char)(63 - i);
 				}
+			} else {
+				c = (char)data;
 			}
-			printf(" Success!\n");
-		} else {
-			for(i = 0; i < 64; i++) {
-				c = (char)63 - i; // Some test data
-				if (serialWriteTry(&c, 1) != 0) {
-					printf(" Error while sending!\n");
-					suicide;
-				} else {
-					printf(".");
-				}
+
+			if (serialWriteTry(&c, 1) != 0) {
+				printf(" Error while sending!\n");
+				suicide;
+			} else {
+				printf(".");
 			}
-			printf(" Success!\n");
 		}
+		printf(" Success!\n");
 
 		readAck();
 	}
@@ -150,6 +156,9 @@ int serialReadTry(char *data, size_t length) {
 	int i = 0;
 	int written = 0;
 	int ret;
+	time_t start, end;
+	start = time(NULL);
+
 	while (keepRunning) {
 		ret = serialRead((data + written), (length - written));
 		if (ret == -1) {
@@ -162,6 +171,11 @@ int serialReadTry(char *data, size_t length) {
 		}
 		if (written == length) {
 			break;
+		}
+		end = time(NULL);
+		if (difftime(start, end) > 2) {
+			printf("Timeout went by. Exit!");
+			suicide;
 		}
 	}
 	return 0;

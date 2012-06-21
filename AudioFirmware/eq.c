@@ -43,13 +43,19 @@ uint8_t result[7] = {128, 128, 128, 128, 128, 128, 128};
 #define STROBEON STROBEPORT |= (1 << STROBE)
 #define STROBEOFF STROBEPORT &= ~(1 << STROBE)
 
+void equalizerInit(void);
+uint8_t *equalizerGet(void);
+void calcMultiplicator(uint8_t *d);
+void filterNoise(uint8_t *data);
+uint8_t getOffset(void);
+
 void equalizerInit(void) {
 	RESETON;
 	STROBEOFF;
 }
 
 uint8_t *equalizerGet(void) {
-	uint8_t i, offset = getOffset();
+	uint8_t i;
 
 	RESETOFF;
 	_delay_us(Trs);
@@ -60,19 +66,39 @@ uint8_t *equalizerGet(void) {
 		STROBEOFF;
 		_delay_us(To); // Wait for result
 
-		// Get result, takes ca. 29ms
 		adcStartConversion(0);
-		result[i] = offset + adcGetByte();
+		result[i] = adcGetByte();
 	}
 
 	RESETON;
-	asm volatile ("nop");
-	asm volatile ("nop");   // Ensure minimal reset pulse width
-							// 2 NOPs at 16MHz are enough...
+	asm volatile ("nop"); // Ensure minimal reset pulse width
+	asm volatile ("nop"); // 2 NOPs at 16MHz are enough...
+
+	filterNoise(result);
+	calcMultiplicator(result);
+
 	return result;
+}
+
+void calcMultiplicator(uint8_t *d) {
+	uint8_t i;
+	uint16_t multiplicator = ((uint16_t)getOffset() + 100) / 10;
+
+	for (i = 0; i < 7; i++) {
+		d[i] = (d[i] * multiplicator) / 10;
+	}
+}
+
+void filterNoise(uint8_t *data) {
+	uint8_t i;
+	for (i = 0; i < 7; i++) {
+		if (data[i] <= 40) {
+			data[i] = 0;
+		}
+	}
 }
 
 uint8_t getOffset(void) {
 	adcStartConversion(0x01);
-	return (adcGetByte() / 2);
+	return adcGetByte();
 }

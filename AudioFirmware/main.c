@@ -60,10 +60,6 @@ int main(void) {
 			music = equalizerGet();
 			twiSetDataToSend(music);
 		}
-
-		// Heartbeat
-		PORTB ^= (1 << PB1);
-
 		wdt_reset();
 	}
 
