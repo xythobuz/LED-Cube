@@ -26,10 +26,6 @@
 #include <stdlib.h>
 #include <util/atomic.h>
 
-#ifdef DEBUG
-#include "serial.h"
-#include "strings.h"
-#endif
 #include "cube.h"
 
 #ifndef F_CPU
@@ -161,9 +157,6 @@ void initCube(void) {
 				toggleFlag = COUNT2; // Ensure next interrupts starts displaying
 			}
 			while(imgFlag < 1); // Wait for frame to display
-			/* ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-				imgBuffer[x][y] |= (0xFF); // Clear pixel
-			} */
 		}
 	}
 

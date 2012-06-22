@@ -35,7 +35,4 @@ extern void close(void);
 
 extern void fillBuffer(uint8_t val);
 
-// For debugging, not normal operation:
-extern void setFet(uint8_t data);
-extern void setLatch(uint8_t latchNr, uint8_t data);
 extern uint32_t getTriggerCount(void);

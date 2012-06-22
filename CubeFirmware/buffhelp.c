@@ -30,9 +30,7 @@ uint8_t *buffNew(void) {
 	uint8_t i;
 	uint8_t *tmp = (uint8_t *)malloc(64);
 	if (tmp == NULL) {
-#ifdef DEBUG
-		serialWriteString(getString(24));
-#endif
+		serialWriteString(getString(24)); // Display warning, don't care for CubeControl
 		while(1); // Ran out of heap => Watchdog Reset
 	}
 	for (i = 0; i < 64; i++) {

@@ -8,8 +8,7 @@ You can find the schematic as png and Eagle file in this directory.
 
 ## Firmware
 
-The firmware of the Controller is yet to be tested...
-It uses [Peter Fleury's TWI Library](http://homepage.hispeed.ch/peterfleury/avr-software.html).
+2 Firmwares, for the AtMega8 TWI Slave and for the Atmega32. Currently in development.
 
 ## Cube Control
 

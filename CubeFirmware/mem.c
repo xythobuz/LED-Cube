@@ -26,10 +26,8 @@
 #include <stdint.h>
 #include "twi.h"
 #include "mem.h"
-#ifdef DEBUG
 #include "serial.h"
 #include "strings.h"
-#endif
 
 // address is a number between (inclusive) zero and 131071
 uint8_t memGetByte(uint32_t address) {
@@ -65,9 +63,7 @@ uint8_t *memGetBytes(uint32_t address, uint8_t length) {
 	addB = address & 0xFF;
 	ret = (uint8_t *)malloc(length); // Allocate memory for values read
 	if (ret == NULL) {
-#ifdef DEBUG
 		serialWriteString(getString(24));
-#endif
 		return NULL;
 	}
 

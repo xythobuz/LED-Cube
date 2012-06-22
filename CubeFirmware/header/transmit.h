@@ -23,7 +23,4 @@
 
 void recieveAnimations(void);
 void transmitAnimations(void);
-
-#ifdef DEBUG
 void sendAudioData(void);
-#endif

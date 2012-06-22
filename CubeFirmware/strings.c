@@ -24,12 +24,7 @@
 
 char buffer[60];
 
-#ifdef DEBUG
-const char stringVersion[] PROGMEM = "v2.3 Debug Build\nPROBABLY NOT COMPATIBLE WITH CubeControl Software!\n"; // 0
-#else
-const char stringVersion[] PROGMEM = "v2.3 Release\n"; // 0
-#endif
-
+const char stringVersion[] PROGMEM = "v2.4\n"; // 0
 const char stringSelfTestError[] PROGMEM = "Self-Test Error: 0b"; // 1
 const char stringInit[] PROGMEM = "Initialized: "; // 2
 const char stringAudioError[] PROGMEM = " => No answer from Audio!\n"; // 3
@@ -60,15 +55,15 @@ const char stringInterrupts[] PROGMEM = " Interrupts after 1000msec\n"; // 27
 const char stringFrames2[] PROGMEM = " Frames per Second\n"; // 28
 const char stringDeleted[] PROGMEM = "Memory deleted!\n"; // 29
 const char stringReset[] PROGMEM = "Reset in 500ms. Bye!\n"; // 30
-const char stringWatchdog[] PROGMEM = "Watchdog Reset detected.\n"; // 31
-const char stringBrownout[] PROGMEM = "Brown-Out Reset detected.\n"; // 32
-const char stringNothing[] PROGMEM = "No Reset reason detected.\n"; // 33
-const char stringExtern[] PROGMEM = "External Reset detected.\n"; // 34
-const char stringJtag[] PROGMEM = "JTAG Reset detected.\n"; // 35
-const char stringPowerOn[] PROGMEM = "Power-On Reset detected.\n"; // 36
+const char stringWatchdog[] PROGMEM = ""; // 31
+const char stringBrownout[] PROGMEM = ""; // 32
+const char stringNothing[] PROGMEM = ""; // 33
+const char stringExtern[] PROGMEM = ""; // 34
+const char stringJtag[] PROGMEM = ""; // 35
+const char stringPowerOn[] PROGMEM = ""; // 36
 const char stringMinute[] PROGMEM = "Yay! Another minute passed :)\n"; // 37
-const char stringAudioMode[] PROGMEM = "Audio Mode!\n"; // 38
-const char stringCubeMode[] PROGMEM = "Cube Mode!\n"; // 39
+const char stringAudioMode[] PROGMEM = ""; // 38
+const char stringCubeMode[] PROGMEM = ""; // 39
 const char stringModeChange[] PROGMEM = "Cube mode entered!\n"; // 40
 const char stringModeChange2[] PROGMEM = "Audio mode entered!\n"; // 41
 

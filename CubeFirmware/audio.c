@@ -26,9 +26,6 @@
 
 #include "twi.h"
 #include "audio.h"
-#ifdef DEBUG
-#include "serial.h"
-#endif
 
 uint8_t ret[7]; // Buffer for data
 

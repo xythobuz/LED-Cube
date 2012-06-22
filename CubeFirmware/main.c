@@ -63,19 +63,16 @@
 
 void serialHandler(char c);
 uint8_t audioModeSelected(void);
-#ifdef DEBUG
 void printErrors(uint8_t e);
 uint8_t selfTest(void);
 void printTime(void);
 
-#include "snake.c"
-#endif
+// #include "snake.c"
 
 uint8_t shouldRestart = 0;
 uint8_t refreshAnimationCount = 1;
 uint8_t lastButtonState = 0;
 uint8_t maxButtonState = 0;
-uint8_t mcusr_mirror;
 char buffer[11];
 
 #include "builtInFrames.c"
@@ -90,11 +87,8 @@ int main(void) {
 	uint16_t count;
 	uint64_t lastChecked;
 	uint8_t idleCounter = 0;
-#ifdef DEBUG
 	uint32_t temp;
-#endif
 
-	mcusr_mirror = MCUCSR;
 	MCUCSR = 0;
 	wdt_disable();
 
@@ -113,37 +107,17 @@ int main(void) {
 
 	wdt_enable(WDTO_1S); // Watchdog reset after 1 second
 
-#ifdef DEBUG
-	// Kill animation counter in debug mode
-	// => Don't preserve animations while power down
-	setAnimationCount(0);
-
-	serialWriteString(getString(2));
+	serialWriteString(getString(2)); // "Initialized: "
 
 	i = selfTest();
 	if (i) {
-		serialWriteString(getString(1));
+		serialWriteString(getString(1)); // Selftest error
 		serialWriteString(itoa(i, buffer, 2));
 		serialWrite('\n');
 		printErrors(i);
 	}
 
-	serialWriteString(getString(0));
-
-	if (mcusr_mirror & WDRF) {
-		serialWriteString(getString(31));
-	} else if (mcusr_mirror & BORF) {
-		serialWriteString(getString(32));
-	} else if (mcusr_mirror & EXTRF) {
-		serialWriteString(getString(34));
-	} else if (mcusr_mirror & JTRF) {
-		serialWriteString(getString(35));
-	} else if (mcusr_mirror & PORF) {
-		serialWriteString(getString(36));
-	} else {
-		serialWriteString(getString(33));
-	}
-#endif
+	serialWriteString(getString(0)); // Version
 
 	maxButtonState = numberOfVisualizations() + 1; // All visualizations and anim mode
 
@@ -219,8 +193,7 @@ int main(void) {
 			serialHandler((char)(serialGet()));
 		}
 
-#ifdef DEBUG
-		// Print frames per second
+		// Print fps after one second
 		if ((getSystemTime() >= 1000) && ((DebugDone & 1) == 0)) {
 			temp = getTriggerCount();
 			serialWriteString(ltoa(temp, buffer, 10));
@@ -229,7 +202,6 @@ int main(void) {
 			serialWriteString(getString(28));
 			DebugDone |= 1;
 		}
-#endif
 
 		if ((getSystemTime() - lastChecked) > 150) { // Check button state every 150ms
 			audioModeSelected();
@@ -252,19 +224,10 @@ uint8_t audioModeSelected(void) {
 			lastButtonState = 0;
 		}
 
-#ifdef DEBUG
-		if (lastButtonState) {
-			serialWriteString(getString(38));
-		} else {
-			serialWriteString(getString(39));
-		}
-#endif
-
 	}
 	return lastButtonState;
 }
 
-#ifdef DEBUG
 uint8_t selfTest(void) {
 	uint8_t result = NOERROR;
 	
@@ -329,16 +292,11 @@ void randomAnimation(void) {
 	}
 	free(b);
 }
-#endif
 
 void serialHandler(char c) {
 	// Used letters:
 	// a, b, c, d, e, g, i, n, q, r, s, t, v, x, y, 0, 1, 2, 3, #
-#ifdef DEBUG
 	uint8_t i, y, z;
-	serialWrite(c);
-	serialWriteString(": ");
-#endif
 
 	switch(c) {
 	case OK:
@@ -347,7 +305,6 @@ void serialHandler(char c) {
 
 	case 'h': case 'H': case '?':
 		serialWriteString(getString(6));
-#ifdef DEBUG
 		serialWriteString(getString(7));
 		serialWriteString(getString(8));
 		serialWriteString(getString(9));
@@ -356,20 +313,13 @@ void serialHandler(char c) {
 		serialWriteString(getString(12));
 		serialWriteString(getString(13));
 		serialWriteString(getString(26));
-#endif
 		break;
 
 	case 'd': case 'D':
 		clearMem();
-#ifndef DEBUG
 		serialWrite(OK);
-#endif
-#ifdef DEBUG
-		serialWriteString(getString(29));
-#endif
 		break;
 
-#ifndef DEBUG
 	case 'g': case 'G':
 		transmitAnimations();
 		break;
@@ -377,13 +327,11 @@ void serialHandler(char c) {
 	case 's': case 'S':
 		recieveAnimations();
 		break;
-#endif
 
 	case 'v': case 'V':
 		serialWriteString(getString(0));
 		break;
 
-#ifdef DEBUG
 	case 'm': case 'M':
 		lastButtonState = !lastButtonState;
 		if (lastButtonState) {
@@ -439,7 +387,7 @@ void serialHandler(char c) {
 		break;
 
 	case 'n': case 'N':
-		snake();
+		// snake();
 		break;
 
 	case '0':
@@ -492,7 +440,6 @@ killMeForIt:
 		serialWriteString(ltoa(getTriggerCount(), buffer, 10));
 		serialWrite('\n');
 		break;
-#endif
 
 	default:
 		serialWrite(ERROR);
@@ -501,7 +448,6 @@ killMeForIt:
 	// c was used as temp var and does not contain the char anymore...!
 }
 
-#ifdef DEBUG
 void printTime(void) {
 	serialWriteString(getString(14));
 	serialWriteString(ltoa(getSystemTime(), buffer, 10));
@@ -528,4 +474,3 @@ void printTime(void) {
 		serialWrite('\n');
 	}
 }
-#endif
