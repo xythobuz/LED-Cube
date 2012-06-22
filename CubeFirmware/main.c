@@ -109,14 +109,16 @@ int main(void) {
 	initSystemTimer();
 	sei(); // Enable Interrupts
 
-	wdt_enable(WDTO_1S); // Watchdog reset after 1 second
-
 	setImage(defaultImageCube); // Display something
+
+	wdt_enable(WDTO_1S); // Watchdog reset after 1 second
 
 #ifdef DEBUG
 	// Kill animation counter in debug mode
 	// => Don't preserve animations while power down
 	setAnimationCount(0);
+
+	serialWriteString(getString(2));
 
 	i = selfTest();
 	if (i) {
@@ -126,12 +128,7 @@ int main(void) {
 		printErrors(i);
 	}
 
-	serialWriteString(getString(2));
 	serialWriteString(getString(0));
-	
-	/* serialWriteString("Took ");
-	serialWriteString(itoa(getSystemTime(), buffer, 10));
-	serialWriteString(" ms!\n"); */
 
 	if (mcusr_mirror & WDRF) {
 		serialWriteString(getString(31));
@@ -231,12 +228,6 @@ int main(void) {
 			serialWriteString(ltoa((temp / 8), buffer, 10));
 			serialWriteString(getString(28));
 			DebugDone |= 1;
-		}
-
-		// Show how stable we are running :)
-		if (((getSystemTime() % 60000) == 0) && (getSystemTime() > 0)) {
-			// serialWriteString(getString(37));
-			printTime();
 		}
 #endif
 
@@ -480,6 +471,7 @@ void serialHandler(char c) {
 						defaultImageA[y + (i * 8)] |= (1 << z);
 						setImage(defaultImageA);
 						while (isFinished() == 0) {
+							wdt_reset();
 							if (serialHasChar()) {
 								goto killMeForIt; // Yes I know...
 								// But I need to break out of 2 while Loops...

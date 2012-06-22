@@ -30,8 +30,8 @@ const char stringVersion[] PROGMEM = "v2.3 Debug Build\nPROBABLY NOT COMPATIBLE 
 const char stringVersion[] PROGMEM = "v2.3 Release\n"; // 0
 #endif
 
-const char stringInit[] PROGMEM = "Initialized: "; // 1
-const char stringSelfTestError[] PROGMEM = "Self-Test Error: 0b"; // 2
+const char stringSelfTestError[] PROGMEM = "Self-Test Error: 0b"; // 1
+const char stringInit[] PROGMEM = "Initialized: "; // 2
 const char stringAudioError[] PROGMEM = " => No answer from Audio!\n"; // 3
 const char stringMemError[] PROGMEM = " => No answer from Memory!\n"; // 4
 const char stringMemWriteError[] PROGMEM = " => Can't write to Memory!\n"; // 5

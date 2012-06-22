@@ -34,7 +34,7 @@
 #define OK 0x42
 #define ERROR 0x23
 
-#define TRANSTIMEOUT 1500
+#define TRANSTIMEOUT 2500
 
 // These are global variables from main.c
 extern char buffer[11];

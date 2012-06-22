@@ -25,6 +25,7 @@ int main(int argc, char *argv[]) {
 	int frameCount = 2;
 	int duration = 3;
 	int data = -1;
+	char command = -1;
 
 	if (argc < 2) {
 		printf("Usage:\n%s /dev/port [-d 0xff]\n", argv[0]);
@@ -41,18 +42,30 @@ int main(int argc, char *argv[]) {
 		frameCount = 1;
 	}
 
+	if (argc == 3) {
+		command = argv[2][0];
+	}
+
 	signal(SIGINT, intHandler);
 	signal(SIGQUIT, intHandler);
 
 	printf("Port opened. Sending test data:\n");
 
 	printf("\tSending command 's'...");
-	c = 's';
+	if (command != -1) {
+		c = command;
+	} else {
+		c = 's';
+	}
 	if (serialWriteTry(&c, 1) != 0) {
 		printf(" Could not send it!\n");
 		suicide;
 	}
 	printf(" Success!\n");
+
+	if (command != -1) {
+		suicide;
+	}
 
 	readAck();
 
