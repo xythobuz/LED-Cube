@@ -56,7 +56,7 @@ void simpleVUMeter(uint8_t *data, uint8_t *buff, uint8_t z) {
 		max = data[i] / FACTOR;
 		for (h = 0; h < max; h++) {
 			if (i == 0) {
-				buffSetPixel(buff, i, h / 2, z);
+				buffSetPixel(buff, i, (h * 10 / 15), z);
 			}
 			buffSetPixel(buff, i + 1, h, z);
 		}

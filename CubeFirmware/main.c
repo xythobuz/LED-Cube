@@ -59,11 +59,11 @@ void serialHandler(char c);
 uint8_t defaultImageCube[64] = {	0x81, 0x42, 0x24, 0x18, 0x18, 0x24, 0x42, 0x81,
 									0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 									0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+									0x81, 0x42, 0x24, 0x18, 0x18, 0x24, 0x42, 0x81,
+									0x81, 0x42, 0x24, 0x18, 0x18, 0x24, 0x42, 0x81,
 									0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 									0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-									0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-									0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-									0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+									0x81, 0x42, 0x24, 0x18, 0x18, 0x24, 0x42, 0x81 };
 
 #define NOERROR 0
 // Audio does not answer
@@ -99,8 +99,9 @@ int main(void) {
 	uint8_t i;
 	uint8_t imageIndex = 0, imageCount = 0;
 	uint8_t idleIndex = 0, idleCount = 0;
-	uint8_t lastButtonCheck, fpsWasSent = 0;
-	uint32_t temp;
+	uint8_t lastButtonCheck;
+	// uint8_t fpsWasSent = 0;
+	// uint32_t temp;
 	uint8_t *imageData = NULL, *audioData = NULL;
 	uint8_t duration = 0;
 
@@ -141,7 +142,7 @@ int main(void) {
 			serialHandler((char)(serialGet()));
 		}
 
-		if ((getSystemTime() - lastButtonCheck) > 150) { // Check button state every 150ms
+		if ((getSystemTime() - lastButtonCheck) >= 150) { // Check button state every 150ms
 			audioModeSelected();
 			lastButtonCheck = getSystemTime();
 		}
@@ -174,18 +175,31 @@ int main(void) {
 			}
 		} else {
 			// An audiomode is selected
-
+			if (disableAudioData == 0) {
+				if (isFinished()) {
+					audioData = getAudioData();
+					if (audioData != NULL) {
+						runVisualization(audioData, (lastButtonState - 1));
+					} else {
+						lastButtonState = 0;
+						duration = 24;
+						setImage(defaultImageCube); // Quasi Error Screen
+					}
+				}
+			} else {
+				lastButtonState = 0;
+			}
 		}
 
 		// Print fps after one second
-		if ((getSystemTime() >= 1000) && (fpsWasSent == 0)) {
+		/* if ((getSystemTime() >= 1000) && (fpsWasSent == 0)) {
 			temp = getTriggerCount();
 			serialWriteString(ltoa(temp, buffer, 10));
 			serialWriteString(getString(27));
 			serialWriteString(ltoa((temp / 8), buffer, 10));
 			serialWriteString(getString(28));
 			fpsWasSent = 1;
-		}
+		} */
 
 	}
 
@@ -230,7 +244,6 @@ uint8_t selfTest(void) {
 	if (data == NULL) {
 		result |= AUDIOERROR;
 	} else {
-		free(data);
 	}
 
 	data = memGetBytes(0, 1);
@@ -334,7 +347,11 @@ void serialHandler(char c) {
 		break;
 
 	case 'm': case 'M':
-		lastButtonState = !lastButtonState;
+		if (lastButtonState < (maxButtonState - 1)) {
+			lastButtonState++;
+		} else {
+			lastButtonState = 0;
+		}
 		if (lastButtonState) {
 			serialWriteString(getString(41));
 		} else {
