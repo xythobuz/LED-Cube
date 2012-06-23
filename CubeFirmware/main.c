@@ -48,6 +48,23 @@
 #include "animations.h"
 #include "transmit.h"
 
+// Length of an idle animation frame, 24 -> 1 second
+#define IDLELENGTH 48
+
+void init(void);
+uint8_t audioModeSelected(void);
+uint8_t selfTest(void);
+void serialHandler(char c);
+
+uint8_t defaultImageCube[64] = {	0x81, 0x42, 0x24, 0x18, 0x18, 0x24, 0x42, 0x81,
+									0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+									0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+									0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+									0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+									0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+									0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+									0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+
 #define NOERROR 0
 // Audio does not answer
 #define AUDIOERROR 1
@@ -58,40 +75,125 @@
 // x = errorcode, e = error definition, not NOERROR
 #define ISERROR(x, e) ((x) & (e))
 
-// Length of an idle animation frame, 24 -> 1 second
-#define IDLELENGTH 48
-
-void serialHandler(char c);
-uint8_t audioModeSelected(void);
-void printErrors(uint8_t e);
-uint8_t selfTest(void);
-void printTime(void);
-
-// #include "snake.c"
-
 uint8_t shouldRestart = 0;
-uint8_t refreshAnimationCount = 1;
+uint8_t refreshAnimationCount = 0;
 uint8_t lastButtonState = 0;
-uint8_t maxButtonState = 0;
+uint8_t maxButtonState = 1; // No audio, get's checked later
+uint8_t disableAudioData = 0;
+uint8_t disableMemory = 0;
+uint8_t disableAnim = 0;
+
 char buffer[11];
 
-#include "builtInFrames.c"
-
-uint8_t DebugDone = 0; // Bit 0: 10s int. count, Bit 1: idle switch
-					   // Bit 2: state changed, disable idle
-
 int main(void) {
-	uint8_t *audioData = NULL;
-	uint8_t *imageData = NULL;
-	uint8_t i, length = 0;
-	uint16_t count;
-	uint64_t lastChecked;
-	uint8_t idleCounter = 0;
+	/*
+		Quick Summary of the jobs main has to do:
+		- Initialize Cube
+		- Regularly check the buttonstate
+		- Check for incoming serial transmission and run serialHandler
+		- Check if animations are stored
+		--> If yes, display them
+		--> If no, display our idle animations
+	*/
+
+	uint8_t i;
+	uint8_t imageIndex = 0, imageCount = 0;
+	uint8_t idleIndex = 0, idleCount = 0;
+	uint8_t lastButtonCheck, fpsWasSent = 0;
 	uint32_t temp;
+	uint8_t *imageData = NULL, *audioData = NULL;
+	uint8_t duration = 0;
 
-	MCUCSR = 0;
+	// Initialization:
+	MCUCSR = 0; // Reset Watchdog
 	wdt_disable();
+	init(); // Initialize all subsystems, set port directions, enable interrupts
+	wdt_enable(WDTO_1S); // Watchdog reset after 1 second
+	i = selfTest(); // Run selftest, print errors
+	// Disable subsystems if they are unavailable
+	if (ISERROR(i, AUDIOERROR))
+		disableAudioData = 1;
+	if (ISERROR(i, MEMORYERROR) || ISERROR(i, MEMORYWRITEERROR))
+		disableMemory = 1;
+	serialWriteString(getString(0)); // Print Version
 
+	audioModeSelected(); // Initial button state check
+	lastButtonCheck = getSystemTime(); // Time we checked
+
+	if (disableMemory == 0)
+		imageCount = getAnimationCount(); // Retrieve image count from memory
+	idleCount = numOfAnimations();
+	if (disableAudioData == 0)
+		maxButtonState = numberOfVisualizations() + 1; // Number of toggle steps for button
+
+	while(1) { // Our Mainloop
+		if (!shouldRestart) { // A flag to trigger a watchdog reset
+			wdt_reset();
+		}
+
+		if (refreshAnimationCount) {
+			refreshAnimationCount = 0;
+			if (disableMemory == 0)
+				imageCount = getAnimationCount();
+		}
+
+		if (serialHasChar()) { // Run serialHandler
+			serialHandler((char)(serialGet()));
+		}
+
+		if ((getSystemTime() - lastButtonCheck) > 150) { // Check button state every 150ms
+			audioModeSelected();
+			lastButtonCheck = getSystemTime();
+		}
+
+		if (lastButtonState == 0) {
+			// Display animations, stored or built-in
+			if (disableAnim == 0) {
+				if ((imageCount > 0) && (disableMemory == 0)) {
+					// Memory frames
+					if (isFinished() > duration) {
+						// Last frame was displayed long enough
+						imageIndex = (imageIndex < (imageCount - 1)) ? (imageIndex + 1) : 0;
+						imageData = getFrame(i);
+						if (imageData == NULL) {
+							duration = 24;
+							setImage(defaultImageCube);
+						} else {
+							duration = imageData[64];
+							setImage(imageData);
+							free(imageData);
+						}
+					}
+				} else {
+					// Built-In Frames
+					if (isFinished()) {
+						idleIndex = (idleIndex < (idleCount - 1)) ? (idleIndex + 1) : 0;
+						executeAnimation(idleIndex);
+					}
+				}
+			}
+		} else {
+			// An audiomode is selected
+
+		}
+
+		// Print fps after one second
+		if ((getSystemTime() >= 1000) && (fpsWasSent == 0)) {
+			temp = getTriggerCount();
+			serialWriteString(ltoa(temp, buffer, 10));
+			serialWriteString(getString(27));
+			serialWriteString(ltoa((temp / 8), buffer, 10));
+			serialWriteString(getString(28));
+			fpsWasSent = 1;
+		}
+
+	}
+
+	close(); // This is of course unneccessary. We never reach this point.
+	return 0;
+}
+
+void init(void) {
 	DDRA = 0xFF; // Latch Data Bus as Output
 	DDRD = 0xFC; DDRB = 24; // Mosfets as Output
 	DDRC = 0xFC; DDRB |= 6; // Latch Enable as Output
@@ -104,113 +206,6 @@ int main(void) {
 	sei(); // Enable Interrupts
 
 	setImage(defaultImageCube); // Display something
-
-	wdt_enable(WDTO_1S); // Watchdog reset after 1 second
-
-	serialWriteString(getString(2)); // "Initialized: "
-
-	i = selfTest();
-	if (i) {
-		serialWriteString(getString(1)); // Selftest error
-		serialWriteString(itoa(i, buffer, 2));
-		serialWrite('\n');
-		printErrors(i);
-	}
-
-	serialWriteString(getString(0)); // Version
-
-	maxButtonState = numberOfVisualizations() + 1; // All visualizations and anim mode
-
-	audioModeSelected();
-	lastChecked = getSystemTime();
-
-	i = 0; // Image count
-	count = getAnimationCount();
-
-	while (1) {
-		// Reset if requested
-		if (!shouldRestart) {
-			wdt_reset();
-		}
-
-		if(lastButtonState >= 1) {
-			// Get Audio Data and visualize it.
-			// Visualization id is in (lastButtonState - 1)
-			if (isFinished()) {
-				audioData = getAudioData(); // Not malloc'ed => Don't free
-				if (audioData != NULL) {
-					runVisualization(audioData, lastButtonState - 1);
-				}
-			}
-		} else {
-			if (refreshAnimationCount) {
-				// Get animation count stored in FRAM via TWI, if needed
-				count = getAnimationCount();
-				refreshAnimationCount = 0;
-				i = 0;
-			}
-
-			if (count > 0) { // We have frames stored
-				if (isFinished() > length) {
-					// Load next image
-					if (i < (count - 1)) {
-						i++;
-					} else {
-						i = 0;
-					}
-
-					imageData = getFrame(i);
-					length = imageData[64];
-					setImage(imageData);
-					free(imageData);
-				}
-			} else { // No frames available
-				if (!(DebugDone & 4)) { // Idle animation allowed
-					if (DebugDone & 2) {
-						if (idleCounter < numOfAnimations()) {
-							executeAnimation(idleCounter++);
-						} else {
-							idleCounter = 0;
-							DebugDone &= ~(2); // Show frames again
-						}
-					} else {
-						// Show idle frames
-						if (isFinished() >= IDLELENGTH) {
-							setImage(idleAnimation[idleCounter]);
-							if (idleCounter < IDLEANIMATIONCOUNT) {
-								idleCounter++;
-							} else {
-								idleCounter = 0;
-								DebugDone |= 2; // Show animation
-							}
-						}
-					}
-				}
-			}
-		}
-
-		if (serialHasChar()) {
-			serialHandler((char)(serialGet()));
-		}
-
-		// Print fps after one second
-		if ((getSystemTime() >= 1000) && ((DebugDone & 1) == 0)) {
-			temp = getTriggerCount();
-			serialWriteString(ltoa(temp, buffer, 10));
-			serialWriteString(getString(27));
-			serialWriteString(ltoa((temp / 8), buffer, 10));
-			serialWriteString(getString(28));
-			DebugDone |= 1;
-		}
-
-		if ((getSystemTime() - lastChecked) > 150) { // Check button state every 150ms
-			audioModeSelected();
-			lastChecked = getSystemTime();
-		} 
-	}
-
-	close();
-	return 0;
 }
 
 uint8_t audioModeSelected(void) {
@@ -250,19 +245,22 @@ uint8_t selfTest(void) {
 		result |= MEMORYWRITEERROR;
 	}
 
-	return result;
-}
+	if (result) { // Error in Selftest
+		serialWriteString(getString(1));
+		serialWriteString(itoa(result, buffer, 2));
+		serialWrite('\n');
+		if (ISERROR(result, AUDIOERROR)) {
+			serialWriteString(getString(3));
+		}
+		if (ISERROR(result, MEMORYERROR)) {
+			serialWriteString(getString(4));
+		}
+		if (ISERROR(result, MEMORYWRITEERROR)) {
+			serialWriteString(getString(5));
+		}
+	}
 
-void printErrors(uint8_t e) {
-	if (ISERROR(e, AUDIOERROR)) {
-		serialWriteString(getString(3));
-	}
-	if (ISERROR(e, MEMORYERROR)) {
-		serialWriteString(getString(4));
-	}
-	if (ISERROR(e, MEMORYWRITEERROR)) {
-		serialWriteString(getString(5));
-	}
+	return result;
 }
 
 void randomAnimation(void) {
@@ -276,6 +274,7 @@ void randomAnimation(void) {
 		b[x] = 0;
 	}
 	while(1) {
+		wdt_reset();
 		setImage(b);
 		while(isFinished() == 0);
 		x = rand() / 4096;
@@ -286,7 +285,7 @@ void randomAnimation(void) {
 		if (serialHasChar()) {
 			serialWriteString(getString(25));
 			free(b);
-			serialHandler(serialGet());
+			serialGet();
 			return;
 		}
 	}
@@ -316,8 +315,10 @@ void serialHandler(char c) {
 		break;
 
 	case 'd': case 'D':
-		clearMem();
+		// clearMem(); // Much too invasive
+		setAnimationCount(0);
 		serialWrite(OK);
+		refreshAnimationCount = 1;
 		break;
 
 	case 'g': case 'G':
@@ -379,11 +380,7 @@ void serialHandler(char c) {
 		break;
 
 	case 'e': case 'E':
-		c = selfTest();
-		serialWriteString(getString(19));
-		serialWriteString(itoa(c, buffer, 2));
-		serialWrite('\n');
-		printErrors(c);
+		selfTest();
 		break;
 
 	case 'n': case 'N':
@@ -392,32 +389,28 @@ void serialHandler(char c) {
 
 	case '0':
 		fillBuffer(0);
-		DebugDone |= 4;
+		disableAnim = 1;
 		break;
 
 	case '1':
 		fillBuffer(0xFF);
-		DebugDone |= 4;
+		disableAnim = 1;
 		break;
 
 	case '3':
 		setImage(defaultImageCube);
-		DebugDone |= 4;
+		disableAnim = 1;
 		break;
 
 	case '2':
-		DebugDone |= 4;
 		fillBuffer(0);
-		for (i = 0; i < 64; i++) {
-			defaultImageA[i] = 0;
-		}
 		while(1) {
 			for (i = 0; i < 8; i++) {
 				for (y = 0; y < 8; y++) {
-					defaultImageA[y + (i * 8)] = 0;
+					defaultImageCube[y + (i * 8)] = 0;
 					for (z = 0; z < 8; z++) {
-						defaultImageA[y + (i * 8)] |= (1 << z);
-						setImage(defaultImageA);
+						defaultImageCube[y + (i * 8)] |= (1 << z);
+						setImage(defaultImageCube);
 						while (isFinished() == 0) {
 							wdt_reset();
 							if (serialHasChar()) {
@@ -426,13 +419,13 @@ void serialHandler(char c) {
 							}
 						}
 					}
-					defaultImageA[y + (i * 8)] = 0;
+					// defaultImageCube[y + (i * 8)] = 0;
 				}
 			}
 		}
 		break;
 killMeForIt:
-		serialGet();
+		serialGet(); // Killed because we got a serial char. Remove it from buffer.
 		serialWriteString(getString(25));
 		break;
 
@@ -446,31 +439,4 @@ killMeForIt:
 		break;
 	}
 	// c was used as temp var and does not contain the char anymore...!
-}
-
-void printTime(void) {
-	serialWriteString(getString(14));
-	serialWriteString(ltoa(getSystemTime(), buffer, 10));
-	serialWriteString("ms");
-	if (getSystemTime() > 60000) {
-		serialWriteString(" (");
-		serialWriteString(itoa(getSystemTime() / 60000, buffer, 10));
-		serialWriteString(" min)");
-	}
-	if (getSystemTime() > 1000) {
-		serialWriteString(" (");
-		serialWriteString(itoa(getSystemTime() / 1000, buffer, 10));
-		itoa(getSystemTime() % 1000, buffer, 10);
-		if (buffer[0] != '\0')
-			serialWrite('.');
-		if (buffer[2] == '\0') 
-			serialWrite('0');
-		if (buffer[1] == '\0')
-			serialWrite('0');
-		if (buffer[0] != '\0')
-			serialWriteString(buffer);
-		serialWriteString("s)\n");
-	} else {
-		serialWrite('\n');
-	}
 }

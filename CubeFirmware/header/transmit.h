@@ -24,3 +24,4 @@
 void recieveAnimations(void);
 void transmitAnimations(void);
 void sendAudioData(void);
+void printTime(void);

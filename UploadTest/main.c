@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
 
 	readAck();
 
-	printf("\tSending anim count (1)...");
+	printf("\tSending anim count (%d)...", animationCount);
 	c = (char)animationCount;
 	if (serialWriteTry(&c, 1) != 0) {
 		printf(" Could not send it!\n");
@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
 
 	readAck();
 
-	printf("\tSending frame count (2)...");
+	printf("\tSending frame count (%d)...", frameCount);
 	c = (char)frameCount;
 	if (serialWriteTry(&c, 1) != 0) {
 		printf(" Could not send it!\n");
@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
 	readAck();
 
 	for (f = 0; f < frameCount; f++) {
-		printf("\tSending duration (3)...");
+		printf("\tSending duration (%d)...", duration);
 		c = (char)duration;
 		if (serialWriteTry(&c, 1) != 0) {
 			printf(" Could not send it!\n");

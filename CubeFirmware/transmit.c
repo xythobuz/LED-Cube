@@ -51,6 +51,9 @@ void recieveAnimations(void) {
 	while (!serialHasChar()) { // Wait for answer
 		if ((getSystemTime() - timestamp) <= TRANSTIMEOUT) {
 			wdt_reset();
+		} else {
+			setAnimationCount(0);
+			return;
 		}
 	}
 	c = serialGet();
@@ -61,6 +64,9 @@ void recieveAnimations(void) {
 		while (!serialHasChar()) { // Wait for answer
 			if ((getSystemTime() - timestamp) <= TRANSTIMEOUT) {
 				wdt_reset();
+			} else {
+				setAnimationCount(0);
+				return;
 			}
 		}
 		c = serialGet();
@@ -71,6 +77,9 @@ void recieveAnimations(void) {
 			while (!serialHasChar()) { // Wait for answer
 				if ((getSystemTime() - timestamp) <= TRANSTIMEOUT) {
 					wdt_reset();
+				} else {
+					setAnimationCount(0);
+					return;
 				}
 			}
 			c = serialGet();
@@ -81,6 +90,9 @@ void recieveAnimations(void) {
 				while (!serialHasChar()) { // Wait for answer
 					if ((getSystemTime() - timestamp) <= TRANSTIMEOUT) {
 						wdt_reset();
+					} else {
+						setAnimationCount(0);
+						return;
 					}
 				}
 				c = serialGet();
@@ -96,24 +108,36 @@ void recieveAnimations(void) {
 	while (!serialHasChar()) { // Wait for answer
 		if ((getSystemTime() - timestamp) <= TRANSTIMEOUT) {
 			wdt_reset();
+		} else {
+			setAnimationCount(0);
+			return;
 		}
 	}
 	c = serialGet();
 	while (!serialHasChar()) { // Wait for answer
 		if ((getSystemTime() - timestamp) <= TRANSTIMEOUT) {
 			wdt_reset();
+		} else {
+			setAnimationCount(0);
+			return;
 		}
 	}
 	c = serialGet();
 	while (!serialHasChar()) { // Wait for answer
 		if ((getSystemTime() - timestamp) <= TRANSTIMEOUT) {
 			wdt_reset();
+		} else {
+			setAnimationCount(0);
+			return;
 		}
 	}
 	c = serialGet();
 	while (!serialHasChar()) { // Wait for answer
 		if ((getSystemTime() - timestamp) <= TRANSTIMEOUT) {
 			wdt_reset();
+		} else {
+			setAnimationCount(0);
+			return;
 		}
 	}
 	c = serialGet();
@@ -209,5 +233,32 @@ void sendAudioData(void) {
 			serialWriteString(buffer);
 			serialWrite('\n');
 		}
+	}
+}
+
+void printTime(void) {
+	serialWriteString(getString(14));
+	serialWriteString(ltoa(getSystemTime(), buffer, 10));
+	serialWriteString("ms");
+	if (getSystemTime() > 60000) {
+		serialWriteString(" (");
+		serialWriteString(itoa(getSystemTime() / 60000, buffer, 10));
+		serialWriteString(" min)");
+	}
+	if (getSystemTime() > 1000) {
+		serialWriteString(" (");
+		serialWriteString(itoa(getSystemTime() / 1000, buffer, 10));
+		itoa(getSystemTime() % 1000, buffer, 10);
+		if (buffer[0] != '\0')
+			serialWrite('.');
+		if (buffer[2] == '\0') 
+			serialWrite('0');
+		if (buffer[1] == '\0')
+			serialWrite('0');
+		if (buffer[0] != '\0')
+			serialWriteString(buffer);
+		serialWriteString("s)\n");
+	} else {
+		serialWrite('\n');
 	}
 }

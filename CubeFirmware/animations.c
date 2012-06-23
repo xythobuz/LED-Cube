@@ -39,43 +39,50 @@ D)	Implement your animation!
 */
 
 // Prototypes for all animations
-void upWave(void);
-void downWave(void);
-void xWave1(void);
-void xWave2(void);
-void zWave1(void);
-void zWave2(void);
-void tinyCube(void);
-void smallCube(void);
-void bigCube(void);
-void fullCube(void);
-
+void upWave(uint8_t i);
+void downWave(uint8_t i);
+void xWave1(uint8_t i);
+void xWave2(uint8_t i);
+void zWave1(uint8_t i);
+void zWave2(uint8_t i);
 
 // Array of animation functions
-#define NUMOFANIMATIONS 10
-void (*animations[NUMOFANIMATIONS])(void) = { &upWave, &downWave,
-								&xWave1, &xWave2, &zWave1,
-								&zWave2, &tinyCube, &smallCube, &bigCube, &fullCube };
+#define NUMOFANIMATIONS 0
+void (*animations[NUMOFANIMATIONS])(void) = { };
 
 #define WAVELENGTH 2
 
 uint8_t numOfAnimations(void) {
-	return NUMOFANIMATIONS;
+	return NUMOFANIMATIONS + 24;
 }
 
 void executeAnimation(uint8_t id) {
-	if (id < NUMOFANIMATIONS) {
-		animations[id](); // Call animation
+	if (id < (6*4)) {
+		if (id < 4) {
+			upWave(id);
+		} else if (id < 8) {
+			downWave(id - 4);
+		} else if (id < 12) {
+			xWave1(id - 8);
+		} else if (id < 16) {
+			xWave2(id - 12);
+		} else if (id < 20) {
+			zWave1(id - 16);
+		} else {
+			zWave2(id - 20);
+		}
+	} else if ((id - (6*4)) < NUMOFANIMATIONS) {
+		animations[id - (6*4)](); // Call animation
 	}
 }
 
-void upWave(void) {
+void upWave(uint8_t i) {
 	uint8_t *buff;
 	int8_t x, y, z;
 
 	buff = buffNew();
 	// Up-wave
-	for(y = 0; y < 8; y++) {
+	for(y = (i * 2); y < ((i * 2) + 2); y++) {
 		for(x = 0; x < 8; x++) {
 			for(z = 0; z < 8; z++) {
 				buffSetPixel(buff, x, y, z);
@@ -90,13 +97,13 @@ void upWave(void) {
 	free(buff);
 }
 
-void downWave(void) {
+void downWave(uint8_t i) {
 	uint8_t *buff;
 	int8_t x, y, z;
 
 	buff = buffNew();
 	// Down-wave (Frames 9-15 of showoff.cube)
-	for(y = 7; y >= 0; y--) {
+	for(y = (7 - (2 * i)); y >= ((7 - (2 * i)) - 1); y--) {
 		for(x = 0; x < 8; x++) {
 			for(z = 0; z < 8; z++) {
 				buffSetPixel(buff, x, y, z);
@@ -111,13 +118,13 @@ void downWave(void) {
 	free(buff);
 }
 
-void xWave1(void) {
+void xWave1(uint8_t i) {
 	uint8_t *buff;
 	int8_t x, y, z;
 
 	buff = buffNew();
 	// x-axis wave
-	for(x = 0; x < 8; x++) {
+	for(x = (i * 2); x < ((i * 2) + 2); x++) {
 		for(y = 0; y < 8; y++) {
 			for(z = 0; z < 8; z++) {
 				buffSetPixel(buff, x, y, z);
@@ -132,12 +139,12 @@ void xWave1(void) {
 	free(buff);
 }
 
-void xWave2(void) {
+void xWave2(uint8_t i) {
 	uint8_t *buff;
 	int8_t x, y, z;
 
 	buff = buffNew();
-	for(x = 7; x >= 0; x--) {
+	for(x = (7 - (2 * i)); x >= ((7 - (2 * i)) - 1); x--) {
 		for(y = 0; y < 8; y++) {
 			for(z = 0; z < 8; z++) {
 				buffSetPixel(buff, x, y, z);
@@ -152,13 +159,13 @@ void xWave2(void) {
 	free(buff);
 }
 
-void zWave1(void) {
+void zWave1(uint8_t i) {
 	uint8_t *buff;
 	int8_t x, y, z;
 
 	buff = buffNew();
 	// z-axis-wave
-	for(z = 0; z < 8; z++) {
+	for(z = (i * 2); z < ((i * 2) + 2); z++) {
 		for(y = 0; y < 8; y++) {
 			for(x = 0; x < 8; x++) {
 				buffSetPixel(buff, x, y, z);
@@ -173,12 +180,12 @@ void zWave1(void) {
 	free(buff);
 }
 
-void zWave2(void) {
+void zWave2(uint8_t i) {
 	uint8_t *buff;
 	int8_t x, y, z;
 
 	buff = buffNew();
-	for(z = 7; z >= 0; z--) {
+	for(z = (7 - (2 * i)); z >= ((7 - (2 * i)) - 1); z--) {
 		for(x = 0; x < 8; x++) {
 			for(y = 0; y < 8; y++) {
 				buffSetPixel(buff, x, y, z);
@@ -190,125 +197,5 @@ void zWave2(void) {
 		}
 		buffClearAllPixels(buff);
 	}
-	free(buff);
-}
-
-void tinyCube(void) {
-	uint8_t *buff;
-
-	buff = buffNew();
-
-	//Cube_1
-	buffSetPixel(buff, 3, 3, 3);
-	buffSetPixel(buff, 4, 3, 3);
-	buffSetPixel(buff, 4, 4, 3);
-	buffSetPixel(buff, 4, 4, 4);
-	setImage(buff);
-	while(isFinished() < WAVELENGTH) {
-		wdt_reset();	
-	}
-	buffClearAllPixels(buff);
-
-	free(buff);
-}
-
-void smallCube (void){
-	uint8_t *buff;
-	int8_t x, y, z;
-
-	buff = buffNew();
-
-	//Cube_2
-	for(x = 2; x < 6; x++) {
-		for(y = 2; y < 6; y++) {
-			buffSetPixel(buff, x, y, 2);
-			buffSetPixel(buff, x, y, 5);
-		}
-	}
-	for(y = 2; y < 6; y++) {
-		for(z = 2; z < 6; z++) {
-			buffSetPixel(buff, 2, y, z);
-			buffSetPixel(buff, 5, y, z);
-		}
-	}
-	for(x = 2; x < 6; x++) {
-		for(z = 2; z < 6; z++) {
-			buffSetPixel(buff, x, 2, z);
-			buffSetPixel(buff, x, 5, z);
-		}
-	}
-	setImage(buff);
-	while(isFinished() < WAVELENGTH) {
-		wdt_reset();	
-	}
-	buffClearAllPixels(buff);
-	free(buff);
-}
-
-void bigCube (void) {
-	uint8_t *buff;
-	int8_t x, y, z;
-
-	buff = buffNew();
-
-	//Cube_3
-	for(x = 1; x < 7; x++){
-		for(y = 1; y < 7; y++) {
-			buffSetPixel(buff, x, y, 1);
-			buffSetPixel(buff, x, y, 6);
-		}
-	}
-	for(y = 1; y < 7; y++){
-		for(z = 1; z < 7; z++) {
-			buffSetPixel(buff, 1, y, z);
-			buffSetPixel(buff, 6, y, z);
-		}
-	}
-	for(x = 1; x < 7; x++){
-		for(z = 1; z < 7; z++) {
-			buffSetPixel(buff, x, 1, z);
-			buffSetPixel(buff, x, 6, z);
-		}
-	}
-	setImage(buff);
-	while(isFinished() < WAVELENGTH) {
-		wdt_reset();	
-	}
-	buffClearAllPixels(buff);
-
-	free(buff);
-}
-
-void fullCube (void) {
-	uint8_t *buff;
-	int8_t x, y, z;
-
-	buff = buffNew();
-	
-	//Cube_4
-	for(x = 0; x < 8; x++){
-		for(y = 0; y < 8; y++) {
-			buffSetPixel(buff, x, y, 0);
-			buffSetPixel(buff, x, y, 7);
-		}
-	}
-	for(y = 0; y < 8; y++){
-		for(z = 0; z < 8; z++) {
-			buffSetPixel(buff, 0, y, z);
-			buffSetPixel(buff, 8, y, z);
-		}
-	}
-	for(x = 0; x < 8; x++){
-		for(z = 0; z < 8; z++) {
-			buffSetPixel(buff, x, 0, z);
-			buffSetPixel(buff, x, 8, z);
-		}
-	}
-	setImage(buff);
-	while(isFinished() < WAVELENGTH) {
-		wdt_reset();	
-	}
-	buffClearAllPixels(buff);
-
 	free(buff);
 }
