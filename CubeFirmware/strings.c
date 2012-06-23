@@ -24,7 +24,7 @@
 
 char buffer[60];
 
-const char stringVersion[] PROGMEM = "v2.4\n"; // 0
+const char stringVersion[] PROGMEM = "v2.5\n"; // 0
 const char stringSelfTestError[] PROGMEM = "Self-Test Error: 0b"; // 1
 const char stringInit[] PROGMEM = "Initialized: "; // 2
 const char stringAudioError[] PROGMEM = " => No answer from Audio!\n"; // 3

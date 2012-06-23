@@ -36,6 +36,7 @@ B)	Increment NUMOFANIMATION by the number of animations you are going to add.
 C)	Put a function pointer to your new animation into the animations[] Array.
 D)	Implement your animation!
 	--> Get a buffer with buffNew(); Display it with setImage(); Free Buffer after usage!
+	--> Return desired duration until the next animation is called, in frames (24fps)
 */
 
 // Prototypes for all animations
@@ -48,7 +49,7 @@ void zWave2(uint8_t i);
 
 // Array of animation functions
 #define NUMOFANIMATIONS 0
-void (*animations[NUMOFANIMATIONS])(void) = { };
+uint8_t (*animations[NUMOFANIMATIONS])(void) = { };
 
 #define WAVELENGTH 2
 
@@ -56,7 +57,7 @@ uint8_t numOfAnimations(void) {
 	return NUMOFANIMATIONS + 24;
 }
 
-void executeAnimation(uint8_t id) {
+uint8_t executeAnimation(uint8_t id) {
 	if (id < (6*4)) {
 		if (id < 4) {
 			upWave(id);
@@ -71,9 +72,11 @@ void executeAnimation(uint8_t id) {
 		} else {
 			zWave2(id - 20);
 		}
+		return 1;
 	} else if ((id - (6*4)) < NUMOFANIMATIONS) {
-		animations[id - (6*4)](); // Call animation
+		return animations[id - (6*4)](); // Call animation
 	}
+	return 1;
 }
 
 void upWave(uint8_t i) {

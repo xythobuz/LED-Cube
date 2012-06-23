@@ -166,9 +166,9 @@ int main(void) {
 					}
 				} else {
 					// Built-In Frames
-					if (isFinished()) {
+					if (isFinished() > duration) {
 						idleIndex = (idleIndex < (idleCount - 1)) ? (idleIndex + 1) : 0;
-						executeAnimation(idleIndex);
+						duration = executeAnimation(idleIndex);
 					}
 				}
 			}

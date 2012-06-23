@@ -22,4 +22,4 @@
  */
 
 uint8_t numOfAnimations(void);
-void executeAnimation(uint8_t id);
+uint8_t executeAnimation(uint8_t id); // Returns desired duration
