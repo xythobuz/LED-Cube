@@ -36,17 +36,18 @@
 uint8_t maxVal(uint8_t data, uint8_t log);
 void setRow(uint8_t x, uint8_t z, uint8_t height, uint8_t *buf);
 uint8_t average(uint8_t *data);
-void filterData(uint8_t *data);
+void filterData(uint8_t *data, uint8_t log);
 void simpleVisualization(uint8_t *data);
 void fullDepthVisualization(uint8_t *data);
 void horribleWave(uint8_t *audioData);
 void simpleLog(uint8_t *data);
 void fullDepthLog(uint8_t *data);
+void linLog(uint8_t *data);
 
-#define NUMOFVISUALIZATIONS 5
+#define NUMOFVISUALIZATIONS 6
 void (*visualizations[NUMOFVISUALIZATIONS])(uint8_t *data) = { &simpleVisualization,
 													&fullDepthVisualization, &horribleWave,
-													&simpleLog, &fullDepthLog };
+													&simpleLog, &fullDepthLog, &linLog };
 uint8_t logScale[8] = { 2, 4, 8, 16, 31, 63, 125, 250 }; // --> ca. (1 << (led + 1));
 
 uint8_t numberOfVisualizations(void) {
@@ -55,8 +56,13 @@ uint8_t numberOfVisualizations(void) {
 
 void runVisualization(uint8_t *data, uint8_t id) {
 	if (id < NUMOFVISUALIZATIONS) {
-		filterData(data);
-		visualizations[id](data);
+		if ((id <= 5) && (id > 2)) {
+			filterData(data, 1);
+			visualizations[id](data);
+		} else {
+			filterData(data, 0);
+			visualizations[id](data);
+		}
 	}
 }
 
@@ -81,9 +87,15 @@ uint8_t average(uint8_t *data) {
 	return (uint8_t)sum;
 }
 
-void filterData(uint8_t *data) {
+void filterData(uint8_t *data, uint8_t log) {
 	uint8_t i;
-	if (average(data) < THRESHOLD) {
+	uint8_t max;
+	if (log) {
+		max = THRESHOLD / 2;
+	} else {
+		max = THRESHOLD;
+	}
+	if (average(data) < max) {
 		for (i = 0; i < 7; i++) {
 			data[i] = 0;
 		}
@@ -124,6 +136,20 @@ void simpleVisualization(uint8_t *data) {
 
 	setRow(0, 0, maxVal(average(data), 0), buff); // Show average
 	simpleVUMeter(data, buff, 7, 0);
+
+	setImage(buff);
+	buffFree(buff);
+}
+
+void linLog(uint8_t *data) {
+	uint8_t *buff;
+	buff = buffNew();
+
+	buffClearAllPixels(buff);
+
+	simpleVUMeter(data, buff, 2, 1);
+	filterData(data, 0);
+	simpleVUMeter(data, buff, 5, 0);
 
 	setImage(buff);
 	buffFree(buff);

@@ -85,6 +85,43 @@ uint8_t disableAnim = 0;
 
 char buffer[11];
 
+/* Not so powerful Debouncing Example
+ * No Interrupt needed
+ * Author: Peter Dannegger
+ */
+#define debounce(port, pin) ({													\
+	static uint8_t flag = 0;			/* new variable on every macro usage */ \
+	uint8_t i = 0;																\
+	if (flag) {							/* check for key release: */ 			\
+		for(;;) {						/* loop ... */							\
+			if(!(port & 1 << pin)) {	/* ... until key pressed or ... */		\
+				i = 0;															\
+				break;															\
+			}																	\
+			_delay_us(98);				/* * 256 = 25ms */						\
+			if(--i == 0) {				/* ... until key >25ms released */		\
+				flag = 0;				/* clear press flag */					\
+				i = 0;					/* 0 = key release debounced */			\
+				break;															\
+			}																	\
+		}																		\
+	} else {							/* else check for key press: */			\
+		for(;;) {						/* loop ... */							\
+			if ((port & 1<<pin)) {		/* ... until key released or ... */		\
+				i = 0;															\
+				break;															\
+			}																	\
+			_delay_us( 98 );			/* * 256 = 25ms */						\
+			if (--i == 0) {				/* ... until key >25ms pressed */		\
+				flag = 1;				/* set press flag */					\
+				i = 1;					/* 1 = key press debounced */			\
+				break;															\
+			}																	\
+		}																		\
+	}																			\
+	i;									/* return value of Macro */				\
+})
+
 int main(void) {
 	/*
 		Quick Summary of the jobs main has to do:
@@ -142,10 +179,10 @@ int main(void) {
 			serialHandler((char)(serialGet()));
 		}
 
-		if ((getSystemTime() - lastButtonCheck) >= 150) { // Check button state every 150ms
+		//if ((getSystemTime() - lastButtonCheck) >= 150) { // Check button state every 150ms
 			audioModeSelected();
-			lastButtonCheck = getSystemTime();
-		}
+		//	lastButtonCheck = getSystemTime();
+		//}
 
 		if (lastButtonState == 0) {
 			// Display animations, stored or built-in
@@ -224,8 +261,7 @@ void init(void) {
 
 uint8_t audioModeSelected(void) {
 	// Pushbutton: PB0, Low active
-
-	if (!(PINB & (1 << PB0))) {
+	if (debounce(PINB, PB0)) {
 		// Button pushed
 		if (lastButtonState < (maxButtonState - 1)) {
 			lastButtonState++;
