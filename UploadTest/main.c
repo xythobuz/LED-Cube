@@ -13,8 +13,10 @@ int serialWriteString(char *s);
 int serialReadTry(char *data, size_t length);
 int serialWriteTry(char *data, size_t length);
 void intHandler(int dummy);
+void transferFile(char *file);
 
 volatile int keepRunning = 1;
+FILE *fp = NULL;
 
 #define suicide intHandler(0)
 
@@ -28,7 +30,7 @@ int main(int argc, char *argv[]) {
 	char command = -1;
 
 	if (argc < 2) {
-		printf("Usage:\n%s /dev/port [-d 0xff]\n", argv[0]);
+		printf("Usage:\n%s /dev/port [-d 0xff] | [-f /file]\n", argv[0]);
 		return 0;
 	}
 
@@ -37,26 +39,31 @@ int main(int argc, char *argv[]) {
 		return 0;
 	}
 
-	if ((argc >= 4) && (strcmp(argv[2], "-d") == 0)) {
+	signal(SIGINT, intHandler);
+	signal(SIGQUIT, intHandler);
+
+	if ((argc == 4) && (strcmp(argv[2], "-d") == 0)) {
 		sscanf(argv[3], "%x", &data);
 		frameCount = 1;
+	}
+
+	if ((argc == 4) && (strcmp(argv[2], "-f") == 0)) {
+		printf("Trying to send from file.\n");
+		transferFile(argv[3]);
 	}
 
 	if (argc == 3) {
 		command = argv[2][0];
 	}
 
-	signal(SIGINT, intHandler);
-	signal(SIGQUIT, intHandler);
-
 	printf("Port opened. Sending test data:\n");
 
-	printf("\tSending command 's'...");
 	if (command != -1) {
 		c = command;
 	} else {
 		c = 's';
 	}
+	printf("\tSending command '%c'...", c);
 	if (serialWriteTry(&c, 1) != 0) {
 		printf(" Could not send it!\n");
 		suicide;
@@ -146,6 +153,96 @@ int main(int argc, char *argv[]) {
 	return 0;
 }
 
+void writeS(char c) {
+	if (serialWriteTry(&c, 1) != 0) {
+		printf("Error while sending!\n");
+		suicide;
+	}
+}
+
+int readFrame(char *frame) {
+	char lineBuffer[80];
+	char buff[3];
+	int lines, byte, i = 0, tmp;
+	buff[2] = '\0';
+
+	fgets(lineBuffer, 80, fp);// Frame name, ignore
+	for (lines = 0; lines < 8; lines++) {
+		fgets(lineBuffer, 80, fp);
+		for(byte = 0; byte < 8; byte++) {
+			buff[0] = lineBuffer[(2 * byte)];
+			buff[1] = lineBuffer[(2 * byte) + 1];
+			sscanf(buff, "%x", &tmp);
+			frame[i++] = (char)tmp;
+		}
+	}
+
+	fgets(lineBuffer, 80, fp);
+	if(lineBuffer[strlen(lineBuffer)-1] == '\n') {
+		lineBuffer[strlen(lineBuffer)-1] = '\0';
+	}
+	sscanf(lineBuffer, "%d", &lines);
+	return lines;
+}
+
+void transferFile(char *file) {
+	char lineBuffer[80];
+	int f, i;
+	int fMax = 0;
+	char frame[64];
+	int duration;
+
+	fp = fopen(file, "r");
+	if (fp != NULL) {
+		printf("File opened...\n");
+		fgets(lineBuffer, 80, fp);
+		if (lineBuffer[strlen(lineBuffer)-1] == '\n') {
+			lineBuffer[strlen(lineBuffer)-1] = '\0';
+		}
+		fMax = atoi(lineBuffer);
+		printf("Has %d frames.\n", fMax);
+		fgets(lineBuffer, 80, fp);
+		printf("Sendind command.\n");
+		writeS('s');
+		readAck();
+		printf("Sendind animation count.\n");
+		writeS(1); // Animation count
+		readAck();
+		printf("Sending frame count.\n");
+		writeS(fMax); // Frame count
+		readAck();
+		for (f = 0; f < fMax; f++) {
+			printf("Reading frame from file... ");
+			duration = readFrame(frame);
+			printf("Done!\nSending duration.\n");
+			writeS(duration);
+			readAck();
+			printf("Sending frame (");
+			for (i = 0; i < 64; i++) {
+				writeS(frame[i]);
+				printf("%x", frame[i]);
+				if (i < 63) {
+					printf(" ");
+				}
+			}
+			printf(") Done!\n");
+			readAck();
+			printf("Wrote frame %d\n\n", f);
+		}
+		printf("Sending end sequence!\n");
+		writeS(0x42);
+		writeS(0x42);
+		writeS(0x42);
+		writeS(0x42);
+		readAck();
+	} else {
+		printf("File not found\n");
+		suicide;
+	}
+	printf("Success!\n");
+	suicide;
+}
+
 void readAck() {
 	char c;
 	printf("Awaiting acknowledge...");
@@ -218,6 +315,9 @@ int serialWriteTry(char *data, size_t length) {
 
 void intHandler(int dummy) {
 	keepRunning = 0;
+	if (fp != NULL) {
+		fclose(fp);
+	}
 	serialClose();
 	exit(0);
 }

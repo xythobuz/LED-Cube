@@ -25,6 +25,7 @@
 #include <avr/interrupt.h>
 #include <stdlib.h>
 #include <util/atomic.h>
+#include <avr/pgmspace.h>
 
 #include "cube.h"
 
@@ -55,41 +56,77 @@ volatile uint8_t imgFlag = 0;
 volatile uint8_t layer = 0;
 volatile uint8_t toggleFlag = 0;
 
-inline void isrCall(void);
-
 volatile uint32_t timesTriggered = 0;
 volatile uint8_t warningDisplayed = 0;
 
-uint8_t lookUp[] = { 	0,  64,  128,  192,  16,  80,  144,  208,  32,  96,  160,
-					224,  48,  112,  176,  240,  4,  68,  132,  196,  20,
-					84,  148,  212,  36,  100,  164,  228,  52,  116,  180,
-					244,  8,  72,  136,  200,  24,  88,  152,  216,  40,
-					104,  168,  232,  56,  120,  184,  248,  12,  76,  140,
-					204,  28,  92,  156,  220,  44,  108,  172,  236,  60,
-					124,  188,  252,  1,  65,  129,  193,  17,  81,  145,
-					209,  33,  97,  161,  225,  49,  113,  177,  241,  5,
-					69,  133,  197,  21,  85,  149,  213,  37,  101,  165,
-					229,  53,  117,  181,  245,  9,  73,  137,  201,  25,
-					89,  153,  217,  41,  105,  169,  233,  57,  121,  185,
-					249,  13,  77,  141,  205,  29,  93,  157,  221,  45,
-					109,  173,  237,  61,  125,  189,  253,  2,  66,  130,
-					194,  18,  82,  146,  210,  34,  98,  162,  226,  50,
-					114,  178,  242,  6,  70,  134,  198,  22,  86,  150,
-					214,  38,  102,  166,  230,  54,  118,  182,  246,  10,
-					74,  138,  202,  26,  90,  154,  218,  42,  106,  170,
-					234,  58,  122,  186,  250,  14,  78,  142,  206,  30,
-					94,  158,  222,  46,  110,  174,  238,  62,  126,  190,
-					254,  3,  67,  131,  195,  19,  83,  147,  211,  35,
-					99,  163,  227,  51,  115,  179,  243,  7,  71,  135,
-					199,  23,  87,  151,  215,  39,  103,  167,  231,  55,
-					119,  183,  247,  11,  75,  139,  203,  27,  91,  155,
-					219,  43,  107,  171,  235,  59,  123,  187,  251,  15,
-					79,  143,  207,  31,  95,  159,  223,  47,  111,  175,
-					239,  63,  127,  191,  255 };
+// A fix for our mirrored 64pin cable.
+uint8_t lookUp[256] PROGMEM = { 	0,  64,  128,  192,  16,  80,  144,  208,  32,  96,  160,
+									224,  48,  112,  176,  240,  4,  68,  132,  196,  20,
+									84,  148,  212,  36,  100,  164,  228,  52,  116,  180,
+									244,  8,  72,  136,  200,  24,  88,  152,  216,  40,
+									104,  168,  232,  56,  120,  184,  248,  12,  76,  140,
+									204,  28,  92,  156,  220,  44,  108,  172,  236,  60,
+									124,  188,  252,  1,  65,  129,  193,  17,  81,  145,
+									209,  33,  97,  161,  225,  49,  113,  177,  241,  5,
+									69,  133,  197,  21,  85,  149,  213,  37,  101,  165,
+									229,  53,  117,  181,  245,  9,  73,  137,  201,  25,
+									89,  153,  217,  41,  105,  169,  233,  57,  121,  185,
+									249,  13,  77,  141,  205,  29,  93,  157,  221,  45,
+									109,  173,  237,  61,  125,  189,  253,  2,  66,  130,
+									194,  18,  82,  146,  210,  34,  98,  162,  226,  50,
+									114,  178,  242,  6,  70,  134,  198,  22,  86,  150,
+									214,  38,  102,  166,  230,  54,  118,  182,  246,  10,
+									74,  138,  202,  26,  90,  154,  218,  42,  106,  170,
+									234,  58,  122,  186,  250,  14,  78,  142,  206,  30,
+									94,  158,  222,  46,  110,  174,  238,  62,  126,  190,
+									254,  3,  67,  131,  195,  19,  83,  147,  211,  35,
+									99,  163,  227,  51,  115,  179,  243,  7,  71,  135,
+									199,  23,  87,  151,  215,  39,  103,  167,  231,  55,
+									119,  183,  247,  11,  75,  139,  203,  27,  91,  155,
+									219,  43,  107,  171,  235,  59,  123,  187,  251,  15,
+									79,  143,  207,  31,  95,  159,  223,  47,  111,  175,
+									239,  63,  127,  191,  255 };
 
 ISR(TIMER1_COMPA_vect) {
+	uint8_t latchCtr;
 	if (toggleFlag >= COUNT2) {
-		isrCall();
+
+		if (changedFlag != 0) {
+			// The picture changed. Restart!
+			layer = 0;
+			changedFlag = 0;
+		}
+
+		PORTD = 0;
+		PORTB &= ~(24); // Disable all Fets
+
+		for (latchCtr = 0; latchCtr < 8; latchCtr++) {
+			// Disable all latches
+			PORTC &= ~(0xFC); // 2 - 7
+			PORTB &= ~(6); // 0 & 1
+
+			PORTA = imgBuffer[layer][latchCtr]; // Put latch data
+
+			// Enable desired latch
+			if (latchCtr > 1) {
+				PORTC |= (1 << latchCtr);
+			} else {
+				PORTB |= (1 << (latchCtr + 1));
+			}
+		}
+
+		// Set FET
+		PORTD = (1 << layer); // PD2 to 7
+		PORTB = (PORTB & ~(24)) | (((1 << layer) << 3) & 24); // PB3 & 4
+		
+		// Select next layer
+		if (layer < 7) {
+			layer++;
+		} else {
+			layer = 0;
+			imgFlag++; // Finished
+		}
+
 		toggleFlag = 0;
 		timesTriggered++;
 	} else {
@@ -101,10 +138,6 @@ uint32_t getTriggerCount(void) {
 	return timesTriggered;
 }
 
-uint8_t bitSwitch(uint8_t d) {
-	return lookUp[d];
-}
-
 void setImage(uint8_t *img) {
 	uint8_t i, j;
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
@@ -113,7 +146,7 @@ void setImage(uint8_t *img) {
 		toggleFlag = 0;
 		for (i = 0; i < 8; i++) {
 			for (j = 0; j < 8; j++) {
-				imgBuffer[j][7 - i] = ~(bitSwitch(img[j + (i * 8)]));
+				imgBuffer[j][7 - i] = ~(pgm_read_byte(&(lookUp[img[j + (i * 8)]])));
 			}
 		}
 	}
@@ -169,53 +202,4 @@ void initCube(void) {
 
 void close(void) {
 	TIMSK &= ~(1 << OCIE1A); // Disable interrupt
-}
-
-// Data is sent to 8 Fet bits...
-inline void setFet(uint8_t data) {
-	PORTD = (data & ~(3)); // Doesn't interfere with serial communication...
-	PORTB = (PORTB & ~(24)) | ((data << 3) & 24);
-}
-
-// Give id of latch, 0 - 7
-inline void selectLatch(uint8_t latchNr) {
-	// Disable all latches
-	PORTC &= ~(0xFC); // 2 - 7
-	PORTB &= ~(6); // 0 & 1
-
-	// Enable desired latch
-	if (latchNr > 1) {
-		PORTC |= (1 << latchNr);
-	} else {
-		PORTB |= (1 << (latchNr + 1));
-	}
-}
-
-inline void setLatch(uint8_t latchNr, uint8_t data) {
-	selectLatch(latchNr); // Activate current latch
-	PORTA = data; // Put latch data
-	asm volatile("nop"::); // Wait for latch
-}
-
-inline void isrCall(void) {
-	uint8_t latchCtr = 0;
-
-	if (changedFlag != 0) {
-		// The picture changed. Restart!
-		layer = 0;
-		changedFlag = 0;
-	}
-	setFet(0);
-	for (; latchCtr < 8; latchCtr++) {
-		setLatch(latchCtr, imgBuffer[layer][latchCtr]); // Put out all the data
-	}
-	setFet(1 << layer);
-	
-	// Select next layer
-	if (layer < 7) {
-		layer++;
-	} else {
-		layer = 0;
-		imgFlag++; // Finished
-	}
 }

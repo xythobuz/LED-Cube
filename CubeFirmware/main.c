@@ -155,7 +155,7 @@ int main(void) {
 					if (isFinished() > duration) {
 						// Last frame was displayed long enough
 						imageIndex = (imageIndex < (imageCount - 1)) ? (imageIndex + 1) : 0;
-						imageData = getFrame(i);
+						imageData = getFrame(imageIndex);
 						if (imageData == NULL) {
 							duration = 24;
 							setImage(defaultImageCube);
@@ -166,7 +166,7 @@ int main(void) {
 						}
 					}
 				} else {
-					// Built-In Frames
+					// Built-In Anims
 					if (isFinished() > duration) {
 						idleIndex = (idleIndex < (idleCount - 1)) ? (idleIndex + 1) : 0;
 						duration = executeAnimation(idleIndex);
@@ -307,8 +307,9 @@ void randomAnimation(void) {
 
 void serialHandler(char c) {
 	// Used letters:
-	// a, b, c, d, e, g, i, n, q, r, s, t, v, x, y, 0, 1, 2, 3, #
+	// a, b, c, d, e, f, g, h, i, n, q, r, s, t, u, v, x, y, 0, 1, 2, 3, #
 	uint8_t i, y, z;
+	uint8_t *tmp;
 
 	switch(c) {
 	case OK:
@@ -321,16 +322,24 @@ void serialHandler(char c) {
 		serialWriteString(getString(8));
 		serialWriteString(getString(9));
 		serialWriteString(getString(10));
+		serialWriteString(getString(26));
+		serialWriteString(getString(34));
+
 		serialWriteString(getString(11));
 		serialWriteString(getString(12));
 		serialWriteString(getString(13));
-		serialWriteString(getString(26));
 		break;
 
 	case 'd': case 'D':
-		// clearMem(); // Much too invasive
 		setAnimationCount(0);
 		serialWrite(OK);
+		refreshAnimationCount = 1;
+		break;
+
+	case 'f': case 'F':
+		serialWriteString(getString(32));
+		clearMem();
+		serialWriteString(getString(33));
 		refreshAnimationCount = 1;
 		break;
 
@@ -340,6 +349,7 @@ void serialHandler(char c) {
 
 	case 's': case 'S':
 		recieveAnimations();
+		refreshAnimationCount = 1;
 		break;
 
 	case 'v': case 'V':
@@ -378,7 +388,23 @@ void serialHandler(char c) {
 
 	case 'c': case 'C':
 		serialWriteString(itoa(getAnimationCount(), buffer, 10));
+		serialWriteString(" (");
+		serialWriteString(itoa(refreshAnimationCount, buffer, 10));
+		serialWriteString(")");
 		serialWriteString(getString(15));
+		break;
+
+	case 'u': case 'U':
+		serialWriteString(getString(31));
+		while(!serialHasChar()) {
+			wdt_reset();
+		}
+		i = serialGet() - '0';
+		serialWrite(i + '0');
+		serialWrite('\n');
+		tmp = getFrame(i);
+		dumpFrame(tmp);
+		free(tmp);
 		break;
 
 	case 'x': case 'X':

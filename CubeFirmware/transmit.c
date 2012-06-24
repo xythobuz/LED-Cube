@@ -34,22 +34,22 @@
 #define OK 0x42
 #define ERROR 0x23
 
-#define TRANSTIMEOUT 2500
+#define TIMEOUTPERFRAME 500
 
 // These are global variables from main.c
 extern char buffer[11];
-extern uint8_t refreshAnimationCount;
 
 void recieveAnimations(void) {
 	uint8_t animCount, a, frameCount, f, i, c;
 	uint16_t completeCount = 0;
 	uint8_t *frame = (uint8_t *)malloc(65);
 	uint64_t timestamp = getSystemTime();
+	uint64_t timeout = TIMEOUTPERFRAME;
 
 	serialWrite(OK); // We are ready...
 
 	while (!serialHasChar()) { // Wait for answer
-		if ((getSystemTime() - timestamp) <= TRANSTIMEOUT) {
+		if ((getSystemTime() - timestamp) <= timeout) {
 			wdt_reset();
 		} else {
 			setAnimationCount(0);
@@ -62,7 +62,7 @@ void recieveAnimations(void) {
 
 	for (a = 0; a < animCount; a++) {
 		while (!serialHasChar()) { // Wait for answer
-			if ((getSystemTime() - timestamp) <= TRANSTIMEOUT) {
+			if ((getSystemTime() - timestamp) <= timeout) {
 				wdt_reset();
 			} else {
 				setAnimationCount(0);
@@ -74,8 +74,9 @@ void recieveAnimations(void) {
 		serialWrite(OK);
 
 		for (f = 0; f < frameCount; f++) {
+			timeout += TIMEOUTPERFRAME;
 			while (!serialHasChar()) { // Wait for answer
-				if ((getSystemTime() - timestamp) <= TRANSTIMEOUT) {
+				if ((getSystemTime() - timestamp) <= timeout) {
 					wdt_reset();
 				} else {
 					setAnimationCount(0);
@@ -88,7 +89,7 @@ void recieveAnimations(void) {
 
 			for (i = 0; i < 64; i++) {
 				while (!serialHasChar()) { // Wait for answer
-					if ((getSystemTime() - timestamp) <= TRANSTIMEOUT) {
+					if ((getSystemTime() - timestamp) <= timeout) {
 						wdt_reset();
 					} else {
 						setAnimationCount(0);
@@ -106,7 +107,7 @@ void recieveAnimations(void) {
 	free(frame);
 
 	while (!serialHasChar()) { // Wait for answer
-		if ((getSystemTime() - timestamp) <= TRANSTIMEOUT) {
+		if ((getSystemTime() - timestamp) <= timeout) {
 			wdt_reset();
 		} else {
 			setAnimationCount(0);
@@ -115,7 +116,7 @@ void recieveAnimations(void) {
 	}
 	c = serialGet();
 	while (!serialHasChar()) { // Wait for answer
-		if ((getSystemTime() - timestamp) <= TRANSTIMEOUT) {
+		if ((getSystemTime() - timestamp) <= timeout) {
 			wdt_reset();
 		} else {
 			setAnimationCount(0);
@@ -124,7 +125,7 @@ void recieveAnimations(void) {
 	}
 	c = serialGet();
 	while (!serialHasChar()) { // Wait for answer
-		if ((getSystemTime() - timestamp) <= TRANSTIMEOUT) {
+		if ((getSystemTime() - timestamp) <= timeout) {
 			wdt_reset();
 		} else {
 			setAnimationCount(0);
@@ -133,7 +134,7 @@ void recieveAnimations(void) {
 	}
 	c = serialGet();
 	while (!serialHasChar()) { // Wait for answer
-		if ((getSystemTime() - timestamp) <= TRANSTIMEOUT) {
+		if ((getSystemTime() - timestamp) <= timeout) {
 			wdt_reset();
 		} else {
 			setAnimationCount(0);
@@ -145,78 +146,11 @@ void recieveAnimations(void) {
 	serialWrite(OK);
 
 	setAnimationCount(completeCount);
-	refreshAnimationCount = 1;
 }
 
 // TODO: Rewrite for new Serial API
 void transmitAnimations(void) {
-	// We store no animation information in here
-	// So we have to place all frames in one or more
-	// animations... We need 8 animations max...
-	uint8_t animationsToGo;
-	uint16_t framesToGo = getAnimationCount();
-	uint16_t character;
-	uint8_t a;
-	uint8_t f, fMax, i;
-	uint8_t *frame;
-
-	if ((framesToGo % 255) == 0) {
-		animationsToGo = framesToGo / 255;
-	} else {
-		animationsToGo = (framesToGo / 255) + 1;
-	}
-
-	serialWrite(OK);
-	serialWrite(animationsToGo);
-	while ((character = serialGet()) & 0xFF00); // Wait for answer
-	if ((character & 0x00FF) != OK) { // Error code recieved
-		return;
-	}
-
-	for (a = 0; a < animationsToGo; a++) {
-		if (framesToGo > 255) {
-			fMax = 255;
-		} else {
-			fMax = framesToGo;
-		}
-
-		serialWrite(fMax); // Number of Frames in current animation
-		while ((character = serialGet()) & 0xFF00); // Wait for answer
-		if ((character & 0x00FF) != OK) { // Error code recieved
-			return;
-		}
-
-		for (f = 0; f < fMax; f++) {
-			frame = getFrame(f + (255 * a));
-
-			serialWrite(frame[64]); // frame duration
-			while ((character = serialGet()) & 0xFF00); // Wait for answer
-			if ((character & 0x00FF) != OK) { // Error code recieved
-				free(frame);
-				return;
-			}
-
-			for (i = 0; i < 64; i++) {
-				serialWrite(frame[i]);
-			}
-			while ((character = serialGet()) & 0xFF00); // Wait for answer
-			if ((character & 0x00FF) != OK) { // Error code recieved
-				free(frame);
-				return;
-			}
-
-			free(frame);
-		}
-		framesToGo -= fMax;
-	}
-
-	serialWrite(OK);
-	serialWrite(OK);
-	serialWrite(OK);
-	serialWrite(OK);
-
-	while ((character = serialGet()) & 0xFF00); // Wait for answer
-	// Error code ignored...
+	serialWrite(ERROR);
 }
 
 void sendAudioData(void) {
@@ -261,4 +195,22 @@ void printTime(void) {
 	} else {
 		serialWrite('\n');
 	}
+}
+
+void dumpFrame(uint8_t *f) {
+	uint8_t zeile, spalte;
+	for (zeile = 0; zeile < 8; zeile++) {
+		serialWrite(zeile + '0');
+		serialWriteString(": ");
+		for (spalte = 0; spalte < 8; spalte++) {
+			itoa(f[(8 * zeile) + spalte], buffer, 16);
+			serialWriteString(buffer);
+			serialWrite(' ');
+		}
+		serialWrite('\n');
+	}
+	serialWriteString("Duration: ");
+	itoa(f[64], buffer, 10);
+	serialWriteString(buffer);
+	serialWrite('\n');
 }

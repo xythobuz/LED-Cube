@@ -42,8 +42,6 @@ D)	Implement your animation!
 // Prototypes for all animations
 void upWave(uint8_t i);
 void downWave(uint8_t i);
-void xWave1(uint8_t i);
-void xWave2(uint8_t i);
 void zWave1(uint8_t i);
 void zWave2(uint8_t i);
 
@@ -51,30 +49,26 @@ void zWave2(uint8_t i);
 #define NUMOFANIMATIONS 0
 uint8_t (*animations[NUMOFANIMATIONS])(void) = { };
 
-#define WAVELENGTH 2
+#define WAVELENGTH 1
 
 uint8_t numOfAnimations(void) {
-	return NUMOFANIMATIONS + 24;
+	return NUMOFANIMATIONS + (4*4);
 }
 
 uint8_t executeAnimation(uint8_t id) {
-	if (id < (6*4)) {
+	if (id < (4*4)) {
 		if (id < 4) {
-			upWave(id);
+			zWave1(id);
 		} else if (id < 8) {
-			downWave(id - 4);
+			zWave2(id - 4);
 		} else if (id < 12) {
-			xWave1(id - 8);
+			upWave(id - 8);
 		} else if (id < 16) {
-			xWave2(id - 12);
-		} else if (id < 20) {
-			zWave1(id - 16);
-		} else {
-			zWave2(id - 20);
+			downWave(id - 12);
 		}
 		return 1;
-	} else if ((id - (6*4)) < NUMOFANIMATIONS) {
-		return animations[id - (6*4)](); // Call animation
+	} else if ((id - (4*4)) < NUMOFANIMATIONS) {
+		return animations[id - (4*4)](); // Call animation
 	}
 	return 1;
 }
@@ -117,47 +111,6 @@ void downWave(uint8_t i) {
 			wdt_reset();
 		}
 		buffClearAllPixels(buff);	
-	}
-	free(buff);
-}
-
-void xWave1(uint8_t i) {
-	uint8_t *buff;
-	int8_t x, y, z;
-
-	buff = buffNew();
-	// x-axis wave
-	for(x = (i * 2); x < ((i * 2) + 2); x++) {
-		for(y = 0; y < 8; y++) {
-			for(z = 0; z < 8; z++) {
-				buffSetPixel(buff, x, y, z);
-			}
-		}
-		setImage(buff);
-		while(isFinished() < WAVELENGTH) {
-			wdt_reset();
-		}
-		buffClearAllPixels(buff);
-	}
-	free(buff);
-}
-
-void xWave2(uint8_t i) {
-	uint8_t *buff;
-	int8_t x, y, z;
-
-	buff = buffNew();
-	for(x = (7 - (2 * i)); x >= ((7 - (2 * i)) - 1); x--) {
-		for(y = 0; y < 8; y++) {
-			for(z = 0; z < 8; z++) {
-				buffSetPixel(buff, x, y, z);
-			}
-		}
-		setImage(buff);
-		while(isFinished() < WAVELENGTH) {
-			wdt_reset();
-		}
-		buffClearAllPixels(buff);
 	}
 	free(buff);
 }

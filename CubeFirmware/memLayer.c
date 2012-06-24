@@ -23,6 +23,7 @@
  #include <stdint.h>
  #include <avr/io.h>
  #include <stdlib.h>
+ #include <avr/wdt.h>
  #include "mem.h"
  #include "memLayer.h"
  #include "serial.h"
@@ -47,6 +48,7 @@ void clearMem() {
 	uint32_t i;
 	for (i = 0; i < MemLength; i++) {
 		memWriteByte(i, 0);
+		wdt_reset();
 	}
 }
 
