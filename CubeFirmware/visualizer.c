@@ -22,6 +22,7 @@
  */
 #include <avr/io.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #include <visualizer.h>
 #include <cube.h>
@@ -36,6 +37,7 @@
 uint8_t maxVal(uint8_t data, uint8_t log);
 void setRow(uint8_t x, uint8_t z, uint8_t height, uint8_t *buf);
 uint8_t average(uint8_t *data);
+uint8_t maximum(uint8_t *data);
 void filterData(uint8_t *data, uint8_t log);
 void simpleVisualization(uint8_t *data);
 void fullDepthVisualization(uint8_t *data);
@@ -45,9 +47,9 @@ void fullDepthLog(uint8_t *data);
 void linLog(uint8_t *data);
 
 #define NUMOFVISUALIZATIONS 6
-void (*visualizations[NUMOFVISUALIZATIONS])(uint8_t *data) = { &simpleVisualization,
+void (*visualizations[NUMOFVISUALIZATIONS])(uint8_t *data) = { &linLog, &simpleVisualization,
 													&fullDepthVisualization, &horribleWave,
-													&simpleLog, &fullDepthLog, &linLog };
+													&simpleLog, &fullDepthLog };
 uint8_t logScale[8] = { 2, 4, 8, 16, 31, 63, 125, 250 }; // --> ca. (1 << (led + 1));
 
 uint8_t numberOfVisualizations(void) {
@@ -56,14 +58,23 @@ uint8_t numberOfVisualizations(void) {
 
 void runVisualization(uint8_t *data, uint8_t id) {
 	if (id < NUMOFVISUALIZATIONS) {
-		if ((id <= 5) && (id > 2)) {
+		if ((id == 0) || ((id > 3) && (id <= 5))) {
 			filterData(data, 1);
-			visualizations[id](data);
 		} else {
 			filterData(data, 0);
-			visualizations[id](data);
+		}
+		visualizations[id](data);
+	}
+}
+
+uint8_t maximum(uint8_t *data) {
+	uint8_t i, max = 0;
+	for (i = 0; i < 7; i++) {
+		if (data[i] > max) {
+			max = data[i];
 		}
 	}
+	return max;
 }
 
 uint8_t maxVal(uint8_t data, uint8_t log) {
@@ -90,8 +101,13 @@ uint8_t average(uint8_t *data) {
 void filterData(uint8_t *data, uint8_t log) {
 	uint8_t i;
 	uint8_t max;
+
 	if (log) {
-		max = THRESHOLD / 2;
+		if (average(data) < THRESHOLD) {
+			max = THRESHOLD;
+		} else {
+			max = THRESHOLD / 2;
+		}
 	} else {
 		max = THRESHOLD;
 	}

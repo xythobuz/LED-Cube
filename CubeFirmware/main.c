@@ -52,7 +52,6 @@
 #define IDLELENGTH 48
 
 void init(void);
-uint8_t audioModeSelected(void);
 uint8_t selfTest(void);
 void serialHandler(char c);
 
@@ -136,9 +135,6 @@ int main(void) {
 	uint8_t i;
 	uint8_t imageIndex = 0, imageCount = 0;
 	uint8_t idleIndex = 0, idleCount = 0;
-	uint8_t lastButtonCheck;
-	// uint8_t fpsWasSent = 0;
-	// uint32_t temp;
 	uint8_t *imageData = NULL, *audioData = NULL;
 	uint8_t duration = 0;
 
@@ -155,14 +151,13 @@ int main(void) {
 		disableMemory = 1;
 	serialWriteString(getString(0)); // Print Version
 
-	audioModeSelected(); // Initial button state check
-	lastButtonCheck = getSystemTime(); // Time we checked
-
 	if (disableMemory == 0)
 		imageCount = getAnimationCount(); // Retrieve image count from memory
 	idleCount = numOfAnimations();
 	if (disableAudioData == 0)
 		maxButtonState = numberOfVisualizations() + 1; // Number of toggle steps for button
+		lastButtonState = 1;
+
 
 	while(1) { // Our Mainloop
 		if (!shouldRestart) { // A flag to trigger a watchdog reset
@@ -179,10 +174,13 @@ int main(void) {
 			serialHandler((char)(serialGet()));
 		}
 
-		//if ((getSystemTime() - lastButtonCheck) >= 150) { // Check button state every 150ms
-			audioModeSelected();
-		//	lastButtonCheck = getSystemTime();
-		//}
+		if (debounce(PINB, PB0)) {
+			if (lastButtonState > 0) {
+				lastButtonState--;
+			} else {
+				lastButtonState = maxButtonState - 1;
+			}
+		}
 
 		if (lastButtonState == 0) {
 			// Display animations, stored or built-in
@@ -257,20 +255,6 @@ void init(void) {
 	sei(); // Enable Interrupts
 
 	setImage(defaultImageCube); // Display something
-}
-
-uint8_t audioModeSelected(void) {
-	// Pushbutton: PB0, Low active
-	if (debounce(PINB, PB0)) {
-		// Button pushed
-		if (lastButtonState < (maxButtonState - 1)) {
-			lastButtonState++;
-		} else {
-			lastButtonState = 0;
-		}
-
-	}
-	return lastButtonState;
 }
 
 uint8_t selfTest(void) {
@@ -393,10 +377,10 @@ void serialHandler(char c) {
 		break;
 
 	case 'm': case 'M':
-		if (lastButtonState < (maxButtonState - 1)) {
-			lastButtonState++;
+		if (lastButtonState > 0) {
+			lastButtonState--;
 		} else {
-			lastButtonState = 0;
+			lastButtonState = maxButtonState - 1;
 		}
 		if (lastButtonState) {
 			serialWriteString(getString(41));
