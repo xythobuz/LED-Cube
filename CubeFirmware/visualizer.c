@@ -31,7 +31,12 @@
 					// 256 / 8 = 32 => Divide by 31 (FACTOR) to get num of leds to light
 					// 255 / FACTOR = 8,...
 					// 127 / FACTOR = 4,...
+ #define THRESHOLD (FACTOR * 10 / 17)
 
+uint8_t maxVal(uint8_t data, uint8_t log);
+void setRow(uint8_t x, uint8_t z, uint8_t height, uint8_t *buf);
+uint8_t average(uint8_t *data);
+void filterData(uint8_t *data);
 void simpleVisualization(uint8_t *data);
 void fullDepthVisualization(uint8_t *data);
 void horribleWave(uint8_t *audioData);
@@ -39,33 +44,56 @@ void simpleLog(uint8_t *data);
 void fullDepthLog(uint8_t *data);
 
 #define NUMOFVISUALIZATIONS 5
-
 void (*visualizations[NUMOFVISUALIZATIONS])(uint8_t *data) = { &simpleVisualization,
 													&fullDepthVisualization, &horribleWave,
 													&simpleLog, &fullDepthLog };
+uint8_t logScale[8] = { 2, 4, 8, 16, 31, 63, 125, 250 }; // --> ca. (1 << (led + 1));
 
 uint8_t numberOfVisualizations(void) {
 	return NUMOFVISUALIZATIONS;
 }
 
 void runVisualization(uint8_t *data, uint8_t id) {
-	if (id < NUMOFVISUALIZATIONS)
+	if (id < NUMOFVISUALIZATIONS) {
+		filterData(data);
 		visualizations[id](data);
+	}
 }
 
-uint8_t logScale[8] = { 2, 4, 8, 16, 31, 63, 125, 250 };
-// --> ca. (1 << (led + 1));
+uint8_t maxVal(uint8_t data, uint8_t log) {
+	uint8_t max = 0;
+	if (log) {
+		while ((max <= 7) && (data > logScale[max])) // Some bitshifting would do it...
+			max++; // But this is more fine grained
+	} else {
+		max = data / FACTOR;
+	}
+	return max;
+}
+
+uint8_t average(uint8_t *data) {
+	uint16_t sum = 0;
+	uint8_t i;
+	for (i = 0; i < 7; i++) {
+		sum += data[i];
+	}
+	sum /= 7;
+	return (uint8_t)sum;
+}
+
+void filterData(uint8_t *data) {
+	uint8_t i;
+	if (average(data) < THRESHOLD) {
+		for (i = 0; i < 7; i++) {
+			data[i] = 0;
+		}
+	}
+}
 
 void simpleVUMeter(uint8_t *data, uint8_t *buff, uint8_t z, uint8_t log) {
 	uint8_t i, h = 0, max;
 	for(i = 0; i < 7; i++) {
-		if (log) {
-			while ((h <= 7) && (data[i] > logScale[h])) // Some bitshifting would do it...
-				h++; // But this is more fine grained
-			max = h;
-		} else {
-			max = data[i] / FACTOR;
-		}
+		max = maxVal(data[i], log);
 		for (h = 0; h < max; h++) {
 			if (i == 0) {
 				buffSetPixel(buff, i, (h * 10 / 15), z);
@@ -81,6 +109,7 @@ void simpleLog(uint8_t *data) {
 	buff = buffNew();
 	buffClearAllPixels(buff);
 
+	setRow(0, 0, maxVal(average(data), 1), buff); // Show average
 	simpleVUMeter(data, buff, 7, 1);
 
 	setImage(buff);
@@ -93,6 +122,7 @@ void simpleVisualization(uint8_t *data) {
 
 	buffClearAllPixels(buff);
 
+	setRow(0, 0, maxVal(average(data), 0), buff); // Show average
 	simpleVUMeter(data, buff, 7, 0);
 
 	setImage(buff);
@@ -129,14 +159,10 @@ void fullDepthVisualization(uint8_t *data) {
 	buffFree(buff);
 }
 
-void setPixelBuffer(uint8_t x, uint8_t y, uint8_t z, uint8_t *buf) {
-	buf[(8 * (7 - z)) + (7 - y)] |= (1 << x); // z is inverted for beauty reasons
-}
-
 void setRow(uint8_t x, uint8_t z, uint8_t height, uint8_t *buf) {
-	uint8_t i = 0;
-	for (; i < height; i++) {
-		setPixelBuffer(x, i, z, buf);
+	uint8_t i;
+	for (i = 0; i < height; i++) {
+		buffSetPixel(buf, x, i, z);
 	}
 }
 

@@ -30,17 +30,12 @@ int flipAdjacent(int d) {
 	return converted;
 }
 
-void main() {
+int main() {
 	int byte;
-	int converted;
 
-	printf("penis = {");
-	
+	printf("uint8_t lookUp[256] = {");
 	for (byte = 0; byte < 256; byte++) {
-		converted = flip(byte);
-		converted = flipAdjacent(converted);
-
-		printf(" %d", converted);
+		printf(" %d", flipAdjacent(flip(byte));
 		if (((byte % 10) == 0) && (byte > 0)) {
 			printf(",\n");
 		} else if (byte < 255) {
@@ -48,4 +43,5 @@ void main() {
 		}
 	}
 	printf(" }\n");
+	return 0;
 }
