@@ -35,11 +35,14 @@
 void simpleVisualization(uint8_t *data);
 void fullDepthVisualization(uint8_t *data);
 void horribleWave(uint8_t *audioData);
+void simpleLog(uint8_t *data);
+void fullDepthLog(uint8_t *data);
 
-#define NUMOFVISUALIZATIONS 3
+#define NUMOFVISUALIZATIONS 5
 
 void (*visualizations[NUMOFVISUALIZATIONS])(uint8_t *data) = { &simpleVisualization,
-													&fullDepthVisualization, &horribleWave };
+													&fullDepthVisualization, &horribleWave,
+													&simpleLog, &fullDepthLog };
 
 uint8_t numberOfVisualizations(void) {
 	return NUMOFVISUALIZATIONS;
@@ -50,10 +53,19 @@ void runVisualization(uint8_t *data, uint8_t id) {
 		visualizations[id](data);
 }
 
-void simpleVUMeter(uint8_t *data, uint8_t *buff, uint8_t z) {
-	uint8_t i, h, max;
+uint8_t logScale[8] = { 2, 4, 8, 16, 31, 63, 125, 250 };
+// --> ca. (1 << (led + 1));
+
+void simpleVUMeter(uint8_t *data, uint8_t *buff, uint8_t z, uint8_t log) {
+	uint8_t i, h = 0, max;
 	for(i = 0; i < 7; i++) {
-		max = data[i] / FACTOR;
+		if (log) {
+			while ((h <= 7) && (data[i] > logScale[h])) // Some bitshifting would do it...
+				h++; // But this is more fine grained
+			max = h;
+		} else {
+			max = data[i] / FACTOR;
+		}
 		for (h = 0; h < max; h++) {
 			if (i == 0) {
 				buffSetPixel(buff, i, (h * 10 / 15), z);
@@ -63,13 +75,40 @@ void simpleVUMeter(uint8_t *data, uint8_t *buff, uint8_t z) {
 	}
 }
 
+void simpleLog(uint8_t *data) {
+	uint8_t *buff;
+
+	buff = buffNew();
+	buffClearAllPixels(buff);
+
+	simpleVUMeter(data, buff, 7, 1);
+
+	setImage(buff);
+	buffFree(buff);
+}
+
 void simpleVisualization(uint8_t *data) {
 	uint8_t *buff;
 	buff = buffNew();
 
 	buffClearAllPixels(buff);
 
-	simpleVUMeter(data, buff, 7);
+	simpleVUMeter(data, buff, 7, 0);
+
+	setImage(buff);
+	buffFree(buff);
+}
+
+void fullDepthLog(uint8_t *data) {
+	uint8_t *buff;
+	uint8_t i;
+	buff = buffNew();
+
+	buffClearAllPixels(buff);
+
+	for (i = 0; i < 8; i++) {
+		simpleVUMeter(data, buff, i, 1);
+	}
 
 	setImage(buff);
 	buffFree(buff);
@@ -83,7 +122,7 @@ void fullDepthVisualization(uint8_t *data) {
 	buffClearAllPixels(buff);
 
 	for (i = 0; i < 8; i++) {
-		simpleVUMeter(data, buff, i);
+		simpleVUMeter(data, buff, i, 0);
 	}
 
 	setImage(buff);
