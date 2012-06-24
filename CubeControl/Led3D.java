@@ -188,7 +188,7 @@ public class Led3D extends MouseAdapter {
 			}
 		}
 
-		drawLedFeetVertical(5, 5, -5, 50, 0.02f); //
+		/*drawLedFeetVertical(5, 5, -5, 50, 0.02f); //
 		drawLedFeetHorizontal(5, 5, -5, 50, 0.02f, 0); // x, y, and z axis
 		drawLedFeetHorizontal(5, 5, -5, 50, 0.02f, 90);
 
@@ -204,7 +204,7 @@ public class Led3D extends MouseAdapter {
 		transform.setTranslation(vector);
 		tg.setTransform(transform);
 		tg.addChild(center);
-		feetGroup.addChild(tg);	
+		feetGroup.addChild(tg);*/	
 
 
 		// Add an ambient light
