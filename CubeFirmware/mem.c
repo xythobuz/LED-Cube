@@ -36,7 +36,7 @@ uint8_t memGetByte(uint32_t address) {
 		// Address needs more than 16 bits, we have to set the PAGE bit in i2c address
 		memAddress |= 2;
 	}
-	addA = address & 0xFF00;
+	addA = (address & 0xFF00) >> 8;
 	addB = address & 0xFF;
 
 	if (i2c_start(memAddress | I2C_WRITE) == 0) { // Send start, write address to read
@@ -59,7 +59,7 @@ uint8_t *memGetBytes(uint32_t address, uint8_t length) {
 		// Address needs more than 16 bits, we have to set the PAGE bit in i2c address
 		memAddress |= 2;
 	}
-	addA = address & 0xFF00;
+	addA = (address & 0xFF00) >> 8;
 	addB = address & 0xFF;
 	ret = (uint8_t *)malloc(length); // Allocate memory for values read
 	if (ret == NULL) {
@@ -88,7 +88,7 @@ void memWriteByte(uint32_t address, uint8_t data) {
 		// Address needs more than 16 bits, we have to set the PAGE bit in i2c address
 		memAddress |= 2;
 	}
-	addA = address & 0xFF00;
+	addA = (address & 0xFF00) >> 8;
 	addB = address & 0xFF;
 	if (i2c_start(memAddress | I2C_WRITE) == 0) {
 		i2c_write(addA);
@@ -104,7 +104,7 @@ void memWriteBytes(uint32_t address, uint8_t *data, uint8_t length) {
 		// Address needs more than 16 bits, we have to set the PAGE bit in i2c address
 		memAddress |= 2;
 	}
-	addA = address & 0xFF00;
+	addA = (address & 0xFF00) >> 8;
 	addB = address & 0xFF;
 	if (i2c_start(memAddress | I2C_WRITE) == 0) {
 		i2c_write(addA);

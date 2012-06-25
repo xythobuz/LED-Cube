@@ -25,6 +25,7 @@
 uint8_t *getFrame(uint16_t frameNumber);
 // 65 bytes framedata, data and duration...
 void setFrame(uint16_t frameNumber, uint8_t *frameData);
+void setDuration(uint16_t frameNumber, uint8_t duration);
 
 void clearMem(void);
 

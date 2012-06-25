@@ -237,6 +237,11 @@ uint8_t readNumber(uint8_t base) {
 	return val;
 }
 
+void writeNumber(uint8_t num, uint8_t base) {
+	itoa(num, buffer, base);
+	serialWriteString(buffer);
+}
+
 uint8_t *readAFrame(void) {
 	uint8_t *frame = (uint8_t *)malloc(65);
 	uint8_t byte;
@@ -244,11 +249,41 @@ uint8_t *readAFrame(void) {
 	serialWriteString(getString(35)); // "Duration: "
 	frame[64] = readNumber(10);
 	for (byte = 0; byte < 64; byte++) {
-		itoa(byte, buffer, 10);
-		serialWriteString(buffer);
+		writeNumber(byte, 10);
 		serialWriteString(": "); // "xx: "
 		frame[byte] = readNumber(16);
 	}
 	serialWriteString(getString(33));
 	return frame;
+}
+
+void simpleAnimationInput(void) {
+	uint8_t start, j, d;
+	int8_t i;
+	uint8_t data[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+	uint8_t *frame = (uint8_t *)malloc(65);
+	frame[64] = 2;
+
+	serialWriteString(getString(36));
+	start = readNumber(10);
+	serialWriteString(getString(37));
+	for (i = 0; i < 8; i++) {
+		writeNumber(i, 10);
+		serialWriteString(": ");
+		data[i] = readNumber(16);
+	}
+	serialWriteString(getString(38));
+	for (i = 0; i < 8; i++) {
+		d = 0;
+		for (j = 0; j < 64; j++) {
+			if ((j < (8 * (i + 1))) && (j >= (8 * i))) {
+				frame[j] = data[d++];
+			} else {
+				frame[j] = 0;
+			}
+		}
+		setFrame(i + start, frame);
+	}
+	serialWriteString(getString(33)); // Done
+	free(frame);
 }

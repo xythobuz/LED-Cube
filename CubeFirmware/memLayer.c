@@ -33,6 +33,8 @@
 // We place 2016 Frames in mem => 131040
 // That gives us 32 bytes at the beginning, 0 -> 31
 // The first frame starts at 32
+// Framecount in 0 and 1
+// General Purpose bytes 0 to 29, starting at 2
 
 // Free after usage!
 uint8_t *getFrame(uint16_t frameNumber) {
@@ -42,6 +44,10 @@ uint8_t *getFrame(uint16_t frameNumber) {
 // 65 bytes framedata, data and duration...
 void setFrame(uint16_t frameNumber, uint8_t *frameData) {
 	memWriteBytes(32 + (65 * frameNumber), frameData, 65);
+}
+
+void setDuration(uint16_t frameNumber, uint8_t duration) {
+	memWriteByte(32 + 64 + (65 * frameNumber), duration);
 }
 
 void clearMem() {

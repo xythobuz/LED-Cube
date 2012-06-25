@@ -28,4 +28,6 @@ void printTime(void);
 void dumpFrame(uint8_t *f);
 uint8_t *readLine(void);
 uint8_t readNumber(uint8_t base);
+void writeNumber(uint8_t num, uint8_t base);
 uint8_t *readAFrame(void);
+void simpleAnimationInput(void);

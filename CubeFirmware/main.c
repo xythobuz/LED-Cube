@@ -327,7 +327,7 @@ void randomAnimation(void) {
 
 void serialHandler(char c) {
 	// Used letters:
-	// a, b, c, d, e, f, g, h, i, m, n, q, r, s, t, u, v, x, y, 0, 1, 2, 3, #
+	// a, b, c, d, e, f, g, h, i, m, n, p, q, r, s, t, u, v, x, y, 0, 1, 2, 3, #
 	uint8_t i, y, z;
 	uint8_t *tmp;
 
@@ -344,6 +344,7 @@ void serialHandler(char c) {
 		serialWriteString(getString(10));
 		serialWriteString(getString(26));
 		serialWriteString(getString(34));
+		serialWriteString(getString(17));
 
 		serialWriteString(getString(11));
 		serialWriteString(getString(12));
@@ -421,10 +422,28 @@ void serialHandler(char c) {
 		free(tmp);
 		break;
 
+	case 'o': case 'O':
+		serialWriteString(getString(36)); // Start:
+		i = readNumber(10);
+		serialWriteString(getString(39)); // Ende:
+		y = readNumber(10);
+		serialWriteString(getString(35)); // Duration:
+		z = readNumber(10);
+		for (c = i; c <= y; c++) {
+			setDuration(c, z);
+		}
+		serialWriteString(getString(33)); // Done
+		break;
+
 	case 'x': case 'X':
 		// Get byte, store as animation count
 		serialWriteString(getString(16)); // "New animation count: "
 		setAnimationCount(readNumber(10));
+		refreshAnimationCount = 1;
+		break;
+
+	case 'p': case 'P':
+		simpleAnimationInput();
 		break;
 
 	case 'y': case 'Y':
