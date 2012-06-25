@@ -148,7 +148,6 @@ void recieveAnimations(void) {
 	setAnimationCount(completeCount);
 }
 
-// TODO: Rewrite for new Serial API
 void transmitAnimations(void) {
 	serialWrite(ERROR);
 }
@@ -209,8 +208,47 @@ void dumpFrame(uint8_t *f) {
 		}
 		serialWrite('\n');
 	}
-	serialWriteString("Duration: ");
+	serialWriteString(getString(35));
 	itoa(f[64], buffer, 10);
 	serialWriteString(buffer);
 	serialWrite('\n');
+}
+
+uint8_t *readLine(void) {
+	uint8_t ptr = 0;
+	while(1) {
+		wdt_reset();
+		if (serialHasChar()) {
+			buffer[ptr] = serialGet();
+			serialWrite(buffer[ptr]);
+			if ((buffer[ptr] == '\n') || (ptr == sizeof(buffer) - 1)) {
+				buffer[ptr] = '\0';
+				return (uint8_t *)buffer;
+			}
+			ptr++;
+		}
+
+	}
+}
+
+uint8_t readNumber(uint8_t base) {
+	uint8_t *s = readLine();
+	uint8_t val = (uint8_t)strtoul((char *)s, NULL, base);
+	return val;
+}
+
+uint8_t *readAFrame(void) {
+	uint8_t *frame = (uint8_t *)malloc(65);
+	uint8_t byte;
+
+	serialWriteString(getString(35)); // "Duration: "
+	frame[64] = readNumber(10);
+	for (byte = 0; byte < 64; byte++) {
+		itoa(byte, buffer, 10);
+		serialWriteString(buffer);
+		serialWriteString(": "); // "xx: "
+		frame[byte] = readNumber(16);
+	}
+	serialWriteString(getString(33));
+	return frame;
 }

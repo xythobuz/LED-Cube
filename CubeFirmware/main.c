@@ -327,7 +327,7 @@ void randomAnimation(void) {
 
 void serialHandler(char c) {
 	// Used letters:
-	// a, b, c, d, e, f, g, h, i, n, q, r, s, t, u, v, x, y, 0, 1, 2, 3, #
+	// a, b, c, d, e, f, g, h, i, m, n, q, r, s, t, u, v, x, y, 0, 1, 2, 3, #
 	uint8_t i, y, z;
 	uint8_t *tmp;
 
@@ -416,30 +416,23 @@ void serialHandler(char c) {
 
 	case 'u': case 'U':
 		serialWriteString(getString(31));
-		while(!serialHasChar()) {
-			wdt_reset();
-		}
-		i = serialGet() - '0';
-		serialWrite(i + '0');
-		serialWrite('\n');
-		tmp = getFrame(i);
+		tmp = getFrame(readNumber(10));
 		dumpFrame(tmp);
 		free(tmp);
 		break;
 
 	case 'x': case 'X':
 		// Get byte, store as animation count
-		serialWriteString(getString(16));
-		while (!serialHasChar());
-		c = serialGet();
-		setAnimationCount(c);
-		serialWriteString(itoa(c, buffer, 10));
-		serialWriteString(getString(17));
+		serialWriteString(getString(16)); // "New animation count: "
+		setAnimationCount(readNumber(10));
 		break;
 
 	case 'y': case 'Y':
-		setAnimationCount(0x2201);
-		serialWriteString(getString(18));
+		serialWriteString(getString(18)); // "Frame to change: "
+		i = readNumber(10);
+		tmp = readAFrame();
+		setFrame(i, tmp);
+		free(tmp);
 		break;
 
 	case 'e': case 'E':
