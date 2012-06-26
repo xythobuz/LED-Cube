@@ -1,9 +1,8 @@
 /*
  * buffhelp.h
  *
- * Copyright 2011 Thomas Buck <xythobuz@me.com>
- * Copyright 2011 Max Nuding <max.nuding@gmail.com>
- * Copyright 2011 Felix Bäder <baeder.felix@gmail.com>
+ * Copyright 2012 Thomas Buck <xythobuz@me.com>
+ * Copyright 2012 Max Nuding <max.nuding@gmail.com>
  *
  * This file is part of LED-Cube.
  *
@@ -47,6 +46,7 @@ void buffSetPixel(uint8_t *buffer, uint8_t x, uint8_t y, uint8_t z) {
 void buffClearPixel(uint8_t *buffer, uint8_t x, uint8_t y, uint8_t z) {
 	buffer[(8 * (7 - z)) + (7 - y)] &= ~(1 << x);
 }
+
 void buffClearAllPixels(uint8_t *buffer) {
 	uint8_t i;
 	for(i = 0; i < 64; i++) {	

@@ -1,9 +1,7 @@
 /*
  * visualizer.c
  *
- * Copyright 2011 Thomas Buck <xythobuz@me.com>
- * Copyright 2011 Max Nuding <max.nuding@gmail.com>
- * Copyright 2011 Felix Bäder <baeder.felix@gmail.com>
+ * Copyright 2012 Thomas Buck <xythobuz@me.com>
  *
  * This file is part of LED-Cube.
  *
@@ -40,16 +38,17 @@ uint8_t average(uint8_t *data);
 uint8_t maximum(uint8_t *data);
 void filterData(uint8_t *data, uint8_t log);
 void simpleVisualization(uint8_t *data);
+void simpleSwitch(uint8_t *data);
 void fullDepthVisualization(uint8_t *data);
 void horribleWave(uint8_t *audioData);
 void simpleLog(uint8_t *data);
 void fullDepthLog(uint8_t *data);
 void linLog(uint8_t *data);
 
-#define NUMOFVISUALIZATIONS 6
+#define NUMOFVISUALIZATIONS 7
 void (*visualizations[NUMOFVISUALIZATIONS])(uint8_t *data) = { &linLog, &simpleVisualization,
 													&fullDepthVisualization, &horribleWave,
-													&simpleLog, &fullDepthLog };
+													&simpleLog, &fullDepthLog, &simpleSwitch };
 uint8_t logScale[8] = { 2, 4, 8, 16, 31, 63, 125, 250 }; // --> ca. (1 << (led + 1));
 
 uint8_t numberOfVisualizations(void) {
@@ -118,15 +117,25 @@ void filterData(uint8_t *data, uint8_t log) {
 	}
 }
 
-void simpleVUMeter(uint8_t *data, uint8_t *buff, uint8_t z, uint8_t log) {
+void simpleVUMeter(uint8_t *data, uint8_t *buff, uint8_t z, uint8_t log, uint8_t change) {
 	uint8_t i, h = 0, max;
 	for(i = 0; i < 7; i++) {
 		max = maxVal(data[i], log);
 		for (h = 0; h < max; h++) {
 			if (i == 0) {
-				buffSetPixel(buff, i, (h * 10 / 15), z);
+				if (change) {
+					buffSetPixel(buff, i, z, (h * 10 / 15));
+				} else {
+					buffSetPixel(buff, i, (h * 10 / 15), z);
+				}
+				
 			}
-			buffSetPixel(buff, i + 1, h, z);
+			if (change) {
+				buffSetPixel(buff, i + 1, z, h);
+			} else {
+				buffSetPixel(buff, i + 1, h, z);
+			}
+			
 		}
 	}
 }
@@ -137,8 +146,8 @@ void simpleLog(uint8_t *data) {
 	buff = buffNew();
 	buffClearAllPixels(buff);
 
-	setRow(0, 0, maxVal(average(data), 1), buff); // Show average
-	simpleVUMeter(data, buff, 7, 1);
+	// setRow(0, 0, maxVal(average(data), 1), buff); // Show average
+	simpleVUMeter(data, buff, 7, 1, 0);
 
 	setImage(buff);
 	buffFree(buff);
@@ -150,8 +159,23 @@ void simpleVisualization(uint8_t *data) {
 
 	buffClearAllPixels(buff);
 
-	setRow(0, 0, maxVal(average(data), 0), buff); // Show average
-	simpleVUMeter(data, buff, 7, 0);
+	// setRow(0, 0, maxVal(average(data), 0), buff); // Show average
+	simpleVUMeter(data, buff, 7, 0, 0);
+
+	setImage(buff);
+	buffFree(buff);
+}
+
+void simpleSwitch(uint8_t *data) {
+	uint8_t *buff;
+	uint8_t i;
+	buff = buffNew();
+
+	buffClearAllPixels(buff);
+
+	for (i = 2; i < 6; i++) {
+		simpleVUMeter(data, buff, i, 0, 1);
+	}
 
 	setImage(buff);
 	buffFree(buff);
@@ -163,9 +187,9 @@ void linLog(uint8_t *data) {
 
 	buffClearAllPixels(buff);
 
-	simpleVUMeter(data, buff, 2, 1);
+	simpleVUMeter(data, buff, 2, 1, 0);
 	filterData(data, 0);
-	simpleVUMeter(data, buff, 5, 0);
+	simpleVUMeter(data, buff, 5, 0, 0);
 
 	setImage(buff);
 	buffFree(buff);
@@ -179,7 +203,7 @@ void fullDepthLog(uint8_t *data) {
 	buffClearAllPixels(buff);
 
 	for (i = 0; i < 8; i++) {
-		simpleVUMeter(data, buff, i, 1);
+		simpleVUMeter(data, buff, i, 1, 0);
 	}
 
 	setImage(buff);
@@ -194,7 +218,7 @@ void fullDepthVisualization(uint8_t *data) {
 	buffClearAllPixels(buff);
 
 	for (i = 0; i < 8; i++) {
-		simpleVUMeter(data, buff, i, 0);
+		simpleVUMeter(data, buff, i, 0, 0);
 	}
 
 	setImage(buff);

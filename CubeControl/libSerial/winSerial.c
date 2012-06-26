@@ -5,9 +5,7 @@
  * Windows 16 (& 32 & 64?) compatible serial port library
  * Uses 8 databits, no parity, 1 stop bit, no handshaking
  *
- * Copyright 2011 Thomas Buck <xythobuz@me.com>
- * Copyright 2011 Max Nuding <max.nuding@gmail.com>
- * Copyright 2011 Felix Bäder <baeder.felix@gmail.com>
+ * Copyright 2012 Thomas Buck <xythobuz@me.com>
  *
  * This file is part of LED-Cube.
  *

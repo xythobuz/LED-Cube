@@ -1,9 +1,7 @@
 /*
  * strings.h
  *
- * Copyright 2011 Thomas Buck <xythobuz@me.com>
- * Copyright 2011 Max Nuding <max.nuding@gmail.com>
- * Copyright 2011 Felix Bäder <baeder.felix@gmail.com>
+ * Copyright 2012 Thomas Buck <xythobuz@me.com>
  *
  * This file is part of LED-Cube.
  *

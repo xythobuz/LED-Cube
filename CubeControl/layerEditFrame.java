@@ -2,9 +2,7 @@
  * layerEditFrame.java
  *
  *
- * Copyright 2011 Thomas Buck <xythobuz@me.com>
- * Copyright 2011 Max Nuding <max.nuding@gmail.com>
- * Copyright 2011 Felix BÃ¤der <baeder.felix@gmail.com>
+ * Copyright 2012 Max Nuding <max.nuding@gmail.com>
  *
  * This file is part of LED-Cube.
  *
@@ -30,8 +28,6 @@ import javax.swing.event.*;
  * Shows a windows that allows the user to toggle the state of 64 LEDs.
  * 
  * @author Max Nuding
- * @author Thomas Buck
- * @author Felix Bäder
  * @version 1.0
  */
 

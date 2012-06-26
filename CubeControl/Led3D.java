@@ -2,9 +2,8 @@
  * Led3D.java
  *
  *
- * Copyright 2011 Thomas Buck <xythobuz@me.com>
- * Copyright 2011 Max Nuding <max.nuding@gmail.com>
- * Copyright 2011 Felix BÃ¤der <baeder.felix@gmail.com>
+ * Copyright 2012 Thomas Buck <xythobuz@me.com>
+ * Copyright 2012 Max Nuding <max.nuding@gmail.com>
  *
  * This file is part of LED-Cube.
  *
@@ -35,7 +34,6 @@ import java.awt.event.*;
  * 
  * @author Thomas Buck
  * @author Max Nuding
- * @author Felix Bäder
  * @version 1.0
  */
 public class Led3D extends MouseAdapter {

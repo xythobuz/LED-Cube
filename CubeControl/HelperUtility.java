@@ -1,9 +1,7 @@
 /*
  * HelperUtility.java
  *
- * Copyright 2011 Thomas Buck <xythobuz@me.com>
- * Copyright 2011 Max Nuding <max.nuding@gmail.com>
- * Copyright 2011 Felix Bäder <baeder.felix@gmail.com>
+ * Copyright 2012 Thomas Buck <xythobuz@me.com>
  *
  * This file is part of LED-Cube.
  *
@@ -24,8 +22,6 @@
 /**
  * Helper class which runs our native library, which is loaded from inside the Jar.
  * @author Thomas Buck
- * @author Max Nuding
- * @author Felix Bäder
  * @version 1.0
  */
 import java.io.*;

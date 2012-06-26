@@ -4,20 +4,20 @@
 
 ## Hardware
 
-You can find the schematic as png and Eagle file in this directory.
+This LED-Cube uses an AtMega32 for displaying animations and an AtMega8 for Audio Visualizations. I first built the Circuit on a 160x100mm hole-grid board. This was very cumbersome, so I created a dual-sided PCB Layout with SMD Parts. You can find this Layout and the Schematic in the Hardware folder, as PNGs and Eagle files. There's also a partlist.
 
-## Firmware
+## CubeFirmware
 
-2 Firmwares, for the AtMega8 TWI Slave and for the Atmega32. Currently in development.
+CubeFirmware controls the AtMega32, which in turn displays images and communicates over USB. It's in the CubeFirmware folder. Compile with avr-gcc, using the makefile (just run 'make').
 
-## Cube Control
+## AudioFirmware
 
-We also build a software to create and load animations into the cube. This software is written in Java and C and should work on Windows and Unix.
-It's source is in the "Cube Control" directory.
+This firmware controls the AtMega8, which interfaces the MSGEQ7 to get sound data. It is addressed by the CubeFirmware as a TWI-Slave.
 
-## Build instructions
+## CubeControl
 
-There is a makefile in every source code directory. Running make inside CubeControl should produce a file called CubeControlMac.jar, CubeControlLinux.jar or CubeControlWin.jar. If not, you should take a look at the makefile. Hard-Coded include directorys are probably different than on your system... You obviously need a working JDK and a C Compiler Environment (we use gcc).
-CubeControls makefile will autodetect a Windows Host and compile a Windows Version accordingly. If it is not on Windows, it will check uname and compile a Mac Version if Darwin is reported as OS name. A Linux Version will be compiled if no Darwin OS was detected.
+CubeControl is a PC software, written in Java and mostly platform-independent, to create Animations for the Cube and send them to it. It depends on Java3D to display a rotatable, clickable 3D View of the LED-Cube. It comes with it's own Serial Library to communicate with the Cube. Compile it with the makefile. You need a working javac and gcc in your Path. To compile under windows get something like MinGW or try Microsofts compiler.
 
-The same goes for AudioFirmware and CubeFirmware. You need avr-gcc to compile these projects.
+## License
+
+See the included LICENSE file. This software is released as GPLv3. It incorporates some code from Peter Danneger (his TWI Library and a button debounce routine), released as GPLv2.

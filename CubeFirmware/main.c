@@ -1,9 +1,7 @@
 /*
  * main.c
  *
- * Copyright 2011 Thomas Buck <xythobuz@me.com>
- * Copyright 2011 Max Nuding <max.nuding@gmail.com>
- * Copyright 2011 Felix Bäder <baeder.felix@gmail.com>
+ * Copyright 2012 Thomas Buck <xythobuz@me.com>
  *
  * This file is part of LED-Cube.
  *
@@ -384,6 +382,8 @@ void serialHandler(char c) {
 			lastButtonState = maxButtonState - 1;
 		}
 		if (lastButtonState) {
+			writeNumber(lastButtonState, 10);
+			serialWrite(' ');
 			serialWriteString(getString(41));
 		} else {
 			serialWriteString(getString(40));
