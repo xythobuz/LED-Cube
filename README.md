@@ -26,11 +26,11 @@ CubeControl is a PC software, written in Java and mostly platform-independent, t
 
 ### HardwareEmulator
 
-Run this in a Unixoid OS to test CubeControls up-/download capabilites.
+Allows you to test CubeControls up-/download capabilites. Unix only!
 
 ### UploadTest
 
-Allows you to send test data or aniamtions saved by CubeControl to the Cube.
+Allows you to send test data or animations saved by CubeControl to the Cube. Unix only!
 
 ## License
 
