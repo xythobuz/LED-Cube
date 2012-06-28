@@ -25,17 +25,21 @@
 #include <serial.h>
 #include <strings.h>
 
-uint8_t *buffNew(void) {
+void buffClearAllPixels(uint8_t *buffer) {
 	uint8_t i;
-	uint8_t *tmp = (uint8_t *)malloc(64);
+	for(i = 0; i < 64; i++) {	
+		buffer[i] = 0;
+	}
+}
+
+uint8_t *buffNew(void) {
+	uint8_t *tmp = (uint8_t *)malloc(65);
 	if (tmp == NULL) {
 		serialWriteString(getString(24)); // Display warning, don't care for CubeControl
 		while(1); // Ran out of heap => Watchdog Reset
 	}
-	for (i = 0; i < 64; i++) {
-		// Clear pixels
-		tmp[i] = 0;
-	}
+	buffClearAllPixels(tmp);
+	tmp[64] = 1;
 	return tmp;
 }
 
@@ -45,13 +49,6 @@ void buffSetPixel(uint8_t *buffer, uint8_t x, uint8_t y, uint8_t z) {
 
 void buffClearPixel(uint8_t *buffer, uint8_t x, uint8_t y, uint8_t z) {
 	buffer[(8 * (7 - z)) + (7 - y)] &= ~(1 << x);
-}
-
-void buffClearAllPixels(uint8_t *buffer) {
-	uint8_t i;
-	for(i = 0; i < 64; i++) {	
-		buffer[i] = 0;
-	}
 }
 
 void buffFree(uint8_t *buffer) {

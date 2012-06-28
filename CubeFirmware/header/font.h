@@ -1,5 +1,5 @@
 /*
- * transmit.c
+ * font.h
  *
  * Copyright 2012 Thomas Buck <xythobuz@me.com>
  *
@@ -19,17 +19,4 @@
  * along with LED-Cube.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define LINEBUFFSIZE 81
-extern char buffer[LINEBUFFSIZE];
-
-void recieveAnimations(void);
-void transmitAnimations(void);
-void sendAudioData(void);
-void printTime(void);
-void dumpFrame(uint8_t *f);
-uint8_t *readLine(void);
-uint8_t readNumber(uint8_t base);
-void writeNumber(uint8_t num, uint8_t base);
-uint8_t *readAFrame(void);
-void simpleAnimationInput(void);
-void textRenderInput(void);
+uint8_t *getFont(char c);

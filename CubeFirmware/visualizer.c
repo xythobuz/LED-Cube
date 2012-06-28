@@ -144,7 +144,6 @@ void simpleLog(uint8_t *data) {
 	uint8_t *buff;
 
 	buff = buffNew();
-	buffClearAllPixels(buff);
 
 	// setRow(0, 0, maxVal(average(data), 1), buff); // Show average
 	simpleVUMeter(data, buff, 7, 1, 0);
@@ -156,8 +155,6 @@ void simpleLog(uint8_t *data) {
 void simpleVisualization(uint8_t *data) {
 	uint8_t *buff;
 	buff = buffNew();
-
-	buffClearAllPixels(buff);
 
 	// setRow(0, 0, maxVal(average(data), 0), buff); // Show average
 	simpleVUMeter(data, buff, 7, 0, 0);
@@ -171,8 +168,6 @@ void simpleSwitch(uint8_t *data) {
 	uint8_t i;
 	buff = buffNew();
 
-	buffClearAllPixels(buff);
-
 	for (i = 2; i < 6; i++) {
 		simpleVUMeter(data, buff, i, 0, 1);
 	}
@@ -184,8 +179,6 @@ void simpleSwitch(uint8_t *data) {
 void linLog(uint8_t *data) {
 	uint8_t *buff;
 	buff = buffNew();
-
-	buffClearAllPixels(buff);
 
 	simpleVUMeter(data, buff, 2, 1, 0);
 	filterData(data, 0);
@@ -200,8 +193,6 @@ void fullDepthLog(uint8_t *data) {
 	uint8_t i;
 	buff = buffNew();
 
-	buffClearAllPixels(buff);
-
 	for (i = 0; i < 8; i++) {
 		simpleVUMeter(data, buff, i, 1, 0);
 	}
@@ -214,8 +205,6 @@ void fullDepthVisualization(uint8_t *data) {
 	uint8_t *buff;
 	uint8_t i;
 	buff = buffNew();
-
-	buffClearAllPixels(buff);
 
 	for (i = 0; i < 8; i++) {
 		simpleVUMeter(data, buff, i, 0, 0);
@@ -234,8 +223,6 @@ void setRow(uint8_t x, uint8_t z, uint8_t height, uint8_t *buf) {
 
 void horribleWave(uint8_t *audioData) {
 	uint8_t *imageData = buffNew();
-	
-	buffClearAllPixels(imageData);
 
 	// Could not figure out a way to represent this easily in a loop
 	// without using a shitload of 'if's...

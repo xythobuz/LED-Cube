@@ -29,8 +29,5 @@ extern void initCube(void);
 // Copies the data in img into its own buffer
 extern void setImage(uint8_t *img); // img[64]
 extern uint8_t isFinished(void);
-extern void close(void);
-
 extern void fillBuffer(uint8_t val);
-
 extern uint32_t getTriggerCount(void);

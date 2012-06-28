@@ -23,19 +23,24 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <avr/wdt.h>
+#include <string.h>
 #include "memLayer.h"
 #include "serial.h"
 #include "time.h"
 #include "strings.h"
 #include "audio.h"
+#include "generator.h"
+
+#include "transmit.h"
 
 #define OK 0x42
 #define ERROR 0x23
 
 #define TIMEOUTPERFRAME 500
 
-// These are global variables from main.c
-extern char buffer[11];
+char buffer[LINEBUFFSIZE];
+
+extern uint8_t refreshAnimationCount;
 
 void recieveAnimations(void) {
 	uint8_t animCount, a, frameCount, f, i, c;
@@ -223,9 +228,16 @@ uint8_t *readLine(void) {
 				buffer[ptr] = '\0';
 				return (uint8_t *)buffer;
 			}
-			ptr++;
+			if (buffer[ptr] != '\r') {
+				// ignore carriage return (\r)
+				if (buffer[ptr] == 8) {
+					// handle backspace
+					ptr--;
+				} else {
+					ptr++;
+				}
+			}
 		}
-
 	}
 }
 
@@ -256,12 +268,9 @@ uint8_t *readAFrame(void) {
 }
 
 void simpleAnimationInput(void) {
-	uint8_t start, j, d;
-	int8_t i;
+	uint8_t start, i;
 	uint8_t data[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-	uint8_t *frame = (uint8_t *)malloc(65);
-	frame[64] = 2;
-
+	
 	serialWriteString(getString(36));
 	start = readNumber(10);
 	serialWriteString(getString(37));
@@ -271,17 +280,14 @@ void simpleAnimationInput(void) {
 		data[i] = readNumber(16);
 	}
 	serialWriteString(getString(38));
-	for (i = 0; i < 8; i++) {
-		d = 0;
-		for (j = 0; j < 64; j++) {
-			if ((j < (8 * (i + 1))) && (j >= (8 * i))) {
-				frame[j] = data[d++];
-			} else {
-				frame[j] = 0;
-			}
-		}
-		setFrame(i + start, frame);
-	}
+	generateMovingAnimation(data, start, 2);
 	serialWriteString(getString(33)); // Done
-	free(frame);
+}
+
+void textRenderInput(void) {
+	readLine();
+	renderText(buffer, 0);
+	setAnimationCount((strlen(buffer) * 8) + 1); // Theres an empty frame at the end.
+	refreshAnimationCount = 1;
+	serialWriteString(getString(33)); // Done
 }

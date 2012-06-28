@@ -45,6 +45,8 @@
 #include "visualizer.h"
 #include "animations.h"
 #include "transmit.h"
+#include "font.h"
+#include "buffhelp.h"
 
 // Length of an idle animation frame, 24 -> 1 second
 #define IDLELENGTH 48
@@ -79,8 +81,6 @@ uint8_t maxButtonState = 1; // No audio, get's checked later
 uint8_t disableAudioData = 0;
 uint8_t disableMemory = 0;
 uint8_t disableAnim = 0;
-
-char buffer[11];
 
 /* Not so powerful Debouncing Example
  * No Interrupt needed
@@ -156,6 +156,7 @@ int main(void) {
 		maxButtonState = numberOfVisualizations() + 1; // Number of toggle steps for button
 		lastButtonState = 1;
 
+	serialWriteString(getString(2));
 
 	while(1) { // Our Mainloop
 		if (!shouldRestart) { // A flag to trigger a watchdog reset
@@ -223,21 +224,9 @@ int main(void) {
 				lastButtonState = 0;
 			}
 		}
-
-		// Print fps after one second
-		/* if ((getSystemTime() >= 1000) && (fpsWasSent == 0)) {
-			temp = getTriggerCount();
-			serialWriteString(ltoa(temp, buffer, 10));
-			serialWriteString(getString(27));
-			serialWriteString(ltoa((temp / 8), buffer, 10));
-			serialWriteString(getString(28));
-			fpsWasSent = 1;
-		} */
-
 	}
 
-	close(); // This is of course unneccessary. We never reach this point.
-	return 0;
+	return 0; // We never reach this point, of course!
 }
 
 void init(void) {
@@ -325,7 +314,7 @@ void randomAnimation(void) {
 
 void serialHandler(char c) {
 	// Used letters:
-	// a, b, c, d, e, f, g, h, i, m, n, p, q, r, s, t, u, v, x, y, 0, 1, 2, 3, #
+	// a, b, c, d, e, f, g, h, i, m, n, o, p, q, r, s, t, u, v, w, x, y, 0, 1, 2, 3, #
 	uint8_t i, y, z;
 	uint8_t *tmp;
 
@@ -435,6 +424,11 @@ void serialHandler(char c) {
 		serialWriteString(getString(33)); // Done
 		break;
 
+	case 'w': case 'W':
+		serialWriteString(getString(42)); // Text:
+		textRenderInput();
+		break;
+
 	case 'x': case 'X':
 		// Get byte, store as animation count
 		serialWriteString(getString(16)); // "New animation count: "
@@ -472,13 +466,8 @@ void serialHandler(char c) {
 		disableAnim = 1;
 		break;
 
-	case '3':
-		setImage(defaultImageCube);
-		disableAnim = 1;
-		break;
-
 	case '2':
-		fillBuffer(0);
+		buffClearAllPixels(defaultImageCube);
 		while(1) {
 			for (i = 0; i < 8; i++) {
 				for (y = 0; y < 8; y++) {
@@ -499,9 +488,34 @@ void serialHandler(char c) {
 			}
 		}
 		break;
-killMeForIt:
+	killMeForIt:
 		serialGet(); // Killed because we got a serial char. Remove it from buffer.
 		serialWriteString(getString(25));
+		break;
+
+	case '3':
+		buffClearAllPixels(defaultImageCube);
+		y = 0;
+		while(1) {
+			tmp = getFont(y);
+			if (y < 255) {
+				y++;
+			} else {
+				y = 0;
+			}
+			for (i = 0; i < 8; i++) {
+				defaultImageCube[i] = tmp[i];
+			}
+			setImage(defaultImageCube);
+			while (isFinished() < 12) {
+				wdt_reset();
+				if (serialHasChar()) {
+					goto killMeForIt; // Yes, yes. But i already need it for '2'
+					// So why not do it again... Please, no raptors :)
+					// http://xkcd.com/292/
+				}
+			}
+		}
 		break;
 
 	case 'I': case 'i':

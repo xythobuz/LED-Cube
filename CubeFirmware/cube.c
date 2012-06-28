@@ -197,7 +197,3 @@ void initCube(void) {
 	imgFlag = 0;
 	toggleFlag = 0;
 }
-
-void close(void) {
-	TIMSK &= ~(1 << OCIE1A); // Disable interrupt
-}
