@@ -241,9 +241,9 @@ uint8_t *readLine(void) {
 	}
 }
 
-uint8_t readNumber(uint8_t base) {
+uint16_t readNumber(uint8_t base) {
 	uint8_t *s = readLine();
-	uint8_t val = (uint8_t)strtoul((char *)s, NULL, base);
+	uint16_t val = (uint16_t)strtoul((char *)s, NULL, base);
 	return val;
 }
 

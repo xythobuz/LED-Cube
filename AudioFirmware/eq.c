@@ -75,7 +75,7 @@ uint8_t *equalizerGet(void) {
 
 	filterNoise(result); // Filter lower values
 	heightenTreble(result); // Heighten higher frequencies, cause they seem damped
-	// calcMultiplicator(result); // Multiply with Poti Position
+	calcMultiplicator(result); // Multiply with Poti Position
 	filterNoise(result); // Filter lower values
 
 	return result;
@@ -83,10 +83,19 @@ uint8_t *equalizerGet(void) {
 
 void calcMultiplicator(uint8_t *d) {
 	uint8_t i;
-	uint16_t multiplicator = ((uint16_t)getOffset() + 100) / 10;
+	uint16_t multiplicator = ((uint16_t)getOffset() + 100) / 10; // From 10 to 36
+	uint16_t temp;
 
 	for (i = 0; i < 7; i++) {
-		d[i] = (d[i] * multiplicator) / 10;
+		// Had some problems with 8bit and 16bit arithmetic, cutting some numbers.
+		// Thats why it is a bit more verbose than really necessary...
+		temp = d[i];
+		temp = temp * multiplicator / 10; // From 0 to 918
+		if (temp > 255) {
+			d[i] = 255;
+		} else {
+			d[i] = (uint8_t)temp;
+		}
 	}
 }
 
@@ -97,7 +106,7 @@ void heightenTreble(uint8_t *d) {
 void filterNoise(uint8_t *data) {
 	uint8_t i;
 	for (i = 0; i < 7; i++) {
-		if (data[i] < 60) {
+		if (data[i] < 30) {
 			data[i] = data[i] * 10 / 15; // / 1.5
 		}
 	}

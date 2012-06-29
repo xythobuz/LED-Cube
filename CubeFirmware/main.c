@@ -131,7 +131,7 @@ int main(void) {
 	*/
 
 	uint8_t i;
-	uint8_t imageIndex = 0, imageCount = 0;
+	uint16_t imageIndex = 0, imageCount = 0;
 	uint8_t idleIndex = 0, idleCount = 0;
 	uint8_t *imageData = NULL, *audioData = NULL;
 	uint8_t duration = 0;
@@ -149,12 +149,21 @@ int main(void) {
 		disableMemory = 1;
 	serialWriteString(getString(0)); // Print Version
 
-	if (disableMemory == 0)
+	if (disableMemory == 0) {
 		imageCount = getAnimationCount(); // Retrieve image count from memory
-	idleCount = numOfAnimations();
-	if (disableAudioData == 0)
-		maxButtonState = numberOfVisualizations() + 1; // Number of toggle steps for button
+		lastButtonState = 0;
+	} else {
 		lastButtonState = 1;
+	}
+	if (disableAudioData == 0) {
+		maxButtonState = numberOfVisualizations() + 1; // Number of toggle steps for button
+	} else {
+		lastButtonState = 0;
+		maxButtonState = 1;
+		// If both memory and audio are not working, we have nothing to do anyways...
+	}
+
+	idleCount = numOfAnimations();
 
 	serialWriteString(getString(2));
 
@@ -174,10 +183,10 @@ int main(void) {
 		}
 
 		if (debounce(PINB, PB0)) {
-			if (lastButtonState > 0) {
-				lastButtonState--;
+			if (lastButtonState < (maxButtonState - 1)) {
+				lastButtonState++;
 			} else {
-				lastButtonState = maxButtonState - 1;
+				lastButtonState = 0;
 			}
 		}
 
@@ -365,10 +374,10 @@ void serialHandler(char c) {
 		break;
 
 	case 'm': case 'M':
-		if (lastButtonState > 0) {
-			lastButtonState--;
+		if (lastButtonState < (maxButtonState - 1)) {
+			lastButtonState++;
 		} else {
-			lastButtonState = maxButtonState - 1;
+			lastButtonState = 0;
 		}
 		if (lastButtonState) {
 			writeNumber(lastButtonState, 10);
@@ -495,13 +504,13 @@ void serialHandler(char c) {
 
 	case '3':
 		buffClearAllPixels(defaultImageCube);
-		y = 0;
+		y = 0x20;
 		while(1) {
 			tmp = getFont(y);
-			if (y < 255) {
+			if (y < 0x7E) {
 				y++;
 			} else {
-				y = 0;
+				y = 0x20;
 			}
 			for (i = 0; i < 8; i++) {
 				defaultImageCube[i] = tmp[i];

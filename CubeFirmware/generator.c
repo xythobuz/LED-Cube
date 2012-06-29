@@ -28,7 +28,7 @@
 
 // Generate 8 frames, store them from index start.
 // data has 8 bytes --> 1 layer. This layer is moved from back to front.
-void generateMovingAnimation(uint8_t *data, uint8_t start, uint8_t duration) {
+void generateMovingAnimation(uint8_t *data, uint16_t start, uint8_t duration) {
 	uint8_t i, j, d;
 	uint8_t *frame = (uint8_t *)malloc(65);
 	frame[64] = duration;
@@ -47,7 +47,7 @@ void generateMovingAnimation(uint8_t *data, uint8_t start, uint8_t duration) {
 	free(frame);
 }
 
-void renderText(char *text, uint8_t start) {
+void renderText(char *text, uint16_t start) {
 	uint8_t *buf;
 
 	while(text[0] != '\0') {
@@ -57,7 +57,7 @@ void renderText(char *text, uint8_t start) {
 	}
 
 	buf = buffNew();
-	buf[64] = 10; // half second pause...
+	buf[64] = 12; // half second empty frame at end of text
 	setFrame(start, buf);
 	free(buf);
 }

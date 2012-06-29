@@ -45,10 +45,15 @@ void simpleLog(uint8_t *data);
 void fullDepthLog(uint8_t *data);
 void linLog(uint8_t *data);
 
-#define NUMOFVISUALIZATIONS 7
-void (*visualizations[NUMOFVISUALIZATIONS])(uint8_t *data) = { &linLog, &simpleVisualization,
-													&fullDepthVisualization, &horribleWave,
-													&simpleLog, &fullDepthLog, &simpleSwitch };
+#define LINEARVISUALS 4
+void (*linear[LINEARVISUALS])(uint8_t *data) = { &simpleVisualization, &fullDepthVisualization,
+											&simpleSwitch, &horribleWave };
+
+#define LOGARITHMICVISUALS 3
+void (*logarithmic[LOGARITHMICVISUALS])(uint8_t *data) = { &linLog, &simpleLog, &fullDepthLog };
+
+#define NUMOFVISUALIZATIONS (LINEARVISUALS + LOGARITHMICVISUALS)
+
 uint8_t logScale[8] = { 2, 4, 8, 16, 31, 63, 125, 250 }; // --> ca. (1 << (led + 1));
 
 uint8_t numberOfVisualizations(void) {
@@ -57,12 +62,15 @@ uint8_t numberOfVisualizations(void) {
 
 void runVisualization(uint8_t *data, uint8_t id) {
 	if (id < NUMOFVISUALIZATIONS) {
-		if ((id == 0) || ((id > 3) && (id <= 5))) {
-			filterData(data, 1);
+		if (id < LINEARVISUALS) {
+			filterData(data, 0); // Linear filter
+			linear[id](data); // run it
+		} else if ((id - LINEARVISUALS) < LOGARITHMICVISUALS) {
+			filterData(data, 1); // Logarithmic filter
+			logarithmic[id - LINEARVISUALS](data); // run it
 		} else {
-			filterData(data, 0);
+			// Invalid, do nothing!
 		}
-		visualizations[id](data);
 	}
 }
 
