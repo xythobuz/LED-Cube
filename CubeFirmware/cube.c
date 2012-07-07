@@ -58,6 +58,7 @@ volatile uint32_t timesTriggered = 0;
 volatile uint8_t warningDisplayed = 0;
 
 // A fix for our mirrored 64pin cable.
+// Look around line 150 to change this
 uint8_t lookUp[256] PROGMEM = { 	0,  64,  128,  192,  16,  80,  144,  208,  32,  96,  160,
 									224,  48,  112,  176,  240,  4,  68,  132,  196,  20,
 									84,  148,  212,  36,  100,  164,  228,  52,  116,  180,
@@ -144,7 +145,13 @@ void setImage(uint8_t *img) {
 		toggleFlag = 0;
 		for (i = 0; i < 8; i++) {
 			for (j = 0; j < 8; j++) {
-				imgBuffer[j][7 - i] = ~(pgm_read_byte(&(lookUp[img[j + (i * 8)]])));
+				// First line uses the lookUp Table to account for our wrong connection
+				// imgBuffer[j][7 - i] = ~(pgm_read_byte(&(lookUp[img[j + (i * 8)]])));
+
+				// This line is simply displaying the data, for correct connections
+				imgBuffer[j][i] = ~(img[j + (i * 8)]);
+
+				// Uncomment the desired line, comment the other...
 			}
 		}
 	}

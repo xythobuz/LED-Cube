@@ -859,7 +859,8 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 		System.out.println("## Enter a Command ('h' for help) ##");
 		System.out.print("$> ");
 	
-		do {
+		// Uncomment this to enable a cli debug interface
+		/* do {
 			if (sc.hasNextLine()) {
 				String s = sc.nextLine();
 		
@@ -972,7 +973,7 @@ public class Frame extends JFrame implements ListSelectionListener, ChangeListen
 				lastCommand = new String(s);
 				System.out.print("$> ");
 			}
-		} while (true);
+		} while (true); */
 	}
 	
 	private static short[] toShortArray(String s) {
