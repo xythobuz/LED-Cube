@@ -21,28 +21,29 @@
 #include <avr/pgmspace.h>
 #include "transmit.h"
 
-const char stringVersion[] PROGMEM = "v2.5\n"; // 0
-const char stringSelfTestError[] PROGMEM = "Self-Test Error: 0b"; // 1
-const char stringInit[] PROGMEM = "Initialized!\n"; // 2
-const char stringAudioError[] PROGMEM = " => No answer from Audio!\n"; // 3
-const char stringMemError[] PROGMEM = " => No answer from Memory!\n"; // 4
-const char stringMemWriteError[] PROGMEM = " => Can't write to Memory!\n"; // 5
+const char stringVersion[] PROGMEM = "v3.0\n"; // 0
 
+// Help Text
 const char stringHelp1[] PROGMEM = "(d)elete, (g)et anims, (s)et anims, (v)ersion\n"; // 6
 const char stringHelp2[] PROGMEM = "(t)ime, (a)udio, (c)ount, (x)Custom count\n"; // 7
 const char stringHelp3[] PROGMEM = "(y)Set a frame, sim(p)le anim\n"; // 8
 const char stringHelp4[] PROGMEM = "t(e)st, (m)ode, d(u)mp\n"; // 9
 const char stringHelp5[] PROGMEM = "Play S(n)ake\n"; // 10
+const char stringHelp9[] PROGMEM = "(i)nterrupt count, (r)andom, (q)reset\n"; // 26
+const char stringExtern[] PROGMEM = "(f)ormat memory, (w)rite text\n"; // 34
+const char stringWritten[] PROGMEM = "durati(o)n\n"; // 17
 const char stringHelp6[] PROGMEM = "All LEDs Off/On (0/1)\n"; // 11
 const char stringHelp7[] PROGMEM = "(2): Test Anim. 1\n"; // 12
 const char stringHelp8[] PROGMEM = "(3): Font Test\n"; // 13
 
+const char stringSelfTestError[] PROGMEM = "Self-Test Error: 0b"; // 1
+const char stringInit[] PROGMEM = "Initialized!\n"; // 2
+const char stringAudioError[] PROGMEM = " => No answer from Audio!\n"; // 3
+const char stringMemError[] PROGMEM = " => No answer from Memory!\n"; // 4
+const char stringMemWriteError[] PROGMEM = " => Can't write to Memory!\n"; // 5
 const char stringTime[] PROGMEM = "System Time: "; // 14
 const char stringFrames[] PROGMEM = " Frames stored\n"; // 15
 const char stringByte[] PROGMEM = "New animation count: "; // 16
-
-const char stringWritten[] PROGMEM = "durati(o)n\n"; // 17
-
 const char stringCount[] PROGMEM = "Frame to change: "; // 18
 const char stringSelfTest[] PROGMEM = "Self-Test: 0b"; // 19
 const char stringKillCount[] PROGMEM = "Killed Animation Counter!\n"; // 20
@@ -51,9 +52,6 @@ const char stringAudioData[] PROGMEM = "Audio Data:\n"; // 22
 const char stringSnakeControl[] PROGMEM = "Controls: W A S D Q E, x to quit\n"; // 23
 const char stringNoMoreHeap[] PROGMEM = "Ran out of Heap!\n"; // 24
 const char stringKilledAnimation[] PROGMEM = "Animation aborted!\n"; // 25
-
-const char stringHelp9[] PROGMEM = "(i)nterrupt count, (r)andom, (q)reset\n"; // 26
-
 const char stringInterrupts[] PROGMEM = " Interrupts after 1000msec\n"; // 27
 const char stringFrames2[] PROGMEM = " Frames per Second\n"; // 28
 const char stringDeleted[] PROGMEM = "Memory deleted!\n"; // 29
@@ -61,9 +59,6 @@ const char stringReset[] PROGMEM = "Reset in 500ms. Bye!\n"; // 30
 const char stringWatchdog[] PROGMEM = "Enter frame to dump: "; // 31
 const char stringBrownout[] PROGMEM = "Formatting memory... "; // 32
 const char stringNothing[] PROGMEM = "Done!\n"; // 33
-
-const char stringExtern[] PROGMEM = "(f)ormat memory, (w)rite text\n"; // 34
-
 const char stringJtag[] PROGMEM = "Duration: "; // 35
 const char stringPowerOn[] PROGMEM = "Start: "; // 36
 const char stringMinute[] PROGMEM = "8 Layerbytes...\n"; // 37
