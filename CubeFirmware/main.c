@@ -332,7 +332,7 @@ void serialHandler(char c) {
 		serialWrite(OK);
 		break;
 
-	case 'h': case 'H': case '?':
+	case 'h': case 'H':
 		serialWriteString(getString(6));
 		serialWriteString(getString(7));
 		serialWriteString(getString(8));
@@ -369,7 +369,7 @@ void serialHandler(char c) {
 		refreshAnimationCount = 1;
 		break;
 
-	case 'v': case 'V':
+	case 'v': case 'V': case '?':
 		serialWriteString(getString(0));
 		break;
 
