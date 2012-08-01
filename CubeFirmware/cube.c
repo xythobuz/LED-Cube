@@ -146,10 +146,10 @@ void setImage(uint8_t *img) {
 		for (i = 0; i < 8; i++) {
 			for (j = 0; j < 8; j++) {
 				// First line uses the lookUp Table to account for our wrong connection
-				// imgBuffer[j][7 - i] = ~(pgm_read_byte(&(lookUp[img[j + (i * 8)]])));
+				imgBuffer[j][7 - i] = ~(pgm_read_byte(&(lookUp[img[j + (i * 8)]])));
 
 				// This line is simply displaying the data, for correct connections
-				imgBuffer[j][i] = ~(img[j + (i * 8)]);
+				// imgBuffer[j][i] = ~(img[j + (i * 8)]);
 
 				// Uncomment the desired line, comment the other...
 			}

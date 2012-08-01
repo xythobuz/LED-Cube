@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <jni.h>
+#include <time.h>
 #include "serialInterface.h"
 
 #ifdef winHelper
@@ -80,11 +81,13 @@ JNIEXPORT jstring JNICALL Java_HelperUtility_getThePorts(JNIEnv *env, jclass cla
 JNIEXPORT jshortArray JNICALL Java_HelperUtility_readDataNative(JNIEnv *env, jclass class, jint length) {
 	jshortArray arr = (*env)->NewShortArray(env, length);
 	int toBeRead = 0, read, i, error = 0;
-	char *data = (char *)malloc(length * sizeof(char));
+	unsigned char *data = (char *)malloc(length * sizeof(char));
 	jshort *data2 = (jshort *)malloc(length * sizeof(jshort));
+	time_t startTime = time(NULL);
+	time_t diff = (length / 3000) + 1;
 
 	while (length > 0) {
-		read = serialRead(data + toBeRead, length);
+		read = serialRead((char *)data + toBeRead, length);
 		if (read == -1) {
 			error++;
 			if (error > 10) {
@@ -93,6 +96,9 @@ JNIEXPORT jshortArray JNICALL Java_HelperUtility_readDataNative(JNIEnv *env, jcl
 		} else {
 			toBeRead += read;
 			length -= read;
+		}
+		if (difftime(time(NULL), startTime) > diff) {
+			return NULL;
 		}
 	}
 

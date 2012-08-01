@@ -1,5 +1,4 @@
 /*
- *
  * winSerial.c
  *
  * Windows 16 (& 32 & 64?) compatible serial port library

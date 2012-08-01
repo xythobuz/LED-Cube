@@ -1,5 +1,4 @@
 /*
- *
  * unixSerial.c
  *
  * POSIX compatible serial port library
@@ -118,25 +117,41 @@ char** namesInDev(int *siz) {
 	files = (char **)malloc((size + 1) * sizeof(char *));
 	files[size++] = NULL;
 	closedir(dir);
+
+	// printf("JNI: Counted files in /dev/: %d\n", size);
+
 	dir = opendir("/dev/");
 	while ((ent = readdir(dir)) != NULL) {
+		if (i == (size - 1)) {
+			break;
+		}
 		files[i] = (char *)malloc((strlen(ent->d_name) + 1) * sizeof(char));
 		files[i] = strcpy(files[i], ent->d_name);
 		i++;
 	}
 	closedir(dir);
 
+	// printf("JNI: Got names...\n");
+
 	char *tmp = NULL;
-	// Fix every string, addin /dev/ in front of it...
+	// Fix every string, add /dev/ in front of it...
 	for (i = 0; i < (size - 1); i++) {
+		// printf("JNI: (%d)Allocating %d\n", i, strlen(files[i]) + 6);
 		tmp = (char *)malloc((strlen(files[i]) + 6) * sizeof(char));
+		if (tmp == NULL) {
+			printf("JNI: Ran out of memory!\n");
+			exit(1);
+		}
 		tmp[0] = '/';
 		tmp[1] = 'd';
 		tmp[2] = 'e';
 		tmp[3] = 'v';
 		tmp[4] = '/';
+		tmp[5] = '\0';
 		files[i] = strncat(tmp, files[i], strlen(files[i]));
 	}
+
+	// printf("JNI: Paths fixed!\n");
 
 	*siz = size;
 	return files;

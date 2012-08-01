@@ -16,7 +16,7 @@ UNAME := $(shell uname -s)
 ifeq ($(UNAME),Darwin)
 HEADERPATH = /System/Library/Frameworks/JavaVM.framework/Headers
 else 
-HEADERPATH = /usr/lib/jvm/java-6-openjdk/include
+HEADERPATH = /usr/lib/jvm/java-6-openjdk/include -I/usr/lib/jvm/java-6-openjdk/include/linux
 endif
 endif
 endif
@@ -46,7 +46,7 @@ libSerial.jnilib: serialHelper.c unixSerial.c serialInterface.h
 
 libSerial.so: serialHelper.c unixSerial.c serialInterface.h
 	$(CC) -x c -std=$(STANDARD) -I$(HEADERPATH) -c serialHelper.c -o serialHelper.o
-	$(CC) -dynamiclib -o libSerial.so serialHelper.o
+	$(CC) -shared -o libSerial.so serialHelper.o
 
 Serial.dll: serialHelper.c winSerial.c serialInterface.h
 	$(CC) -x c -std=$(STANDARD) -DBUILDINGDLL -I$(HEADERPATH) -c serialHelper.c -o serialHelper.o -D winHelper
