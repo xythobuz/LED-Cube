@@ -1,40 +1,36 @@
 Partlist
 
-Quant.	Value			Device
+Quant.  Value           Device
 
-22		100nF			0603
-4		22pF			0603
-1		4u7F			0603
-1		33pF			0603
-1		10nF			0603
-1		100uF			CPOL-80
+22      100nF           0603
+4       22pF            0603
+1       4u7F            0603
+1       33pF            0603
+1       10nF            0603
+1       100uF           CPOL-80
 
-8		15R				0603
-3		10kR			0603
-8		100kR			0603
-67		1kR				0603
-3		200kR			0603
-2		2kR				0603
-1		4k7R			0603
-64		120R			0603
+8       15R             0603
+3       10kR            0603
+8       100kR           0603
+67      1kR             0603
+3       200kR           0603
+2       2kR             0603
+1       4k7R            0603
+64      120R            0603
 
-64		PNP				BC 860CW
-8		IRF530			IRF530
-8		74HC573D		74HC573D
-1		MEGA8-AI		MEGA8-AI
-1		FT232RL			FT232RL
-1		FM24V10			FM24V10
-1		MSGEQ7			MSGEQ7
-1		7805			78XXS
-1		MEGA32-A		MEGA32-A
+64      PNP             BC 860CW
+8       IRF530          IRF530
+8       74HC573D        74HC573D
+1       MEGA8-AI        MEGA8-AI
+1       FT232RL         FT232RL
+1       FM24V10         FM24V10
+1       MSGEQ7          MSGEQ7
+1       7805            78XXS
+1       MEGA32-A        MEGA32-A
 
-1		POTI			TRIM_EU-PT
-1		Connector		ML64
-1		Klinkenbuchse	Klinkenbuchse
-1		TASTER			TASTER	SMD
-1		DC-Stecker		733980-62
-1		USB-B mini		USB-B-MINI-SMD
-
-==>	48,63€
-	Reichelt:
-	https://secure.reichelt.de/index.html?;ACTION=20;AWKID=538158;PROVID=2084
+1       POTI            TRIM_EU-PT
+1       Connector       ML64
+1       Klinkenbuchse   Klinkenbuchse
+1       TASTER          TASTER    SMD
+1       DC-Stecker      733980-62
+1       USB-B mini      USB-B-MINI-SMD
