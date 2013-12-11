@@ -44,8 +44,8 @@ JP3   AVR-ISP          AVR-ISP         ML10           ISP ( In System Programmin
 JP6   AVR-ISP          AVR-ISP         ML10           ISP ( In System Programming ) Stecker für AVRs
 LED1                   LEDCHIPLED_0603 CHIPLED_0603   LED
 LED65                  LEDCHIPLED_0603 CHIPLED_0603   LED
-Q1                     CRYSTALHC49S    HC49/S         CRYSTAL                                                                                  1667008    unknown
-Q10                    CRYSTALHC49S    HC49/S         CRYSTAL                                                                                  1667008    unknown
+Q1    16MHz            CRYSTALHC49S    HC49/S         CRYSTAL                                                                                  1667008    unknown
+Q10   16MHz            CRYSTALHC49S    HC49/S         CRYSTAL                                                                                  1667008    unknown
 R1    10k              R-EU_R0603      R0603          RESISTOR, European symbol
 R2    15               R-EU_R0603      R0603          RESISTOR, European symbol
 R3    15               R-EU_R0603      R0603          RESISTOR, European symbol
