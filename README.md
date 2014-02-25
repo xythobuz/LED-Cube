@@ -27,6 +27,8 @@ A more or less recent Version of CubeControl can be found as CubeControl.jar. It
 
 *Warning:* Java3D 1.5 is incompatible with more recent OS X versions and/or Java 7. [Possible workaround](https://github.com/hharrison/).
 
+Also the Windows build of CubeControl is not tested very thoroughly. If you're on a 64bit Windows, you may also need to modify the libSerial makefile (add the `-m64` flag in the gcc call).
+
 ### HardwareEmulator
 
 Allows you to test CubeControls up-/download capabilites. Unix only!
