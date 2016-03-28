@@ -34,7 +34,7 @@ IC7   74HC573D         74HC573D        SO20W          8-bit D latch BUS DRIVER
 IC8   74HC573D         74HC573D        SO20W          8-bit D latch BUS DRIVER
 IC9   74HC573D         74HC573D        SO20W          8-bit D latch BUS DRIVER
 IC10  FT232RL          FT232RL         SSOP28         Source: http://www.ftdichip.com/Documents/DataSheets/DS_FT232R_v104.pdf    FT232RL       1146032    91K9918
-IC11  FM24V10          FM24V10         SOIC8
+IC11  FM24V10          FM24V10         SOIC8          Alternative: FM24C04BG
 IC12  MSGEQ7           MSGEQ7          DIP8
 IC13                   78XXS           78XXS          VOLTAGE REGULATOR
 IC14  MEGA32-A         MEGA32-A        TQFP44         MICROCONTROLLER                                                            ATMEGA32-16AU 9171274    69K6677
