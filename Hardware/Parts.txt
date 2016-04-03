@@ -36,7 +36,7 @@ IC9   74HC573D         74HC573D        SO20W          8-bit D latch BUS DRIVER
 IC10  FT232RL          FT232RL         SSOP28         Source: http://www.ftdichip.com/Documents/DataSheets/DS_FT232R_v104.pdf    FT232RL       1146032    91K9918
 IC11  FM24V10          FM24V10         SOIC8          Alternative: FM24C04BG
 IC12  MSGEQ7           MSGEQ7          DIP8
-IC13                   78XXS           78XXS          VOLTAGE REGULATOR
+IC13                   78XXS           7805           VOLTAGE REGULATOR
 IC14  MEGA32-A         MEGA32-A        TQFP44         MICROCONTROLLER                                                            ATMEGA32-16AU 9171274    69K6677
 JP1                    PORT            ML10           Datenportstecker
 JP2                    JP1E            JP1            JUMPER
@@ -142,70 +142,70 @@ R101  1k               R-EU_R0603      R0603          RESISTOR, European symbol
 R102  1k               R-EU_R0603      R0603          RESISTOR, European symbol
 SV1                    ML64            ML64           HARTING                                                                                  unknown    unknown
 U$1   3.5mm audio jack KLINKENBUCHSE   KLINKEPRINT    3.5mm Klinkenbuchse, print.
-U$2   PNP              PNP             SOT323
-U$3   PNP              PNP             SOT323
-U$4   PNP              PNP             SOT323
-U$5   PNP              PNP             SOT323
-U$6   PNP              PNP             SOT323
-U$7   PNP              PNP             SOT323
-U$8   PNP              PNP             SOT323
-U$9   PNP              PNP             SOT323
-U$10  PNP              PNP             SOT323
-U$11  PNP              PNP             SOT323
-U$12  PNP              PNP             SOT323
-U$13  PNP              PNP             SOT323
-U$14  PNP              PNP             SOT323
-U$15  PNP              PNP             SOT323
-U$16  PNP              PNP             SOT323
-U$17  PNP              PNP             SOT323
-U$18  PNP              PNP             SOT323
-U$19  PNP              PNP             SOT323
-U$20  PNP              PNP             SOT323
-U$21  PNP              PNP             SOT323
-U$22  PNP              PNP             SOT323
-U$23  PNP              PNP             SOT323
-U$24  PNP              PNP             SOT323
-U$25  PNP              PNP             SOT323
-U$26  PNP              PNP             SOT323
-U$27  PNP              PNP             SOT323
-U$28  PNP              PNP             SOT323
-U$29  PNP              PNP             SOT323
-U$30  PNP              PNP             SOT323
-U$31  PNP              PNP             SOT323
-U$32  PNP              PNP             SOT323
-U$33  PNP              PNP             SOT323
-U$34  PNP              PNP             SOT323
-U$35  PNP              PNP             SOT323
-U$36  PNP              PNP             SOT323
-U$37  PNP              PNP             SOT323
-U$38  PNP              PNP             SOT323
-U$39  PNP              PNP             SOT323
-U$40  PNP              PNP             SOT323
-U$41  PNP              PNP             SOT323
-U$42  PNP              PNP             SOT323
-U$43  PNP              PNP             SOT323
-U$44  PNP              PNP             SOT323
-U$45  PNP              PNP             SOT323
-U$46  PNP              PNP             SOT323
-U$47  PNP              PNP             SOT323
-U$48  PNP              PNP             SOT323
-U$49  PNP              PNP             SOT323
-U$50  PNP              PNP             SOT323
-U$51  PNP              PNP             SOT323
-U$52  PNP              PNP             SOT323
-U$53  PNP              PNP             SOT323
-U$54  PNP              PNP             SOT323
-U$55  PNP              PNP             SOT323
-U$56  PNP              PNP             SOT323
-U$57  PNP              PNP             SOT323
-U$58  PNP              PNP             SOT323
-U$59  PNP              PNP             SOT323
-U$60  PNP              PNP             SOT323
-U$61  PNP              PNP             SOT323
-U$62  PNP              PNP             SOT323
-U$63  PNP              PNP             SOT323
-U$64  PNP              PNP             SOT323
-U$65  PNP              PNP             SOT323
+U$2   BC 860CW         PNP             SOT323
+U$3   BC 860CW         PNP             SOT323
+U$4   BC 860CW         PNP             SOT323
+U$5   BC 860CW         PNP             SOT323
+U$6   BC 860CW         PNP             SOT323
+U$7   BC 860CW         PNP             SOT323
+U$8   BC 860CW         PNP             SOT323
+U$9   BC 860CW         PNP             SOT323
+U$10  BC 860CW         PNP             SOT323
+U$11  BC 860CW         PNP             SOT323
+U$12  BC 860CW         PNP             SOT323
+U$13  BC 860CW         PNP             SOT323
+U$14  BC 860CW         PNP             SOT323
+U$15  BC 860CW         PNP             SOT323
+U$16  BC 860CW         PNP             SOT323
+U$17  BC 860CW         PNP             SOT323
+U$18  BC 860CW         PNP             SOT323
+U$19  BC 860CW         PNP             SOT323
+U$20  BC 860CW         PNP             SOT323
+U$21  BC 860CW         PNP             SOT323
+U$22  BC 860CW         PNP             SOT323
+U$23  BC 860CW         PNP             SOT323
+U$24  BC 860CW         PNP             SOT323
+U$25  BC 860CW         PNP             SOT323
+U$26  BC 860CW         PNP             SOT323
+U$27  BC 860CW         PNP             SOT323
+U$28  BC 860CW         PNP             SOT323
+U$29  BC 860CW         PNP             SOT323
+U$30  BC 860CW         PNP             SOT323
+U$31  BC 860CW         PNP             SOT323
+U$32  BC 860CW         PNP             SOT323
+U$33  BC 860CW         PNP             SOT323
+U$34  BC 860CW         PNP             SOT323
+U$35  BC 860CW         PNP             SOT323
+U$36  BC 860CW         PNP             SOT323
+U$37  BC 860CW         PNP             SOT323
+U$38  BC 860CW         PNP             SOT323
+U$39  BC 860CW         PNP             SOT323
+U$40  BC 860CW         PNP             SOT323
+U$41  BC 860CW         PNP             SOT323
+U$42  BC 860CW         PNP             SOT323
+U$43  BC 860CW         PNP             SOT323
+U$44  BC 860CW         PNP             SOT323
+U$45  BC 860CW         PNP             SOT323
+U$46  BC 860CW         PNP             SOT323
+U$47  BC 860CW         PNP             SOT323
+U$48  BC 860CW         PNP             SOT323
+U$49  BC 860CW         PNP             SOT323
+U$50  BC 860CW         PNP             SOT323
+U$51  BC 860CW         PNP             SOT323
+U$52  BC 860CW         PNP             SOT323
+U$53  BC 860CW         PNP             SOT323
+U$54  BC 860CW         PNP             SOT323
+U$55  BC 860CW         PNP             SOT323
+U$56  BC 860CW         PNP             SOT323
+U$57  BC 860CW         PNP             SOT323
+U$58  BC 860CW         PNP             SOT323
+U$59  BC 860CW         PNP             SOT323
+U$60  BC 860CW         PNP             SOT323
+U$61  BC 860CW         PNP             SOT323
+U$62  BC 860CW         PNP             SOT323
+U$63  BC 860CW         PNP             SOT323
+U$64  BC 860CW         PNP             SOT323
+U$65  BC 860CW         PNP             SOT323
 U$66  IRF530           IRF530          TO220-3V
 U$67  IRF530           IRF530          TO220-3V
 U$68  IRF530           IRF530          TO220-3V
